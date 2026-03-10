@@ -1,0 +1,307 @@
+/* ============================================================================
+   GLOBAL STYLES — Kivo Frontend
+   ============================================================================
+   Imports, reset moderno e configuração HTML.
+   ========================================================================== */
+
+/* ——— FONTES DO GOOGLE (deve vir primeiro) ——— */
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap");
+
+/* ——— DESIGN TOKENS E TEMAS ——— */
+@import "../styles/tokens.css";
+@import "../styles/themes/theme-dark.css";
+@import "../styles/themes/theme-light.css";
+@import "../styles/utils.css";
+
+/* ============================================================================
+   RESET CSS MODERNO
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  /* Tema padrão definido via :root e seletor [data-theme] */
+  scroll-behavior: smooth;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-base);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-base);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ——— TIPOGRAFIA ——— */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  font-weight: var(--font-bold);
+  line-height: var(--leading-tight);
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+h1 {
+  font-size: var(--text-4xl);
+}
+
+h2 {
+  font-size: var(--text-3xl);
+}
+
+h3 {
+  font-size: var(--text-2xl);
+}
+
+h4 {
+  font-size: var(--text-xl);
+}
+
+h5 {
+  font-size: var(--text-lg);
+}
+
+h6 {
+  font-size: var(--text-md);
+}
+
+p {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+a {
+  color: var(--color-brand-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-interactive-hover);
+}
+
+strong,
+b {
+  font-weight: var(--font-bold);
+}
+
+em,
+i {
+  font-style: italic;
+}
+
+code {
+  font-family: var(--font-mono);
+  background-color: var(--color-bg-elevated);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  color: var(--color-feedback-success);
+  font-size: 0.9em;
+}
+
+pre {
+  overflow: auto;
+  background-color: var(--color-bg-elevated);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-default);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-feedback-success);
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+/* ——— LISTAS ——— */
+
+ul,
+ol {
+  margin: var(--space-4) 0;
+  padding-left: var(--space-6);
+  color: var(--color-text-primary);
+}
+
+li {
+  margin-bottom: var(--space-2);
+  line-height: var(--leading-normal);
+}
+
+/* ——— FORMS ——— */
+
+input,
+textarea,
+select {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+
+input,
+textarea,
+select {
+  background-color: var(--color-bg-input);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  transition: all var(--transition-fast);
+}
+
+input:hover:not(:disabled),
+textarea:hover:not(:disabled),
+select:hover:not(:disabled) {
+  border-color: var(--color-border-strong);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px var(--color-feedback-success-bg);
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled {
+  background-color: var(--color-bg-elevated);
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+label {
+  display: inline-block;
+  font-weight: var(--font-semibold);
+  margin-bottom: var(--space-2);
+  color: var(--color-text-primary);
+}
+
+/* ——— BUTTONS ——— */
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: var(--font-body);
+  font-weight: var(--font-semibold);
+  transition: all var(--transition-fast);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ——— TABELAS ——— */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-4) 0;
+  color: var(--color-text-primary);
+}
+
+th,
+td {
+  padding: var(--space-3);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+th {
+  background-color: var(--color-bg-elevated);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+}
+
+tr:hover {
+  background-color: var(--color-bg-elevated);
+}
+
+/* ——— SCROLLBAR ——— */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-brand-primary);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-interactive-hover);
+}
+
+/* ——— SELEÇÃO ——— */
+
+::selection {
+  background-color: var(--color-brand-primary);
+  color: var(--color-text-on-primary);
+}
+
+::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* ——— ACESSIBILIDADE ——— */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ——— PRINT ——— */
+
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+
+  a {
+    color: #0000ff;
+    text-decoration: underline;
+  }
+}

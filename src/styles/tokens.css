@@ -1,0 +1,116 @@
+/* ============================================================================
+   DESIGN TOKENS — Camada Primitiva
+   ============================================================================
+   Tokens brutos e atômicos. NUNCA usados diretamente nos componentes.
+   Mapeados pelos semantic tokens de cada tema em themes/*.css
+   ========================================================================== */
+
+:root {
+  /* ——— PALETA DE CORES PRIMITIVAS ——— */
+
+  /* Verdes (Campo Noturno — cores primárias) */
+  --green-100: #e8fff3;
+  --green-200: #adffd6;
+  --green-300: #00e676; /* primary forte */
+  --green-400: #00bfa5; /* secondary médio */
+  --green-500: #00897b;
+  --green-600: #2e7d32;
+  --green-700: #1b5e20;
+
+  /* Amarelos (Acentos) */
+  --yellow-100: #fffde7;
+  --yellow-300: #ffd600; /* accent vibrante */
+  --yellow-500: #ff9100; /* warning */
+
+  /* Vermelhos (Feedback negativo) */
+  --red-300: #ff1744;
+  --red-500: #d32f2f;
+
+  /* Azuis (Info/dados) */
+  --blue-300: #00b0ff;
+  --blue-500: #0091ea;
+
+  /* Neutros escuros (fundo gramado à noite) */
+  --dark-50: #f0fff4;
+  --dark-100: #6b8f7a;
+  --dark-200: #3a5244;
+  --dark-300: #1e2d27;
+  --dark-400: #131a17;
+  --dark-500: #0a0f0d;
+  --dark-600: #060c0a;
+  --dark-700: #030705;
+
+  /* Neutros claros (futuro tema light) */
+  --light-50: #ffffff;
+  --light-100: #fafafa;
+  --light-200: #f0f0f0;
+  --light-300: #e0e0e0;
+  --light-400: #bdbdbd;
+  --light-500: #757575;
+  --light-600: #424242;
+  --light-700: #1a1a1a;
+
+  /* ——— TIPOGRAFIA ——— */
+  --font-display: "Barlow Condensed", sans-serif;
+  --font-body: "DM Sans", sans-serif;
+  --font-mono: "DM Mono", monospace;
+
+  /* Tamanhos de texto (escala harmônica) */
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-md: 17px;
+  --text-lg: 20px;
+  --text-xl: 24px;
+  --text-2xl: 30px;
+  --text-3xl: 38px;
+  --text-4xl: 48px;
+
+  /* Pesos (font-weight) */
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --font-black: 900;
+
+  /* Alturas de linha (line-height) */
+  --leading-tight: 1.1;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+
+  /* ——— ESPAÇAMENTO (escala 4px base) ——— */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* ——— BORDER RADIUS ——— */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* ——— TRANSIÇÕES E ANIMAÇÕES ——— */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+  --transition-bounce: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ——— Z-INDEX STACK ——— */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+}

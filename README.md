@@ -1,36 +1,162 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
 
-## Getting Started
+<img src="https://img.shields.io/badge/version-0.1.0-00C896?style=for-the-badge" />
+<img src="https://img.shields.io/badge/status-em%20desenvolvimento-FFB800?style=for-the-badge" />
+<img src="https://img.shields.io/badge/licença-MIT-blue?style=for-the-badge" />
 
-First, run the development server:
+# ⚽ KIVO SPORTS — Frontend
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Plataforma web de gestão de campeonatos esportivos e venda de ingressos digitais para eventos amadores e semiprofissionais.
+
+[Sobre](#-sobre-o-projeto) · [Stack](#-stack) · [Estrutura](#-estrutura-do-projeto) · [Como rodar](#-como-rodar) · [Variáveis de ambiente](#-variáveis-de-ambiente) · [Padrões](#-padrões-de-desenvolvimento)
+
+</div>
+
+---
+
+## 📌 Sobre o Projeto
+
+O **Kivo Sports** é uma plataforma web que digitaliza e moderniza a gestão de eventos esportivos de pequeno e médio porte. Organizadores criam campeonatos, gerenciam times e jogos, registram resultados e publicam notícias — enquanto torcedores acompanham tabelas, resultados e compram ingressos digitais via PIX.
+
+Este repositório contém o **frontend** da plataforma, desenvolvido em **Next.js 14** com App Router.
+
+---
+
+## 🧩 Stack
+
+| Camada        | Tecnologia                                                   |
+| ------------- | ------------------------------------------------------------ |
+| Framework     | [Next.js 14](https://nextjs.org/) (App Router)               |
+| Linguagem     | [TypeScript](https://www.typescriptlang.org/)                |
+| Estilização   | [Tailwind CSS](https://tailwindcss.com/)                     |
+| Estado global | [Redux Toolkit](https://redux-toolkit.js.org/)               |
+| Chamadas HTTP | [RTK Query](https://redux-toolkit.js.org/rtk-query/overview) |
+| Formulários   | [React Hook Form](https://react-hook-form.com/)              |
+| Validação     | [Zod](https://zod.dev/)                                      |
+| Linting       | ESLint + Prettier                                            |
+
+---
+
+## 🗂 Estrutura do Projeto
+
+A arquitetura de componentes segue o padrão **Atomic Design**:
+
+```
+src/
+├── app/                        # Páginas e rotas (Next.js App Router)
+│   ├── (auth)/                 # Grupo de rotas públicas (login, cadastro)
+│   ├── (dashboard)/            # Grupo de rotas protegidas
+│   └── layout.tsx              # Layout raiz com Redux Provider
+│
+├── components/
+│   ├── atoms/                  # Elementos base: Button, Input, Label, Badge...
+│   ├── molecules/              # Combinações: FormField, SearchBar, Card...
+│   ├── organisms/              # Seções: Header, Sidebar, Tabela de jogos...
+│   └── templates/              # Layouts: AuthLayout, DashboardLayout...
+│
+├── store/
+│   ├── index.ts                # Store principal
+│   ├── hooks.ts                # useAppDispatch e useAppSelector tipados
+│   ├── slices/                 # Redux slices por domínio (auth, campeonato...)
+│   └── api/                   # RTK Query endpoints por domínio
+│
+├── types/                      # Interfaces e tipos TypeScript globais
+├── hooks/                      # Custom hooks reutilizáveis
+└── utils/                      # Funções utilitárias
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Como Rodar
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Pré-requisitos
 
-## Learn More
+- Node.js 18+
+- npm ou yarn
 
-To learn more about Next.js, take a look at the following resources:
+### Instalação
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Clone o repositório
+git clone https://github.com/kivo-sports/kivo-frontend.git
+cd kivo-frontend
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Instale as dependências
+npm install
 
-## Deploy on Vercel
+# Configure as variáveis de ambiente
+cp .env.example .env.local
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Rode o servidor de desenvolvimento
+npm run dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Acesse [http://localhost:3000](http://localhost:3000)
+
+---
+
+## 🔑 Variáveis de Ambiente
+
+Crie um arquivo `.env.local` na raiz do projeto com as seguintes variáveis:
+
+```env
+# URL base da API (.NET)
+NEXT_PUBLIC_API_URL=http://localhost:5000
+```
+
+> ⚠️ Nunca commite o arquivo `.env.local`. Ele já está no `.gitignore`.
+
+---
+
+## 🎨 Padrões de Desenvolvimento
+
+### Atomic Design
+
+Cada componente deve ser criado no nível correto da hierarquia:
+
+| Nível        | O que é                         | Exemplos                        |
+| ------------ | ------------------------------- | ------------------------------- |
+| **Atom**     | Menor unidade, sem dependências | Button, Input, Label, Badge     |
+| **Molecule** | Combinação de atoms             | FormField, SearchBar, GameCard  |
+| **Organism** | Seção funcional completa        | Header, Tabela de Classificação |
+| **Template** | Estrutura de página             | AuthLayout, DashboardLayout     |
+
+### Commits
+
+Seguimos o padrão **Conventional Commits**:
+
+```
+feat: adiciona tela de login
+fix: corrige validação do formulário de cadastro
+chore: atualiza dependências
+refactor: reorganiza estrutura do authSlice
+```
+
+### Branches
+
+```
+main          → produção
+develop       → desenvolvimento
+feat/nome     → novas funcionalidades
+fix/nome      → correções
+```
+
+---
+
+## 🔗 Repositórios Relacionados
+
+| Repositório                                                 | Descrição        |
+| ----------------------------------------------------------- | ---------------- |
+| [kivo-backend](https://github.com/kivo-sports/kivo-backend) | API REST em .NET |
+
+---
+
+## 👥 Time
+
+Desenvolvido pelo time **Kivo Sports**.
+
+---
+
+<div align="center">
+  <sub>Kivo Sports © 2025 — Digitalizando o esporte amador brasileiro</sub>
+</div>
