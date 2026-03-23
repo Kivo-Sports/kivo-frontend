@@ -37,6 +37,10 @@ export function PageTransition({ children }: PageTransitionProps) {
         animate="animate"
         exit="exit"
         transition={pageTransition}
+        style={{
+          backfaceVisibility: "hidden",
+          WebkitFontSmoothing: "antialiased",
+        }}
       >
         {children}
       </motion.div>

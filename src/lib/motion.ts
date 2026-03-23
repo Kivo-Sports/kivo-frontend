@@ -28,7 +28,7 @@ export const pageVariants: Variants = {
 };
 
 export const pageTransition: Transition = {
-  duration: 0.4,
+  duration: 0.35,
   ease: appleEase,
 };
 
@@ -40,9 +40,9 @@ export const fadeIn: Variants = {
 };
 
 export const fadeInUp: Variants = {
-  initial: { opacity: 0, y: 16 },
+  initial: { opacity: 0, y: 12 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: 16 },
+  exit: { opacity: 0, y: 8 },
 };
 
 export const fadeInDown: Variants = {
@@ -64,9 +64,9 @@ export const fadeInRight: Variants = {
 };
 
 export const fadeInScale: Variants = {
-  initial: { opacity: 0, scale: 0.96 },
-  animate: { opacity: 1, scale: 1 },
-  exit: { opacity: 0, scale: 0.96 },
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: 8 },
 };
 
 // Listas e stagger
@@ -74,40 +74,44 @@ export const containerVariants: Variants = {
   initial: {},
   animate: {
     transition: {
-      // mantive abaixo de 0.08 para nao ficar "efeito cascata" exagerado
-      staggerChildren: 0.07,
-      delayChildren: 0.05,
+      staggerChildren: 0.06,
     },
   },
 };
 
 export const itemVariants: Variants = {
-  initial: { opacity: 0, y: 16 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: 16 },
+  initial: { opacity: 0, y: 8 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } },
+  exit: { opacity: 0, y: 8 },
 };
 
 // Cards e superficies
 export const cardHover = {
-  scale: 1.02,
+  y: -3,
   boxShadow: "var(--shadow-lg)",
 };
 
 export const cardTap = {
-  scale: 0.98,
+  y: 0,
+};
+
+export const buttonHover = {
+  whileHover: { y: -1, opacity: 0.9 },
+  whileTap: { y: 0, opacity: 0.75 },
+  transition: { duration: 0.15, ease: appleEase },
 };
 
 // Modais e overlays
 export const overlayVariants: Variants = {
   initial: { opacity: 0 },
-  animate: { opacity: 0.6 },
+  animate: { opacity: 1 },
   exit: { opacity: 0 },
 };
 
 export const modalVariants: Variants = {
-  initial: { opacity: 0, scale: 0.95, y: 8 },
-  animate: { opacity: 1, scale: 1, y: 0 },
-  exit: { opacity: 0, scale: 0.95, y: 8 },
+  initial: { opacity: 0, y: 16 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: 8 },
 };
 
 // Notificacoes / Toast
@@ -120,14 +124,16 @@ export const toastVariants: Variants = {
 // Numero animado (placar)
 export const scoreVariants: Variants = {
   idle: {
-    scale: 1,
+    y: 0,
+    opacity: 1,
     color: "var(--color-text-primary)",
   },
   animate: {
-    scale: [1, 1.03, 1],
+    y: [0, -1, 0],
+    opacity: [1, 0.9, 1],
     color: ["var(--color-text-primary)", "var(--color-brand-primary)", "var(--color-text-primary)"],
     transition: {
-      duration: 0.5,
+      duration: 0.35,
       ease: appleEase,
     },
   },
@@ -144,12 +150,12 @@ export const quickMotionTransition: Transition = {
 };
 
 export const mediumMotionTransition: Transition = {
-  duration: 0.4,
+  duration: 0.35,
   ease: appleEase,
 };
 
 export const scoreCountTransition: Transition = {
-  duration: 0.6,
+  duration: 0.35,
   ease: appleEase,
 };
 
@@ -169,7 +175,7 @@ export function getFadeDirectionVariants(direction: FadeDirection): Variants {
   return fadeDirectionToVariants[direction];
 }
 
-export function getFadeTransition(delayInSeconds = 0, durationInSeconds = 0.4): Transition {
+export function getFadeTransition(delayInSeconds = 0, durationInSeconds = 0.35): Transition {
   return {
     delay: delayInSeconds,
     duration: durationInSeconds,

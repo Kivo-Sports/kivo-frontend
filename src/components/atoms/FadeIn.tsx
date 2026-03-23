@@ -32,7 +32,7 @@ export function FadeIn({
   children,
   delay = 0,
   direction = "up",
-  duration = 0.4,
+  duration = 0.35,
   once = true,
   className,
 }: FadeInProps) {
@@ -45,6 +45,10 @@ export function FadeIn({
       exit="exit"
       viewport={{ once, amount: 0.25 }}
       transition={getFadeTransition(delay, duration)}
+      style={{
+        backfaceVisibility: "hidden",
+        WebkitFontSmoothing: "antialiased",
+      }}
     >
       {children}
     </motion.div>

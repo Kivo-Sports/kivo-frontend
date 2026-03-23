@@ -14,6 +14,9 @@
 // - React
 import { useState } from "react";
 
+// - Next.js
+import Link from "next/link";
+
 // - Framer Motion
 import { motion } from "framer-motion";
 
@@ -21,7 +24,14 @@ import { motion } from "framer-motion";
 import { AnimatedList } from "@/components/atoms/AnimatedList";
 import { AnimatedNumber } from "@/components/atoms/AnimatedNumber";
 import { AnimatedPage } from "@/components/atoms/AnimatedPage";
+import { Avatar } from "@/components/atoms/Avatar";
+import { Badge } from "@/components/atoms/Badge";
+import { Button } from "@/components/atoms/Button";
 import { FadeIn } from "@/components/atoms/FadeIn";
+import { Input } from "@/components/atoms/Input";
+import { Spinner } from "@/components/atoms/Spinner";
+import { Card } from "@/components/molecules/Card";
+import { FormField } from "@/components/molecules/FormField";
 import { MotionCard } from "@/components/molecules/MotionCard";
 
 // - Motion config
@@ -42,6 +52,9 @@ const jogosIniciaisDaRodada: JogoDaRodada[] = [
 export default function Home() {
   const [jogosDaRodada, setJogosDaRodada] = useState<JogoDaRodada[]>(jogosIniciaisDaRodada);
   const [placarDoKivoFc, setPlacarDoKivoFc] = useState(1);
+  const [emailDemo, setEmailDemo] = useState<string>("");
+  const [senhaDemo, setSenhaDemo] = useState<string>("");
+  const [usuarioDemo, setUsuarioDemo] = useState<string>("");
 
   function handleAdicionarJogoTeste(): void {
     const idDoNovoJogo = Date.now();
@@ -115,15 +128,287 @@ export default function Home() {
             >
               <MotionCard style={{ padding: "var(--space-5)" }}>
                 <div className="card-header">
+                  <h2 className="card-title">Button Showcase</h2>
+                  <p className="card-subtitle">Variantes, tamanhos e estados do componente.</p>
+                </div>
+
+                <div style={{ display: "grid", gap: "var(--space-3)" }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-3)" }}>
+                    <Button variant="primary">Primary</Button>
+                    <Button variant="secondary">Secondary</Button>
+                    <Button variant="ghost">Ghost</Button>
+                    <Button variant="danger">Danger</Button>
+                  </div>
+
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-3)" }}>
+                    <Button size="sm">Small</Button>
+                    <Button size="md">Medium</Button>
+                    <Button size="lg">Large</Button>
+                  </div>
+
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-3)" }}>
+                    <Button loading>Loading</Button>
+                    <Button disabled variant="ghost">
+                      Disabled
+                    </Button>
+                  </div>
+
+                  <Button fullWidth>Full Width</Button>
+                </div>
+              </MotionCard>
+
+              <MotionCard style={{ padding: "var(--space-5)" }}>
+                <div className="card-header">
+                  <h2 className="card-title">Input Showcase</h2>
+                  <p className="card-subtitle">Default, com icone, erro e estado desabilitado.</p>
+                </div>
+
+                <div style={{ display: "grid", gap: "var(--space-4)" }}>
+                  <Input
+                    label="Email"
+                    placeholder="voce@kivo.com"
+                    value={emailDemo}
+                    onChange={(event) => setEmailDemo(event.target.value)}
+                    icon={<span style={{ fontWeight: 700 }}>@</span>}
+                    type="email"
+                  />
+
+                  <Input
+                    label="Senha"
+                    placeholder="Digite ao menos 6 caracteres"
+                    value={senhaDemo}
+                    onChange={(event) => setSenhaDemo(event.target.value)}
+                    type="password"
+                    error={
+                      senhaDemo.length > 0 && senhaDemo.length < 6
+                        ? "A senha precisa ter no minimo 6 caracteres."
+                        : undefined
+                    }
+                  />
+
+                  <Input label="Campo desabilitado" placeholder="Indisponivel" disabled />
+                </div>
+              </MotionCard>
+
+              <MotionCard style={{ padding: "var(--space-5)" }}>
+                <div className="card-header">
+                  <h2 className="card-title">FormField Showcase</h2>
+                  <p className="card-subtitle">
+                    Molecule padrao para formularios com label e erro.
+                  </p>
+                </div>
+
+                <div style={{ display: "grid", gap: "var(--space-4)" }}>
+                  <FormField
+                    label="Usuario"
+                    placeholder="Seu nome de usuario"
+                    value={usuarioDemo}
+                    onChange={(event) => setUsuarioDemo(event.target.value)}
+                  />
+
+                  <FormField
+                    label="Email de login"
+                    placeholder="contato@kivo.com"
+                    type="email"
+                    error={
+                      emailDemo.length > 0 && !emailDemo.includes("@")
+                        ? "Informe um email valido."
+                        : undefined
+                    }
+                    value={emailDemo}
+                    onChange={(event) => setEmailDemo(event.target.value)}
+                  />
+                </div>
+              </MotionCard>
+
+              <MotionCard style={{ padding: "var(--space-5)" }}>
+                <div className="card-header">
+                  <h2 className="card-title">Badge Showcase</h2>
+                  <p className="card-subtitle">
+                    Variantes de status com opacidade de fundo em 15%.
+                  </p>
+                </div>
+
+                <div style={{ display: "grid", gap: "var(--space-3)" }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-3)" }}>
+                    <Badge variant="success" size="md">
+                      Sucesso
+                    </Badge>
+                    <Badge variant="warning" size="md">
+                      Alerta
+                    </Badge>
+                    <Badge variant="danger" size="md">
+                      Erro
+                    </Badge>
+                    <Badge variant="info" size="md">
+                      Info
+                    </Badge>
+                    <Badge variant="default" size="md">
+                      Padrao
+                    </Badge>
+                  </div>
+
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-3)" }}>
+                    <Badge variant="success" size="sm">
+                      sm
+                    </Badge>
+                    <Badge variant="warning" size="sm">
+                      sm
+                    </Badge>
+                    <Badge variant="danger" size="sm">
+                      sm
+                    </Badge>
+                    <Badge variant="info" size="sm">
+                      sm
+                    </Badge>
+                    <Badge variant="default" size="sm">
+                      sm
+                    </Badge>
+                  </div>
+                </div>
+              </MotionCard>
+
+              <MotionCard style={{ padding: "var(--space-5)" }}>
+                <div className="card-header">
+                  <h2 className="card-title">Auth Screen Preview</h2>
+                  <p className="card-subtitle">
+                    Acesso rapido para validar a nova tela de login do Kivo Sports.
+                  </p>
+                </div>
+
+                <div style={{ display: "grid", gap: "var(--space-3)" }}>
+                  <p className="text-secondary">
+                    A tela de autenticacao foi criada com template responsivo, foco em leitura e
+                    hierarquia visual alinhada ao tema noturno da plataforma.
+                  </p>
+
+                  <Link
+                    href="/login"
+                    className="btn btn-primary"
+                    style={{ width: "100%", justifyContent: "center" }}
+                  >
+                    Abrir Tela de Login
+                  </Link>
+                </div>
+              </MotionCard>
+
+              <MotionCard style={{ padding: "var(--space-5)" }}>
+                <div className="card-header">
+                  <h2 className="card-title">Spinner Showcase</h2>
+                  <p className="card-subtitle">Loading animado com tamanhos e cores diferentes.</p>
+                </div>
+
+                <div style={{ display: "grid", gap: "var(--space-4)" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      flexWrap: "wrap",
+                      gap: "var(--space-4)",
+                    }}
+                  >
+                    <Spinner size="sm" />
+                    <Spinner size="md" />
+                    <Spinner size="lg" />
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      flexWrap: "wrap",
+                      gap: "var(--space-4)",
+                    }}
+                  >
+                    <Spinner size="md" color="var(--color-brand-primary)" />
+                    <Spinner size="md" color="var(--color-brand-secondary)" />
+                    <Spinner size="md" color="var(--color-feedback-warning)" />
+                    <Spinner size="md" color="var(--color-feedback-danger)" />
+                  </div>
+                </div>
+              </MotionCard>
+
+              <MotionCard style={{ padding: "var(--space-5)" }}>
+                <div className="card-header">
+                  <h2 className="card-title">Avatar Showcase</h2>
+                  <p className="card-subtitle">
+                    Foto de perfil com fallback automatico para iniciais.
+                  </p>
+                </div>
+
+                <div style={{ display: "grid", gap: "var(--space-4)" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      flexWrap: "wrap",
+                      gap: "var(--space-4)",
+                    }}
+                  >
+                    <Avatar size="sm" name="Bruno Silva" src="https://i.pravatar.cc/64?img=14" />
+                    <Avatar size="md" name="Camila Rocha" src="https://i.pravatar.cc/96?img=32" />
+                    <Avatar size="lg" name="Diego Souza" src="https://i.pravatar.cc/128?img=54" />
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      flexWrap: "wrap",
+                      gap: "var(--space-4)",
+                    }}
+                  >
+                    <Avatar size="sm" name="Maria Oliveira" />
+                    <Avatar size="md" name="Joao Pedro" />
+                    <Avatar size="lg" name="Kivo United" />
+                  </div>
+                </div>
+              </MotionCard>
+
+              <MotionCard style={{ padding: "var(--space-5)" }}>
+                <div className="card-header">
+                  <h2 className="card-title">Card Showcase</h2>
+                  <p className="card-subtitle">
+                    Container base com padding configuravel e hover opcional.
+                  </p>
+                </div>
+
+                <div style={{ display: "grid", gap: "var(--space-3)" }}>
+                  <Card padding="sm">
+                    <strong style={{ display: "block", marginBottom: "var(--space-1)" }}>
+                      Padding sm
+                    </strong>
+                    <p className="text-muted">Card compacto para conteudo curto.</p>
+                  </Card>
+
+                  <Card padding="md">
+                    <strong style={{ display: "block", marginBottom: "var(--space-1)" }}>
+                      Padding md
+                    </strong>
+                    <p className="text-muted">Card padrao para a maioria das telas.</p>
+                  </Card>
+
+                  <Card padding="lg" hoverable>
+                    <strong style={{ display: "block", marginBottom: "var(--space-1)" }}>
+                      Padding lg + hoverable
+                    </strong>
+                    <p className="text-muted">Passe o mouse para ver elevacao de superficie.</p>
+                  </Card>
+                </div>
+              </MotionCard>
+
+              <MotionCard style={{ padding: "var(--space-5)" }}>
+                <div className="card-header">
                   <h2 className="card-title">Card Interativo</h2>
                   <p className="card-subtitle">Hover e tap configurados via MotionCard.</p>
                 </div>
                 <p className="text-secondary" style={{ marginBottom: "var(--space-4)" }}>
-                  Passe o mouse ou toque para perceber scale e sombra suaves em padrao Apple-like.
+                  Passe o mouse ou toque para perceber elevacao e sombra suaves em padrao
+                  Apple-like.
                 </p>
-                <button className="btn btn-primary" type="button">
+                <Button variant="primary" type="button">
                   Acao Principal
-                </button>
+                </Button>
               </MotionCard>
 
               <MotionCard style={{ padding: "var(--space-5)" }}>
@@ -141,13 +426,9 @@ export default function Home() {
                   />
                 </div>
                 <div style={{ marginTop: "var(--space-4)" }}>
-                  <button
-                    className="btn btn-secondary"
-                    type="button"
-                    onClick={handleSomarGolNoPlacarDemo}
-                  >
+                  <Button variant="secondary" type="button" onClick={handleSomarGolNoPlacarDemo}>
                     Somar Gol
-                  </button>
+                  </Button>
                 </div>
               </MotionCard>
             </section>
@@ -169,13 +450,9 @@ export default function Home() {
                   marginBottom: "var(--space-4)",
                 }}
               >
-                <button
-                  className="btn btn-primary"
-                  type="button"
-                  onClick={handleAdicionarJogoTeste}
-                >
+                <Button variant="primary" type="button" onClick={handleAdicionarJogoTeste}>
                   Adicionar Jogo
-                </button>
+                </Button>
               </div>
 
               <AnimatedList>
@@ -197,7 +474,11 @@ export default function Home() {
                       variants={itemVariants}
                       transition={mediumMotionTransition}
                       className="card"
-                      style={{ padding: "var(--space-4)" }}
+                      style={{
+                        padding: "var(--space-4)",
+                        backfaceVisibility: "hidden",
+                        WebkitFontSmoothing: "antialiased",
+                      }}
                     >
                       <div className="flex justify-between items-center gap-3">
                         <div>
@@ -206,13 +487,14 @@ export default function Home() {
                           </strong>
                           <p className="text-muted">{jogoDaRodada.status}</p>
                         </div>
-                        <button
+                        <Button
                           type="button"
-                          className="btn btn-ghost"
+                          variant="ghost"
+                          size="sm"
                           onClick={() => handleRemoverJogo(jogoDaRodada.id)}
                         >
                           Remover
-                        </button>
+                        </Button>
                       </div>
                     </motion.li>
                   ))}
