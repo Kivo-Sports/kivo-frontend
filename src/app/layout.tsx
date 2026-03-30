@@ -1,11 +1,6 @@
 /**
  * @file layout.tsx
  * @description Layout raiz da aplicacao.
- *
- * Aqui eu concentrei os providers globais (Redux + transicao de rota)
- * para manter as paginas o mais limpas possivel.
- *
- * @author Kivo Sports - TCC
  */
 
 // - Next.js
@@ -15,9 +10,11 @@ import "./globals.css";
 
 // - Providers
 import { StoreProvider } from "@/store/StoreProvider";
+import { ToastProvider } from "@/components/atoms/Toast";
 
 // - Componentes
 import { PageTransition } from "@/components/atoms/PageTransition";
+import { RootLayoutClient } from "./layout.client";
 
 export const metadata: Metadata = {
   title: "Kivo Frontend",
@@ -57,7 +54,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
     >
       <body className="antialiased">
         <StoreProvider>
-          <PageTransition>{children}</PageTransition>
+          <ToastProvider>
+            <PageTransition>{children}</PageTransition>
+            <RootLayoutClient />
+          </ToastProvider>
         </StoreProvider>
       </body>
     </html>

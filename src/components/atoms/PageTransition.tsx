@@ -13,7 +13,7 @@
 import type { ReactNode } from "react";
 
 // - Framer Motion
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 
 // - Next.js
 import { usePathname } from "next/navigation";
@@ -29,21 +29,18 @@ export function PageTransition({ children }: PageTransitionProps) {
   const rotaAtual = usePathname();
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={rotaAtual}
-        variants={pageVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        transition={pageTransition}
-        style={{
-          backfaceVisibility: "hidden",
-          WebkitFontSmoothing: "antialiased",
-        }}
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+    <motion.div
+      key={rotaAtual}
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      transition={pageTransition}
+      style={{
+        backfaceVisibility: "hidden",
+        WebkitFontSmoothing: "antialiased",
+      }}
+    >
+      {children}
+    </motion.div>
   );
 }

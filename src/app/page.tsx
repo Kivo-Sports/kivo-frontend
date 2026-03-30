@@ -12,7 +12,7 @@
  */
 
 // - React
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // - Next.js
 import Link from "next/link";
@@ -33,6 +33,11 @@ import { Spinner } from "@/components/atoms/Spinner";
 import { Card } from "@/components/molecules/Card";
 import { FormField } from "@/components/molecules/FormField";
 import { MotionCard } from "@/components/molecules/MotionCard";
+import { Stepper } from "@/components/molecules/Stepper/Stepper";
+import { FormSection } from "@/components/molecules/FormSection/FormSection";
+import { useToast } from "@/components/atoms/Toast";
+import { Header } from "@/components/organisms/Header";
+import { HeaderMobile } from "@/components/organisms/HeaderMobile";
 
 // - Motion config
 import { containerVariants, itemVariants, mediumMotionTransition } from "@/lib/motion";
@@ -49,12 +54,34 @@ const jogosIniciaisDaRodada: JogoDaRodada[] = [
   { id: 3, title: "Racha Prime vs Kivo United", status: "Finalizado" },
 ];
 
+const mockStepperSteps = [
+  { numero: 1, titulo: "Dados Pessoais" },
+  { numero: 2, titulo: "Credenciais" },
+  { numero: 3, titulo: "Endereço" },
+  { numero: 4, titulo: "Confirmação" },
+];
+
 export default function Home() {
   const [jogosDaRodada, setJogosDaRodada] = useState<JogoDaRodada[]>(jogosIniciaisDaRodada);
   const [placarDoKivoFc, setPlacarDoKivoFc] = useState(1);
   const [emailDemo, setEmailDemo] = useState<string>("");
   const [senhaDemo, setSenhaDemo] = useState<string>("");
   const [usuarioDemo, setUsuarioDemo] = useState<string>("");
+  const [isMobile, setIsMobile] = useState(false);
+  const [stepperStep, setStepperStep] = useState(1);
+  const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+  const [activeFormSection, setActiveFormSection] = useState<number>(1);
+
+  const { success, error, warning, info } = useToast();
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   function handleAdicionarJogoTeste(): void {
     const idDoNovoJogo = Date.now();
@@ -80,10 +107,14 @@ export default function Home() {
 
   return (
     <AnimatedPage>
+      {/* Header Responsivo */}
+      {isMobile ? <HeaderMobile /> : <Header />}
+
       <main
         style={{
           minHeight: "100vh",
           padding: "var(--space-8)",
+          paddingTop: "calc(70px + var(--space-8))",
           background:
             "radial-gradient(circle at 15% 20%, rgba(0, 230, 118, 0.16), transparent 35%), radial-gradient(circle at 85% 0%, rgba(255, 214, 0, 0.1), transparent 30%), var(--color-bg-base)",
         }}
@@ -294,6 +325,39 @@ export default function Home() {
 
               <MotionCard style={{ padding: "var(--space-5)" }}>
                 <div className="card-header">
+                  <h2 className="card-title">Toast Showcase</h2>
+                  <p className="card-subtitle">Teste as notificações em todos os tipos.</p>
+                </div>
+
+                <div style={{ display: "grid", gap: "var(--space-3)" }}>
+                  <Button
+                    variant="primary"
+                    onClick={() => success("Operação realizada com sucesso!", "Sucesso")}
+                  >
+                    Success
+                  </Button>
+                  <Button
+                    variant="danger"
+                    onClick={() => error("Ocorreu um erro na operação!", "Erro")}
+                  >
+                    Error
+                  </Button>
+                  <Button
+                    onClick={() => warning("Atenção: Esta ação requer confirmação", "Aviso")}
+                  >
+                    Warning
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => info("Esta é uma mensagem informativa", "Informação")}
+                  >
+                    Info
+                  </Button>
+                </div>
+              </MotionCard>
+
+              <MotionCard style={{ padding: "var(--space-5)" }}>
+                <div className="card-header">
                   <h2 className="card-title">Spinner Showcase</h2>
                   <p className="card-subtitle">Loading animado com tamanhos e cores diferentes.</p>
                 </div>
@@ -429,6 +493,83 @@ export default function Home() {
                   <Button variant="secondary" type="button" onClick={handleSomarGolNoPlacarDemo}>
                     Somar Gol
                   </Button>
+                </div>
+              </MotionCard>
+
+              <MotionCard style={{ padding: "var(--space-5)" }}>
+                <div className="card-header">
+                  <h2 className="card-title">Stepper Component</h2>
+                  <p className="card-subtitle">Indicador de progresso multi-step.</p>
+                </div>
+
+                <div style={{ marginBottom: "var(--space-4)" }}>
+                  <Stepper
+                    steps={mockStepperSteps}
+                    currentStep={stepperStep}
+                    completedSteps={completedSteps}
+                    onStepClick={(step) => {
+                      setStepperStep(step);
+                      if (!completedSteps.includes(step)) {
+                        setCompletedSteps([...completedSteps, step]);
+                      }
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: "flex", gap: "var(--space-2)" }}>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    disabled={stepperStep === 1}
+                    onClick={() => setStepperStep(stepperStep - 1)}
+                  >
+                    Anterior
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="primary"
+                    disabled={stepperStep === 4}
+                    onClick={() => {
+                      setStepperStep(stepperStep + 1);
+                      setCompletedSteps([...completedSteps, stepperStep]);
+                    }}
+                  >
+                    Próximo
+                  </Button>
+                </div>
+              </MotionCard>
+
+              <MotionCard style={{ padding: "var(--space-5)" }}>
+                <div className="card-header">
+                  <h2 className="card-title">FormSection Component</h2>
+                  <p className="card-subtitle">Seção expandível com validação.</p>
+                </div>
+
+                <div style={{ display: "grid", gap: "var(--space-3)" }}>
+                  <FormSection
+                    stepNumber={1}
+                    title="Dados Pessoais"
+                    description="Informações básicas"
+                    isActive={activeFormSection === 1}
+                    isCompleted={completedSteps.includes(1)}
+                    isDisabled={false}
+                    onToggle={() => setActiveFormSection(activeFormSection === 1 ? 0 : 1)}
+                  >
+                    <FormField label="Nome completo" placeholder="Seu nome" />
+                    <FormField label="Email" placeholder="seu@email.com" type="email" />
+                  </FormSection>
+
+                  <FormSection
+                    stepNumber={2}
+                    title="Credenciais"
+                    description="Crie sua senha"
+                    isActive={activeFormSection === 2}
+                    isCompleted={completedSteps.includes(2)}
+                    isDisabled={!completedSteps.includes(1)}
+                    onToggle={() => setActiveFormSection(activeFormSection === 2 ? 0 : 2)}
+                  >
+                    <FormField label="Senha" placeholder="Min 6 caracteres" type="password" />
+                  </FormSection>
                 </div>
               </MotionCard>
             </section>

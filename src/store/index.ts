@@ -16,11 +16,13 @@ import { baseApi } from "./api/baseApi";
 
 // - Slices
 import authReducer from "./slices/authSlice";
+import registrationReducer from "./slices/registrationSlice";
 
 export const store = configureStore({
   reducer: {
     // optei por deixar o nome do slice explicito para facilitar debug no devtools
     auth: authReducer,
+    registration: registrationReducer,
     [baseApi.reducerPath]: baseApi.reducer,
   },
   // se um dia ficar pesado, da pra revisar serializableCheck aqui
