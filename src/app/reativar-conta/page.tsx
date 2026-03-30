@@ -17,6 +17,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/atoms/Button';
 import { Input } from '@/components/atoms/Input';
 import { Card } from '@/components/molecules/Card';
+import { VerificationCodeInput } from '@/components/molecules/VerificationCodeInput';
 import { FadeIn } from '@/components/atoms/FadeIn';
 import { useToast } from '@/components/atoms/Toast';
 
@@ -37,6 +38,7 @@ export default function ReativarContaPage() {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [codeSent, setCodeSent] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
+  const [canResend, setCanResend] = useState(false);
 
   // Timer para reenviar código
   useEffect(() => {
@@ -166,6 +168,59 @@ export default function ReativarContaPage() {
     setErrors({});
   };
 
+  const handleResendCode = async () => {
+    // Reenviar código é basicamente chamar handleSendCode novamente
+    setErrors({});
+    setCanResend(false);
+    setCode(''); // Limpar código anterior
+
+    const emailTrim = email.trim();
+    if (!emailTrim) {
+      setErrors({ email: 'Email é obrigatório' });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      if (!apiUrl) {
+        throw new Error('API URL não configurada');
+      }
+
+      const response = await fetch(`${apiUrl}/api/auth/enviar-codigo-reativacao`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: emailTrim }),
+      });
+
+      if (response.ok) {
+        toastSuccess(
+          `Novo código enviado para ${emailTrim}`,
+          undefined,
+          3000
+        );
+        setCodeSent(true);
+        setTimeLeft(300); // 5 minutos novamente
+      } else {
+        const data = await response.json().catch(() => ({}));
+        const errorMsg = data.message || 'Erro ao reenviar código';
+        toastError(errorMsg, 'Erro', 5000);
+        setErrors({ email: errorMsg });
+        setCanResend(true); // Permite tentar novamente
+      }
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Erro de conexão';
+      toastError(errorMsg, 'Erro ao conectar', 5000);
+      setErrors({ email: errorMsg });
+      setCanResend(true); // Permite tentar novamente
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -280,28 +335,60 @@ export default function ReativarContaPage() {
                 </p>
               </div>
 
-              {/* Campo Código */}
-              <Input
+              {/* Campo Código com 6 Quadradinhos */}
+              <VerificationCodeInput
                 label="Código de Confirmação:"
-                placeholder="000000"
-                type="text"
-                value={code}
-                onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                error={errors.code}
+                code={code}
+                onChange={(value) => setCode(value)}
                 disabled={loading}
-                maxLength={6}
+                error={errors.code}
+                digitCount={6}
               />
 
               {/* Timer */}
-              <p
+              <div
                 style={{
-                  fontSize: 'var(--text-xs)',
-                  color: timeLeft < 60 ? 'var(--color-feedback-danger)' : 'var(--color-text-muted)',
                   textAlign: 'center',
+                  padding: 'var(--space-3)',
+                  borderRadius: 'var(--radius-md)',
+                  backgroundColor: timeLeft === 0 ? 'var(--color-feedback-danger-bg)' : 'transparent',
+                  border: timeLeft === 0 ? '1px solid var(--color-feedback-danger)' : 'none',
                 }}
               >
-                Código válido por: <strong>{formatTime(timeLeft)}</strong>
-              </p>
+                <p
+                  style={{
+                    fontSize: 'var(--text-xs)',
+                    color: timeLeft < 60 ? 'var(--color-feedback-danger)' : 'var(--color-text-muted)',
+                    margin: 0,
+                  }}
+                >
+                  {timeLeft === 0 ? (
+                    <>
+                      <strong>⏰ Código expirado!</strong>
+                      <br />
+                      Clique em "Reenviar Código" abaixo para solicitar um novo
+                    </>
+                  ) : (
+                    <>
+                      Código válido por: <strong>{formatTime(timeLeft)}</strong>
+                    </>
+                  )}
+                </p>
+              </div>
+
+              {/* Botão Reenviar (quando expirar) */}
+              {canResend && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="md"
+                  fullWidth
+                  onClick={handleResendCode}
+                  disabled={loading}
+                >
+                  {loading ? '⏳ Enviando...' : '🔄 Reenviar Código'}
+                </Button>
+              )}
 
               {/* Erro geral */}
               {errors.general && (
