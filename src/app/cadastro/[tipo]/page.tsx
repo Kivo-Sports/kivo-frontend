@@ -289,16 +289,30 @@ export default function CadastroFormPage() {
         justifyContent: 'center',
         padding: 'var(--space-4)',
         paddingTop: 'var(--space-6)',
+        paddingBottom: 'var(--space-6)',
         background:
           'radial-gradient(circle at 8% 12%, rgba(0, 230, 118, 0.15), transparent 35%), radial-gradient(circle at 100% 0%, rgba(255, 214, 0, 0.1), transparent 32%), linear-gradient(145deg, var(--color-bg-base), color-mix(in srgb, var(--color-bg-base), #000 10%))',
       }}
     >
+      <style>{`
+        @media (max-width: 640px) {
+          main {
+            padding: var(--space-2);
+            padding-top: var(--space-4);
+            padding-bottom: var(--space-4);
+          }
+
+          .form-grid-inputs {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
       <FadeIn delay={0} direction="up">
         <Card
           padding="lg"
           className="w-full"
           style={{
-            maxWidth: 600,
+            maxWidth: 'clamp(320px, calc(100% - 32px), 600px)',
             width: '100%',
           }}
         >
@@ -373,41 +387,50 @@ export default function CadastroFormPage() {
                   ['nome', 'email', 'telefone', 'dataNascimento'].includes(k)
                 )}
               >
-                <Input
-                  label="Nome"
-                  placeholder="João Silva"
-                  value={formData.nome}
-                  onChange={(e) => handleFieldChange('nome', e.target.value)}
-                  error={errors.nome}
-                />
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                    gap: 'var(--space-3)',
+                  }}
+                  className="form-grid-inputs"
+                >
+                  <Input
+                    label="Nome"
+                    placeholder="João Silva"
+                    value={formData.nome}
+                    onChange={(e) => handleFieldChange('nome', e.target.value)}
+                    error={errors.nome}
+                  />
 
-                <Input
-                  label="Email"
-                  placeholder="seu.email@kivo.com"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleFieldChange('email', e.target.value)}
-                  error={errors.email}
-                />
+                  <Input
+                    label="Email"
+                    placeholder="seu.email@kivo.com"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleFieldChange('email', e.target.value)}
+                    error={errors.email}
+                  />
 
-                <Input
-                  label="Telefone"
-                  placeholder="(xx) xxxxx-xxxx"
-                  value={formData.telefone}
-                  onChange={(e) => handleFieldChange('telefone', e.target.value)}
-                  error={errors.telefone}
-                  autoComplete="tel"
-                />
+                  <Input
+                    label="Telefone"
+                    placeholder="(xx) xxxxx-xxxx"
+                    value={formData.telefone}
+                    onChange={(e) => handleFieldChange('telefone', e.target.value)}
+                    error={errors.telefone}
+                    autoComplete="tel"
+                  />
 
-                <Input
-                  label="Data de Nascimento"
-                  type="date"
-                  value={formData.dataNascimento}
-                  onChange={(e) =>
-                    handleFieldChange('dataNascimento', e.target.value)
-                  }
-                  error={errors.dataNascimento}
-                />
+                  <Input
+                    label="Data de Nascimento"
+                    type="date"
+                    value={formData.dataNascimento}
+                    onChange={(e) =>
+                      handleFieldChange('dataNascimento', e.target.value)
+                    }
+                    error={errors.dataNascimento}
+                  />
+                </div>
 
                 {/* Botão para avançar */}
                 <Button
@@ -438,41 +461,50 @@ export default function CadastroFormPage() {
                 onToggle={() => setExpandedStep(expandedStep === 2 ? 1 : 2)}
                 hasError={Object.keys(errors).some((k) => ['cpf', 'senha', 'confirmSenha'].includes(k))}
               >
-                <Input
-                  label="CPF"
-                  placeholder="000.000.000-00"
-                  value={formData.cpf}
-                  onChange={(e) => handleFieldChange('cpf', e.target.value)}
-                  error={errors.cpf}
-                  autoComplete="off"
-                />
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                    gap: 'var(--space-3)',
+                  }}
+                  className="form-grid-inputs"
+                >
+                  <Input
+                    label="CPF"
+                    placeholder="000.000.000-00"
+                    value={formData.cpf}
+                    onChange={(e) => handleFieldChange('cpf', e.target.value)}
+                    error={errors.cpf}
+                    autoComplete="off"
+                  />
 
-                <Input
-                  label="Senha"
-                  placeholder="Digite ao menos 6 caracteres"
-                  type="password"
-                  value={formData.senha}
-                  onChange={(e) => handleFieldChange('senha', e.target.value)}
-                  error={errors.senha}
-                  autoComplete="new-password"
-                />
+                  <Input
+                    label="Senha"
+                    placeholder="Digite ao menos 6 caracteres"
+                    type="password"
+                    value={formData.senha}
+                    onChange={(e) => handleFieldChange('senha', e.target.value)}
+                    error={errors.senha}
+                    autoComplete="new-password"
+                  />
 
-                <Input
-                  label="Confirmar Senha"
-                  placeholder="Repita sua senha"
-                  type="password"
-                  value={formData.confirmSenha}
-                  onChange={(e) =>
-                    dispatch(
-                      updateFormField({
-                        field: 'confirmSenha',
-                        value: e.target.value,
-                      })
-                    )
-                  }
-                  error={errors.confirmSenha}
-                  autoComplete="new-password"
-                />
+                  <Input
+                    label="Confirmar Senha"
+                    placeholder="Repita sua senha"
+                    type="password"
+                    value={formData.confirmSenha}
+                    onChange={(e) =>
+                      dispatch(
+                        updateFormField({
+                          field: 'confirmSenha',
+                          value: e.target.value,
+                        })
+                      )
+                    }
+                    error={errors.confirmSenha}
+                    autoComplete="new-password"
+                  />
+                </div>
 
                 {/* Password Requirements */}
                 {formData.senha && (
@@ -597,37 +629,38 @@ export default function CadastroFormPage() {
                   ['cep', 'rua', 'numero', 'cidade', 'estado'].includes(k)
                 )}
               >
-                <Input
-                  label="CEP"
-                  placeholder="01310-100"
-                  value={formData.endereco.cep}
-                  onChange={(e) => handleFieldChange('endereco.cep', e.target.value)}
-                  error={errors.cep}
-                  disabled={isLoadingCEP}
-                />
-
-                <Input
-                  label="Rua"
-                  placeholder="Avenida Paulista"
-                  value={formData.endereco.rua}
-                  onChange={(e) =>
-                    dispatch(
-                      updateFormField({
-                        field: 'endereco.rua',
-                        value: e.target.value,
-                      })
-                    )
-                  }
-                  error={errors.rua}
-                />
-
                 <div
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
                     gap: 'var(--space-3)',
                   }}
+                  className="form-grid-inputs"
                 >
+                  <Input
+                    label="CEP"
+                    placeholder="01310-100"
+                    value={formData.endereco.cep}
+                    onChange={(e) => handleFieldChange('endereco.cep', e.target.value)}
+                    error={errors.cep}
+                    disabled={isLoadingCEP}
+                  />
+
+                  <Input
+                    label="Rua"
+                    placeholder="Avenida Paulista"
+                    value={formData.endereco.rua}
+                    onChange={(e) =>
+                      dispatch(
+                        updateFormField({
+                          field: 'endereco.rua',
+                          value: e.target.value,
+                        })
+                      )
+                    }
+                    error={errors.rua}
+                  />
+
                   <Input
                     label="Número"
                     placeholder="1000"
@@ -656,15 +689,7 @@ export default function CadastroFormPage() {
                       )
                     }
                   />
-                </div>
 
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: 'var(--space-3)',
-                  }}
-                >
                   <Input
                     label="Cidade"
                     placeholder="São Paulo"
@@ -742,68 +767,92 @@ export default function CadastroFormPage() {
                   isDisabled={!registration.completedSteps.includes(3)}
                   onToggle={() => setExpandedStep(expandedStep === 5 ? 3 : 5)}
                   hasError={Object.keys(errors).some((k) =>
-                    ['banco', 'agencia', 'conta', 'chavePix'].includes(k)
+                    ['banco', 'agencia', 'conta', 'tipo', 'chavePix'].includes(k)
                   )}
                 >
-                  <Input
-                    label="Banco"
-                    placeholder="ex: Nubank, Bradesco"
-                    value={formData.contaBanco?.banco || ''}
-                    onChange={(e) =>
-                      dispatch(
-                        updateFormField({
-                          field: 'contaBanco.banco',
-                          value: e.target.value,
-                        })
-                      )
-                    }
-                    error={errors.banco}
-                  />
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                      gap: 'var(--space-3)',
+                    }}
+                    className="form-grid-inputs"
+                  >
+                    <Input
+                      label="Banco"
+                      placeholder="ex: Nubank, Bradesco"
+                      value={formData.contaBanco?.banco || ''}
+                      onChange={(e) =>
+                        dispatch(
+                          updateFormField({
+                            field: 'contaBanco.banco',
+                            value: e.target.value,
+                          })
+                        )
+                      }
+                      error={errors.banco}
+                    />
 
-                  <Input
-                    label="Agência"
-                    placeholder="0001"
-                    value={formData.contaBanco?.agencia || ''}
-                    onChange={(e) =>
-                      dispatch(
-                        updateFormField({
-                          field: 'contaBanco.agencia',
-                          value: e.target.value,
-                        })
-                      )
-                    }
-                    error={errors.agencia}
-                  />
+                    <Input
+                      label="Agência"
+                      placeholder="0001"
+                      value={formData.contaBanco?.agencia || ''}
+                      onChange={(e) =>
+                        dispatch(
+                          updateFormField({
+                            field: 'contaBanco.agencia',
+                            value: e.target.value,
+                          })
+                        )
+                      }
+                      error={errors.agencia}
+                    />
 
-                  <Input
-                    label="Conta"
-                    placeholder="123456-7"
-                    value={formData.contaBanco?.conta || ''}
-                    onChange={(e) =>
-                      dispatch(
-                        updateFormField({
-                          field: 'contaBanco.conta',
-                          value: e.target.value,
-                        })
-                      )
-                    }
-                    error={errors.conta}
-                  />
+                    <Input
+                      label="Conta"
+                      placeholder="123456-7"
+                      value={formData.contaBanco?.conta || ''}
+                      onChange={(e) =>
+                        dispatch(
+                          updateFormField({
+                            field: 'contaBanco.conta',
+                            value: e.target.value,
+                          })
+                        )
+                      }
+                      error={errors.conta}
+                    />
 
-                  <Input
-                    label="Chave PIX"
-                    placeholder="email@example.com"
-                    value={formData.contaBanco?.chavePix || ''}
-                    onChange={(e) =>
-                      dispatch(
-                        updateFormField({
-                          field: 'contaBanco.chavePix',
-                          value: e.target.value,
-                        })
-                      )
-                    }
-                    error={errors.chavePix}
-                  />
+                    <Input
+                      label="Tipo de Conta"
+                      placeholder="ex: Corrente, Poupança"
+                      value={formData.contaBanco?.tipo || ''}
+                      onChange={(e) =>
+                        dispatch(
+                          updateFormField({
+                            field: 'contaBanco.tipo',
+                            value: e.target.value,
+                          })
+                        )
+                      }
+                      error={errors.tipo}
+                    />
+
+                    <Input
+                      label="Chave PIX"
+                      placeholder="email@example.com"
+                      value={formData.contaBanco?.chavePix || ''}
+                      onChange={(e) =>
+                        dispatch(
+                          updateFormField({
+                            field: 'contaBanco.chavePix',
+                            value: e.target.value,
+                          })
+                        )
+                      }
+                      error={errors.chavePix}
+                    />
+                  </div>
 
                   {/* Botões de navegação */}
                   <div
@@ -999,6 +1048,9 @@ export default function CadastroFormPage() {
                         </div>
                         <div>
                           <strong>Conta:</strong> {formData.contaBanco.conta}
+                        </div>
+                        <div>
+                          <strong>Tipo:</strong> {formData.contaBanco.tipo}
                         </div>
                         <div>
                           <strong>Chave PIX:</strong> {formData.contaBanco.chavePix}

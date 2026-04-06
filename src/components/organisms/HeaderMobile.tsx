@@ -1,18 +1,33 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { clearCredentials } from '@/store/slices/authSlice';
 
 export function HeaderMobile() {
   const router = useRouter();
+  const pathname = usePathname();
   const dispatch = useAppDispatch();
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const userDropdownRef = useRef<HTMLDivElement>(null);
+
+  const isActive = (path: string) => pathname === path;
+
+  const getNavLinkStyle = (path: string) => ({
+    color: isActive(path) ? 'var(--color-brand-primary)' : 'var(--color-text-secondary)',
+    fontSize: 'var(--text-sm)',
+    fontWeight: isActive(path) ? 600 : 500,
+    padding: 'var(--space-3) var(--space-2)',
+    transition: 'all 0.2s ease',
+    cursor: 'pointer',
+    textDecoration: 'none',
+    borderRadius: '8px',
+    background: isActive(path) ? 'rgba(0, 230, 118, 0.1)' : 'transparent',
+  });
 
   useEffect(() => {
     const handleClickOutside = (event: Event) => {
@@ -39,14 +54,34 @@ export function HeaderMobile() {
     router.push('/login');
   };
 
+  // Função para redirecionar para home específica do usuário
+  const getHomeRoute = () => {
+    if (!user?.cargo) return '#';
+
+    const cargo = user.cargo.toLowerCase();
+    switch (cargo) {
+      case 'torcedor':
+        return '/home/torcedor';
+      case 'organizadortime':
+        return '/home/organizador-time';
+      case 'organizadorcampeonato':
+        return '/home/organizador-campeonato';
+      case 'administrador':
+        return '/home/admin';
+      default:
+        return '#';
+    }
+  };
+
   return (
     <header
+      ref={menuRef}
       style={{
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
-        zIndex: 1000,
+        zIndex: 1001,
         background: 'rgba(20, 20, 20, 0.98)',
         backdropFilter: 'blur(8px)',
         borderBottom: '1px solid rgba(0, 230, 118, 0.2)',
@@ -71,10 +106,19 @@ export function HeaderMobile() {
             gap: 'var(--space-2)',
             cursor: 'pointer',
             flex: 1,
+            transition: 'opacity 0.2s ease',
           }}
           onClick={() => {
-            router.push('/dashboard');
-            setIsMenuOpen(false);
+            const homeRoute = getHomeRoute();
+            if (homeRoute !== '#') {
+              router.push(homeRoute);
+            }
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLDivElement).style.opacity = '0.8';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLDivElement).style.opacity = '1';
           }}
         >
           <div
@@ -109,20 +153,26 @@ export function HeaderMobile() {
           {/* Hamburger Menu */}
           {isAuthenticated && (
             <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsMenuOpen(!isMenuOpen);
+              }}
               style={{
                 width: '40px',
                 height: '40px',
                 display: 'flex',
-                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '5px',
                 background: 'rgba(0, 230, 118, 0.08)',
                 border: '1px solid rgba(0, 230, 118, 0.3)',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
+                padding: 0,
+                fontSize: '24px',
+                color: 'var(--color-brand-primary)',
+                fontWeight: 'bold',
+                lineHeight: 1,
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = 'rgba(0, 230, 118, 0.15)';
@@ -130,34 +180,16 @@ export function HeaderMobile() {
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = 'rgba(0, 230, 118, 0.08)';
               }}
+              onTouchStart={(e) => {
+                e.stopPropagation();
+                e.currentTarget.style.background = 'rgba(0, 230, 118, 0.15)';
+              }}
+              onTouchEnd={(e) => {
+                e.stopPropagation();
+                e.currentTarget.style.background = 'rgba(0, 230, 118, 0.08)';
+              }}
             >
-              <div
-                style={{
-                  width: '20px',
-                  height: '2px',
-                  background: 'var(--color-brand-primary)',
-                  transition: 'all 0.3s ease',
-                  transform: isMenuOpen ? 'rotate(45deg) translateY(10px)' : 'none',
-                }}
-              />
-              <div
-                style={{
-                  width: '20px',
-                  height: '2px',
-                  background: 'var(--color-brand-primary)',
-                  transition: 'all 0.3s ease',
-                  opacity: isMenuOpen ? 0 : 1,
-                }}
-              />
-              <div
-                style={{
-                  width: '20px',
-                  height: '2px',
-                  background: 'var(--color-brand-primary)',
-                  transition: 'all 0.3s ease',
-                  transform: isMenuOpen ? 'rotate(-45deg) translateY(-10px)' : 'none',
-                }}
-              />
+              {isMenuOpen ? '✕' : '☰'}
             </button>
           )}
 
@@ -188,7 +220,7 @@ export function HeaderMobile() {
                   e.currentTarget.style.background = 'rgba(0, 230, 118, 0.15)';
                 }}
               >
-                {user.name.charAt(0).toUpperCase()}
+                {user?.name && user.name.length > 0 ? user.name.charAt(0).toUpperCase() : 'U'}
               </button>
 
               {isUserDropdownOpen && (
@@ -202,7 +234,8 @@ export function HeaderMobile() {
                     backdropFilter: 'blur(10px)',
                     border: '1px solid rgba(0, 230, 118, 0.3)',
                     borderRadius: '12px',
-                    minWidth: '240px',
+                    minWidth: '200px',
+                    maxWidth: 'calc(100vw - var(--space-6))',
                     boxShadow: '0 10px 40px rgba(0, 0, 0, 0.4)',
                     zIndex: 1001,
                     overflow: 'hidden',
@@ -235,7 +268,7 @@ export function HeaderMobile() {
                         wordBreak: 'break-all',
                       }}
                     >
-                      {user.name}
+                      {user?.name || 'Usuário'}
                     </div>
                   </div>
 
@@ -273,7 +306,7 @@ export function HeaderMobile() {
                     <button
                       onClick={() => {
                         setIsUserDropdownOpen(false);
-                        router.push('/settings');
+                        router.push('/configuracoes');
                       }}
                       style={{
                         width: '100%',
@@ -335,7 +368,7 @@ export function HeaderMobile() {
       {/* Mobile Menu */}
       {isMenuOpen && isAuthenticated && (
         <div
-          ref={menuRef}
+          onClick={(e) => e.stopPropagation()}
           style={{
             display: 'flex',
             flexDirection: 'column',
@@ -344,76 +377,65 @@ export function HeaderMobile() {
             background: 'rgba(15, 15, 15, 0.95)',
             borderTop: '1px solid rgba(0, 230, 118, 0.2)',
             animation: 'slideDown 0.3s ease-out',
+            zIndex: 999,
+            position: 'relative',
+            maxHeight: 'calc(100vh - 70px)',
+            overflowY: 'auto',
           }}
         >
           <a
-            href="#"
+            href={getHomeRoute()}
             onClick={() => setIsMenuOpen(false)}
-            style={{
-              color: 'var(--color-text-secondary)',
-              fontSize: 'var(--text-sm)',
-              fontWeight: 500,
-              padding: 'var(--space-3) var(--space-2)',
-              transition: 'all 0.2s ease',
-              cursor: 'pointer',
-              textDecoration: 'none',
-              borderRadius: '8px',
-            }}
+            style={getNavLinkStyle(getHomeRoute())}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(0, 230, 118, 0.1)';
-              e.currentTarget.style.color = 'var(--color-brand-primary)';
+              if (!isActive(getHomeRoute())) {
+                e.currentTarget.style.background = 'rgba(0, 230, 118, 0.1)';
+                e.currentTarget.style.color = 'var(--color-brand-primary)';
+              }
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.color = 'var(--color-text-secondary)';
+              if (!isActive(getHomeRoute())) {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = 'var(--color-text-secondary)';
+              }
             }}
           >
-            Dashboard
+            Home
           </a>
           <a
-            href="#"
+            href="/times"
             onClick={() => setIsMenuOpen(false)}
-            style={{
-              color: 'var(--color-text-secondary)',
-              fontSize: 'var(--text-sm)',
-              fontWeight: 500,
-              padding: 'var(--space-3) var(--space-2)',
-              transition: 'all 0.2s ease',
-              cursor: 'pointer',
-              textDecoration: 'none',
-              borderRadius: '8px',
-            }}
+            style={getNavLinkStyle('/times')}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(0, 230, 118, 0.1)';
-              e.currentTarget.style.color = 'var(--color-brand-primary)';
+              if (!isActive('/times')) {
+                e.currentTarget.style.background = 'rgba(0, 230, 118, 0.1)';
+                e.currentTarget.style.color = 'var(--color-brand-primary)';
+              }
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.color = 'var(--color-text-secondary)';
+              if (!isActive('/times')) {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = 'var(--color-text-secondary)';
+              }
             }}
           >
             Times
           </a>
           <a
-            href="#"
+            href="/campeonatos"
             onClick={() => setIsMenuOpen(false)}
-            style={{
-              color: 'var(--color-text-secondary)',
-              fontSize: 'var(--text-sm)',
-              fontWeight: 500,
-              padding: 'var(--space-3) var(--space-2)',
-              transition: 'all 0.2s ease',
-              cursor: 'pointer',
-              textDecoration: 'none',
-              borderRadius: '8px',
-            }}
+            style={getNavLinkStyle('/campeonatos')}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(0, 230, 118, 0.1)';
-              e.currentTarget.style.color = 'var(--color-brand-primary)';
+              if (!isActive('/campeonatos')) {
+                e.currentTarget.style.background = 'rgba(0, 230, 118, 0.1)';
+                e.currentTarget.style.color = 'var(--color-brand-primary)';
+              }
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.color = 'var(--color-text-secondary)';
+              if (!isActive('/campeonatos')) {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = 'var(--color-text-secondary)';
+              }
             }}
           >
             Campeonatos

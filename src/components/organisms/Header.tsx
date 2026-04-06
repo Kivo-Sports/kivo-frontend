@@ -1,16 +1,49 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { clearCredentials } from '@/store/slices/authSlice';
 
 export function Header() {
   const router = useRouter();
+  const pathname = usePathname();
   const dispatch = useAppDispatch();
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const isActive = (path: string) => pathname === path;
+
+  const getNavLinkStyle = (path: string) => ({
+    color: isActive(path) ? 'var(--color-brand-primary)' : 'var(--color-text-secondary)',
+    fontSize: 'clamp(12px, 2vw, 14px)',
+    fontWeight: isActive(path) ? 600 : 500,
+    transition: 'color 0.3s ease',
+    cursor: 'pointer',
+    textDecoration: 'none',
+    paddingBottom: '4px',
+    borderBottom: isActive(path) ? '2px solid var(--color-brand-primary)' : 'none',
+  });
+
+  // Função para redirecionar para home específica do usuário
+  const getHomeRoute = () => {
+    if (!user?.cargo) return '#';
+
+    const cargo = user.cargo.toLowerCase();
+    switch (cargo) {
+      case 'torcedor':
+        return '/home/torcedor';
+      case 'organizadortime':
+        return '/home/organizador-time';
+      case 'organizadorcampeonato':
+        return '/home/organizador-campeonato';
+      case 'administrador':
+        return '/home/admin';
+      default:
+        return '#';
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -64,8 +97,20 @@ export function Header() {
             gap: 'var(--space-2)',
             cursor: 'pointer',
             minWidth: '120px',
+            transition: 'opacity 0.2s ease',
           }}
-          onClick={() => router.push('/dashboard')}
+          onClick={() => {
+            const homeRoute = getHomeRoute();
+            if (homeRoute !== '#') {
+              router.push(homeRoute);
+            }
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLDivElement).style.opacity = '0.8';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLDivElement).style.opacity = '1';
+          }}
         >
           <div
             style={{
@@ -100,58 +145,49 @@ export function Header() {
             }}
           >
             <a
-              href="#"
-              style={{
-                color: 'var(--color-text-secondary)',
-                fontSize: 'clamp(12px, 2vw, 14px)',
-                fontWeight: 500,
-                transition: 'color 0.3s ease',
-                cursor: 'pointer',
-                textDecoration: 'none',
-              }}
+              href={getHomeRoute()}
+              style={getNavLinkStyle(getHomeRoute())}
               onMouseEnter={(e) => {
-                e.currentTarget.style.color = 'var(--color-brand-primary)';
+                if (!isActive(getHomeRoute())) {
+                  e.currentTarget.style.color = 'var(--color-brand-primary)';
+                }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = 'var(--color-text-secondary)';
+                if (!isActive(getHomeRoute())) {
+                  e.currentTarget.style.color = 'var(--color-text-secondary)';
+                }
               }}
             >
-              Dashboard
+              Home
             </a>
             <a
-              href="#"
-              style={{
-                color: 'var(--color-text-secondary)',
-                fontSize: 'clamp(12px, 2vw, 14px)',
-                fontWeight: 500,
-                transition: 'color 0.3s ease',
-                cursor: 'pointer',
-                textDecoration: 'none',
-              }}
+              href="/times"
+              style={getNavLinkStyle('/times')}
               onMouseEnter={(e) => {
-                e.currentTarget.style.color = 'var(--color-brand-primary)';
+                if (!isActive('/times')) {
+                  e.currentTarget.style.color = 'var(--color-brand-primary)';
+                }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = 'var(--color-text-secondary)';
+                if (!isActive('/times')) {
+                  e.currentTarget.style.color = 'var(--color-text-secondary)';
+                }
               }}
             >
               Times
             </a>
             <a
-              href="#"
-              style={{
-                color: 'var(--color-text-secondary)',
-                fontSize: 'clamp(12px, 2vw, 14px)',
-                fontWeight: 500,
-                transition: 'color 0.3s ease',
-                cursor: 'pointer',
-                textDecoration: 'none',
-              }}
+              href="/campeonatos"
+              style={getNavLinkStyle('/campeonatos')}
               onMouseEnter={(e) => {
-                e.currentTarget.style.color = 'var(--color-brand-primary)';
+                if (!isActive('/campeonatos')) {
+                  e.currentTarget.style.color = 'var(--color-brand-primary)';
+                }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = 'var(--color-text-secondary)';
+                if (!isActive('/campeonatos')) {
+                  e.currentTarget.style.color = 'var(--color-text-secondary)';
+                }
               }}
             >
               Campeonatos
@@ -188,7 +224,7 @@ export function Header() {
                 e.currentTarget.style.borderColor = 'rgba(0, 230, 118, 0.3)';
               }}
             >
-              {user.email}
+              {user?.email || 'Usuário'}
             </button>
 
             {isDropdownOpen && (
@@ -235,7 +271,7 @@ export function Header() {
                       wordBreak: 'break-all',
                     }}
                   >
-                    {user.name}
+                    {user?.name || 'Usuário'}
                   </div>
                 </div>
 
@@ -265,7 +301,7 @@ export function Header() {
                       fontWeight: 500,
                     }}
                   >
-                    {user.email}
+                    {user?.email || 'email@exemplo.com'}
                   </div>
                 </div>
 
@@ -273,7 +309,7 @@ export function Header() {
                   <button
                     onClick={() => {
                       setIsDropdownOpen(false);
-                      router.push('/settings');
+                      router.push('/configuracoes');
                     }}
                     style={{
                       width: '100%',

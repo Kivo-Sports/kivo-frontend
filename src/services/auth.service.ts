@@ -15,6 +15,7 @@ import type { AuthenticatedUser } from '@/store/slices/authSlice';
 export interface LoginResponse {
   token: string;
   usuario: AuthenticatedUser & {
+    nome?: string;
     cpf?: string;
     cargo?: string;
     ativo?: boolean;
@@ -134,6 +135,13 @@ export async function loginUser(
       try {
         const data: LoginResponse = JSON.parse(responseText);
 
+        if (!data.usuario) {
+          return {
+            success: false,
+            error: 'Resposta inválida do servidor: usuário não encontrado',
+          };
+        }
+
         // Extrair email do JWT se não vier no objeto usuario
         let email = data.usuario.email || '';
         if (!email && data.token) {
@@ -145,13 +153,16 @@ export async function loginUser(
           }
         }
 
+        // Garantir que nome não é undefined
+        const userName = (data.usuario.nome || data.usuario.email || 'Usuário').trim() || 'Usuário';
+
         return {
           success: true,
           token: data.token,
           user: {
             id: data.usuario.id,
-            name: data.usuario.name,
-            email,
+            name: userName,
+            email: email || 'email@exemplo.com',  
             cargo: data.usuario.cargo,
           },
         };
@@ -211,6 +222,200 @@ export async function loginUser(
         error instanceof Error
           ? error.message
           : 'Erro de conexão. Verifique sua internet.',
+    };
+  }
+}
+
+// ================== RECUPERAÇÃO DE SENHA ==================
+
+/**
+ * Solicita envio de código de recuperação de senha para o email fornecido
+ */
+export async function enviarCodigoRecuperacaoSenha(email: string): Promise<{
+  success: boolean;
+  message?: string;
+  error?: string;
+}> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiUrl) {
+      throw new Error('NEXT_PUBLIC_API_URL não está configurada');
+    }
+
+    const response = await fetch(`${apiUrl}/api/auth/enviar-codigo-recuperacao-senha`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (response.ok) {
+      return {
+        success: true,
+        message: data.message || 'Código enviado com sucesso',
+      };
+    } else {
+      return {
+        success: false,
+        error: data.message || 'Erro ao enviar código',
+      };
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Erro de conexão',
+    };
+  }
+}
+
+/**
+ * Confirma recuperação de senha com código + nova senha
+ */
+export async function confirmarRecuperacaoSenha(
+  email: string,
+  codigo: string,
+  novaSenha: string
+): Promise<{
+  success: boolean;
+  message?: string;
+  error?: string;
+}> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiUrl) {
+      throw new Error('NEXT_PUBLIC_API_URL não está configurada');
+    }
+
+    const response = await fetch(`${apiUrl}/api/auth/confirmar-recuperacao-senha`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, codigo, novaSenha }),
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (response.ok) {
+      return {
+        success: true,
+        message: data.message || 'Senha atualizada com sucesso',
+      };
+    } else {
+      return {
+        success: false,
+        error: data.message || 'Erro ao atualizar senha',
+      };
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Erro de conexão',
+    };
+  }
+}
+
+// ================== REDEFINIÇÃO DE SENHA (Autenticado) ==================
+
+/**
+ * Redefine a senha do usuário autenticado
+ * Requer: token de autenticação
+ * Endpoint: POST /api/auth/redefinir-senha
+ */
+export async function redefinirSenha(
+  senhaAtual: string,
+  novaSenha: string,
+  token: string
+): Promise<{
+  success: boolean;
+  message?: string;
+  error?: string;
+}> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiUrl) {
+      throw new Error('NEXT_PUBLIC_API_URL não está configurada');
+    }
+
+    const response = await fetch(`${apiUrl}/api/auth/redefinir-senha`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ senhaAtual, novaSenha }),
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (response.ok) {
+      return {
+        success: true,
+        message: data.message || 'Senha redefinida com sucesso',
+      };
+    } else {
+      return {
+        success: false,
+        error: data.message || 'Erro ao redefinir senha',
+      };
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Erro de conexão',
+    };
+  }
+}
+
+// ================== DESATIVAÇÃO DE CONTA ==================
+
+/**
+ * Desativa (deleta) a conta do usuário autenticado
+ * Requer: token de autenticação
+ * Endpoint: DELETE /api/Usuario/{id}
+ */
+export async function desativarConta(
+  usuarioId: string,
+  token: string
+): Promise<{
+  success: boolean;
+  message?: string;
+  error?: string;
+}> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiUrl) {
+      throw new Error('NEXT_PUBLIC_API_URL não está configurada');
+    }
+
+    const response = await fetch(`${apiUrl}/api/Usuario/${usuarioId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (response.ok) {
+      return {
+        success: true,
+        message: data.message || 'Conta desativada com sucesso',
+      };
+    } else {
+      return {
+        success: false,
+        error: data.message || 'Erro ao desativar conta',
+      };
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Erro de conexão',
     };
   }
 }

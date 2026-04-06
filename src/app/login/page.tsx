@@ -130,20 +130,13 @@ export default function LoginPage() {
       const result = await loginUser(identifier, password);
 
       if (result.success && result.token && result.user) {
-        // Mostrar notificação de sucesso com toast
-        toastSuccess(
-          `Bem-vindo, ${result.user.name}!`,
-          undefined,
-          10000
-        );
-
         // Salvar credenciais no Redux
         dispatch(setCredentials({ token: result.token, user: result.user }));
 
-        // Aguardar notificação ser exibida antes de redirecionar
-        await new Promise((resolve) => setTimeout(resolve, 10000));
+        // Mostrar notificação de bem-vindo
+        toastSuccess(`Bem-vindo, ${result.user.name}!`);
 
-        // Redirecionar para dashboard
+        // Redirecionar para dashboard imediatamente
         router.push("/dashboard");
       } else {
         // Se for conta desativada, mostrar modal
