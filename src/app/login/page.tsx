@@ -17,6 +17,7 @@
 // - React
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 // - Redux
@@ -169,40 +170,55 @@ export default function LoginPage() {
       style={{
         minHeight: "100vh",
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
         padding: "var(--space-4)",
         background:
-          "radial-gradient(circle at 8% 12%, rgba(0, 230, 118, 0.15), transparent 35%), radial-gradient(circle at 100% 0%, rgba(255, 214, 0, 0.1), transparent 32%), linear-gradient(145deg, var(--color-bg-base), color-mix(in srgb, var(--color-bg-base), #000 10%))",
+          "radial-gradient(circle at 8% 12%, rgba(0, 230, 118, 0.18), transparent 35%), radial-gradient(circle at 100% 0%, rgba(255, 214, 0, 0.1), transparent 32%), linear-gradient(145deg, var(--color-bg-base), color-mix(in srgb, var(--color-bg-base), #000 10%))",
       }}
     >
-      <FadeIn delay={0} direction="up">
+      {/* Logo acima do card */}
+      <FadeIn delay={0} direction="down">
+        <div style={{ marginBottom: "var(--space-6)", textAlign: "center" }}>
+          <Image
+            src="/LogoKivoSportsSFundoBranca.png"
+            alt="Kivo Sports"
+            width={200}
+            height={68}
+            style={{ objectFit: "contain" }}
+            priority
+          />
+        </div>
+      </FadeIn>
+
+      <FadeIn delay={0.1} direction="up">
         <Card
           padding="lg"
           className="w-full"
           style={{
             maxWidth: 420,
+            border: "1px solid rgba(0, 230, 118, 0.2)",
           }}
         >
           {/* Header */}
           <div style={{ marginBottom: "var(--space-6)", textAlign: "center" }}>
             <h1
               style={{
-                fontSize: "var(--text-2xl)",
-                marginBottom: "var(--space-2)",
+                fontSize: "var(--text-xl)",
+                marginBottom: "var(--space-1)",
                 color: "var(--color-text-primary)",
               }}
             >
-              Bem-vindo ao Kivo Sports
+              Bem-vindo de volta
             </h1>
             <p
-              className="text-secondary"
               style={{
                 fontSize: "var(--text-sm)",
-                marginBottom: "var(--space-4)",
+                color: "var(--color-text-muted)",
               }}
             >
-
+              Faça login para acessar sua conta
             </p>
           </div>
 

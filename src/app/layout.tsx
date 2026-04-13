@@ -4,7 +4,7 @@
  */
 
 // - Next.js
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, DM_Mono, DM_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -16,9 +16,14 @@ import { ToastProvider } from "@/components/atoms/Toast";
 import { PageTransition } from "@/components/atoms/PageTransition";
 import { RootLayoutClient } from "./layout.client";
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
-  title: "Kivo Frontend",
-  description: "Base Next.js 16 com Redux Toolkit, RTK Query e Atomic Design.",
+  title: "Kivo Sports",
+  description: "Plataforma de gestão de campeonatos esportivos amadores e semi-profissionais.",
 };
 
 const fontDisplay = Barlow_Condensed({

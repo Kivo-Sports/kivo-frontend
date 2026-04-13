@@ -627,8 +627,8 @@ export default function ConfiguracoesPage() {
             grid-template-columns: 1fr !important;
             gap: 0 !important;
             padding: 0 !important;
-            width: calc(100% + var(--space-8));
-            margin-left: calc(-0.5 * var(--space-8));
+            width: 100%;
+            margin-left: 0;
           }
           [data-settings-sidebar] {
             border-right: none;

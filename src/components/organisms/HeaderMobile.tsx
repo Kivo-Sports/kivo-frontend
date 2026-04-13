@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { clearCredentials } from '@/store/slices/authSlice';
@@ -121,25 +122,14 @@ export function HeaderMobile() {
             (e.currentTarget as HTMLDivElement).style.opacity = '1';
           }}
         >
-          <div
-            style={{
-              fontSize: '18px',
-              fontWeight: 800,
-              color: 'var(--color-brand-primary)',
-              letterSpacing: '1px',
-            }}
-          >
-            KIVO
-          </div>
-          <div
-            style={{
-              fontSize: '12px',
-              fontWeight: 600,
-              color: 'white',
-            }}
-          >
-            Sports
-          </div>
+          <Image
+            src="/LogoKivoSportsSimplificada.png"
+            alt="Kivo Sports"
+            width={45}
+            height={18}
+            style={{ objectFit: 'contain' }}
+            priority
+          />
         </div>
 
         {/* Menu Button + User Menu */}

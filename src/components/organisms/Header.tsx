@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { clearCredentials } from '@/store/slices/authSlice';
@@ -112,25 +113,14 @@ export function Header() {
             (e.currentTarget as HTMLDivElement).style.opacity = '1';
           }}
         >
-          <div
-            style={{
-              fontSize: 'clamp(16px, 3vw, 18px)',
-              fontWeight: 800,
-              color: 'var(--color-brand-primary)',
-              letterSpacing: '1px',
-            }}
-          >
-            KIVO
-          </div>
-          <div
-            style={{
-              fontSize: 'clamp(12px, 2.5vw, 14px)',
-              fontWeight: 600,
-              color: 'white',
-            }}
-          >
-            Sports
-          </div>
+          <Image
+            src="/LogoKivoSportsSFundoBranca.png"
+            alt="Kivo Sports"
+            width={120}
+            height= {40}
+            style={{ objectFit: 'contain' }}
+            priority
+          />
         </div>
 
         {/* Menu - Centro (Desktop) */}
@@ -239,6 +229,7 @@ export function Header() {
                   border: '1px solid rgba(0, 230, 118, 0.3)',
                   borderRadius: '12px',
                   minWidth: '240px',
+                  maxWidth: 'calc(100vw - 32px)',
                   boxShadow: '0 10px 40px rgba(0, 0, 0, 0.4)',
                   zIndex: 1001,
                   overflow: 'hidden',
