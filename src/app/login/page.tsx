@@ -15,12 +15,13 @@
  */
 
 // - React
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 // - Redux
 import { useDispatch } from "react-redux";
+import { useAppSelector } from "@/store/hooks";
 import { setCredentials } from "@/store/slices/authSlice";
 
 // - Toast
@@ -31,6 +32,7 @@ import { Input } from "@/components/atoms/Input";
 import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/molecules/Card";
 import { FadeIn } from "@/components/atoms/FadeIn";
+import { Spinner } from "@/components/atoms/Spinner";
 import { InactiveAccountModal } from "@/components/molecules/InactiveAccountModal/InactiveAccountModal";
 
 // - Utils
@@ -40,6 +42,7 @@ import {
   isEmailValid,
   isCPFValid,
   isPasswordValid,
+  isOrganizadorTime,
 } from "@/lib/auth.utils";
 
 // - Services
@@ -53,6 +56,8 @@ interface LoginFormErrors {
 export default function LoginPage() {
   const router = useRouter();
   const dispatch = useDispatch();
+  const { isAuthenticated, isHydrated, user } = useAppSelector((state) => state.auth);
+  const hadManualRedirect = useRef(false);
 
   // Toast hook - chamado no topo do componente
   const { success: toastSuccess, error: toastError } = useToast();
@@ -64,11 +69,38 @@ export default function LoginPage() {
   const [errors, setErrors] = useState<LoginFormErrors>({});
   const [showInactiveModal, setShowInactiveModal] = useState<boolean>(false);
 
-  // Detectar tipo de identificador em tempo real
-  const identifierType = useMemo(
-    () => detectIdentifierType(identifier),
-    [identifier]
-  );
+  const identifierType = useMemo(() => detectIdentifierType(identifier), [identifier]);
+
+  useEffect(() => {
+    if (isHydrated && isAuthenticated && !hadManualRedirect.current) {
+      const target = isOrganizadorTime(user?.cargo) ? "/organizador" : "/dashboard";
+      router.replace(target);
+    }
+  }, [isAuthenticated, isHydrated, router, user?.cargo]);
+
+  if (!isHydrated || isAuthenticated) {
+    return (
+      <main
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "var(--space-4)",
+          background:
+            "radial-gradient(circle at 8% 12%, rgba(0, 230, 118, 0.15), transparent 35%), radial-gradient(circle at 100% 0%, rgba(255, 214, 0, 0.1), transparent 32%), linear-gradient(145deg, var(--color-bg-base), color-mix(in srgb, var(--color-bg-base), #000 10%))",
+        }}
+        aria-busy="true"
+      >
+        <div style={{ display: "grid", justifyItems: "center", gap: "var(--space-3)" }}>
+          <Spinner size="lg" ariaLabel="Carregando login" />
+          <p style={{ margin: 0, fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
+            Carregando...
+          </p>
+        </div>
+      </main>
+    );
+  }
 
   // Handle input de identificador com formatacao automatica
   const handleIdentifierChange = (value: string) => {
@@ -131,41 +163,34 @@ export default function LoginPage() {
 
       if (result.success && result.token && result.user) {
         // Mostrar notificação de sucesso com toast
-        toastSuccess(
-          `Bem-vindo, ${result.user.name}!`,
-          undefined,
-          10000
-        );
+        toastSuccess(`Bem-vindo, ${result.user.name}!`, undefined, 10000);
 
-        // Salvar credenciais no Redux
+        hadManualRedirect.current = true;
         dispatch(setCredentials({ token: result.token, user: result.user }));
 
         // Aguardar notificação ser exibida antes de redirecionar
         await new Promise((resolve) => setTimeout(resolve, 10000));
 
-        // Redirecionar para dashboard
-        router.push("/dashboard");
+        // Redirecionar para área inicial conforme perfil
+        const rotaPosLogin = isOrganizadorTime(result.user.cargo) ? "/organizador" : "/dashboard";
+        router.push(rotaPosLogin);
       } else {
         // Se for conta desativada, mostrar modal
-        if (result.errorType === 'user-inactive') {
+        if (result.errorType === "user-inactive") {
           setShowInactiveModal(true);
         } else {
           // Erro de autenticação - mostrar toast
           toastError(
             result.error || "Tente novamente",
             result.errorTitle || "Erro na autenticação",
-            10000
+            10000,
           );
         }
       }
     } catch (err) {
       // Erro inesperado
-      const errorMsg =
-        err instanceof Error ? err.message : "Erro de conexão";
-      toastError(
-        "Verifique sua conexão e tente novamente",
-        errorMsg
-      );
+      const errorMsg = err instanceof Error ? err.message : "Erro de conexão";
+      toastError("Verifique sua conexão e tente novamente", errorMsg);
     } finally {
       setLoading(false);
     }
@@ -208,9 +233,7 @@ export default function LoginPage() {
                 fontSize: "var(--text-sm)",
                 marginBottom: "var(--space-4)",
               }}
-            >
-
-            </p>
+            ></p>
           </div>
 
           {/* Form */}
@@ -223,7 +246,6 @@ export default function LoginPage() {
               value={identifier}
               onChange={(e) => handleIdentifierChange(e.target.value)}
               error={errors.identifier}
-              
               autoComplete="username"
             />
 
@@ -241,8 +263,7 @@ export default function LoginPage() {
                   fontWeight: "500",
                 }}
               >
-                Detectado como{" "}
-                {identifierType === "email" ? "Email" : "CPF"}
+                Detectado como {identifierType === "email" ? "Email" : "CPF"}
               </p>
             )}
 
@@ -254,7 +275,6 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               error={errors.password}
-              
               autoComplete="current-password"
             />
 
@@ -384,4 +404,3 @@ export default function LoginPage() {
     </main>
   );
 }
-

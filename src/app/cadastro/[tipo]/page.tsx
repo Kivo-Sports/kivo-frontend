@@ -30,6 +30,7 @@ import { setCredentials } from '@/store/slices/authSlice';
 import { useToast } from '@/components/atoms/Toast';
 import { Button } from '@/components/atoms/Button';
 import { Input } from '@/components/atoms/Input';
+import { Spinner } from '@/components/atoms/Spinner';
 import { Card } from '@/components/molecules/Card';
 import { Stepper } from '@/components/molecules/Stepper/Stepper';
 import { FormSection, FormSectionGroup } from '@/components/molecules/FormSection/FormSection';
@@ -92,6 +93,7 @@ export default function CadastroFormPage() {
 
   const [expandedStep, setExpandedStep] = useState<number>(1);
   const [isLoadingCEP, setIsLoadingCEP] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const tipoUrl = (params?.tipo as string)?.replace(/-/g, '-') as UserType | undefined;
 
@@ -105,6 +107,11 @@ export default function CadastroFormPage() {
       router.push('/cadastro');
     }
   }, [tipoUrl, userType, router]);
+
+  useEffect(() => {
+    router.prefetch('/dashboard');
+    router.prefetch('/login');
+  }, [router]);
 
   if (!userType || userType !== tipoUrl) {
     return null;
@@ -247,9 +254,12 @@ export default function CadastroFormPage() {
     try {
       const result = await registerUser(userType, formData);
 
-      if (result.success && result.token) {
+      if (result.success && result.token && result.user) {
+        setIsTransitioning(true);
+        dispatch(setCredentials({ token: result.token, user: result.user }));
+
         // Mostrar notificação com toast
-        const nomeUsuario = formData.nome.split(' ')[0];
+        const nomeUsuario = result.user.name.split(' ')[0];
         const tipoLabel = getUserTypeLabel(userType);
 
         toastSuccess(
@@ -259,11 +269,20 @@ export default function CadastroFormPage() {
         );
 
         dispatch(resetRegistration());
+        const rotaPosCadastro = userType === 'organizador-time' ? '/organizador/times/criar' : '/dashboard';
+        router.replace(rotaPosCadastro);
+        return;
+      } else if (result.success) {
+        setIsTransitioning(true);
+        toastSuccess(
+          'Cadastro concluído!',
+          'Faça login para continuar',
+          5000
+        );
 
-        // Aguardar notificação ser exibida antes de redirecionar
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        router.push('/login');
+        dispatch(resetRegistration());
+        router.replace('/login');
+        return;
       } else {
         // Notificação de erro com tipo específico
         const errorType = (result as any).errorType || 'generic-error';
@@ -292,7 +311,53 @@ export default function CadastroFormPage() {
         background:
           'radial-gradient(circle at 8% 12%, rgba(0, 230, 118, 0.15), transparent 35%), radial-gradient(circle at 100% 0%, rgba(255, 214, 0, 0.1), transparent 32%), linear-gradient(145deg, var(--color-bg-base), color-mix(in srgb, var(--color-bg-base), #000 10%))',
       }}
+      aria-busy={isSubmitting || isTransitioning}
     >
+      {isTransitioning ? (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 100,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 'var(--space-4)',
+            background: 'color-mix(in srgb, var(--color-bg-base), #000 20%)',
+            backdropFilter: 'blur(6px)',
+          }}
+        >
+          <Card
+            padding="lg"
+            className="w-full"
+            style={{ maxWidth: 420, textAlign: 'center' }}
+          >
+            <div style={{ display: 'grid', justifyItems: 'center', gap: 'var(--space-3)' }}>
+              <Spinner size="lg" ariaLabel="Entrando na conta" />
+              <h2
+                style={{
+                  margin: 0,
+                  fontSize: 'var(--text-xl)',
+                  fontWeight: 700,
+                  color: 'var(--color-text-primary)',
+                }}
+              >
+                Entrando na sua conta...
+              </h2>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: 'var(--text-sm)',
+                  color: 'var(--color-text-muted)',
+                }}
+              >
+                Estamos finalizando seu cadastro e preparando o dashboard.
+              </p>
+            </div>
+          </Card>
+        </div>
+      ) : null}
+
       <FadeIn delay={0} direction="up">
         <Card
           padding="lg"
@@ -333,7 +398,7 @@ export default function CadastroFormPage() {
             steps={stepperSteps}
             currentStep={expandedStep}
             completedSteps={registration.completedSteps}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isTransitioning}
           />
 
           {/* Error Message */}
@@ -358,7 +423,14 @@ export default function CadastroFormPage() {
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 0 }}>
+          <form
+            onSubmit={handleSubmit}
+            style={{
+              display: 'grid',
+              gap: 0,
+              pointerEvents: isTransitioning ? 'none' : 'auto',
+            }}
+          >
             <FormSectionGroup>
               {/* ============ PASSO 1: INFORMAÇÕES PESSOAIS ============ */}
               <FormSection
@@ -1023,7 +1095,7 @@ export default function CadastroFormPage() {
                 size="lg"
                 fullWidth
                 onClick={() => router.push('/cadastro')}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isTransitioning}
               >
                 Cancelar
               </Button>
@@ -1033,8 +1105,8 @@ export default function CadastroFormPage() {
                 variant="primary"
                 size="lg"
                 fullWidth
-                loading={isSubmitting}
-                disabled={isSubmitting || expandedStep !== 4}
+                loading={isSubmitting || isTransitioning}
+                disabled={isSubmitting || isTransitioning || expandedStep !== 4}
               >
                 Criar Conta
               </Button>

@@ -20,6 +20,8 @@ import { Card } from '@/components/molecules/Card';
 import { VerificationCodeInput } from '@/components/molecules/VerificationCodeInput';
 import { FadeIn } from '@/components/atoms/FadeIn';
 import { useToast } from '@/components/atoms/Toast';
+import { Icon } from '@/components/atoms/Icon';
+import { Unlock, Clock, RefreshCcw, Hourglass } from 'lucide-react';
 
 type Step = 'email' | 'code';
 
@@ -249,8 +251,16 @@ export default function ReativarContaPage() {
         >
           {/* Header */}
           <div style={{ marginBottom: 'var(--space-6)', textAlign: 'center' }}>
-            <div style={{ fontSize: '3rem', marginBottom: 'var(--space-3)' }}>
-              🔓
+            <div
+              style={{
+                fontSize: '3rem',
+                marginBottom: 'var(--space-3)',
+                color: 'var(--color-brand-primary)',
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
+              <Icon icon={Unlock} size={48} />
             </div>
             <h1
               style={{
@@ -362,17 +372,36 @@ export default function ReativarContaPage() {
                     margin: 0,
                   }}
                 >
-                  {timeLeft === 0 ? (
-                    <>
-                      <strong>⏰ Código expirado!</strong>
-                      <br />
-                      Clique em "Reenviar Código" abaixo para solicitar um novo
-                    </>
-                  ) : (
-                    <>
-                      Código válido por: <strong>{formatTime(timeLeft)}</strong>
-                    </>
-                  )}
+                {timeLeft === 0 ? (
+                  <>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                      }}
+                    >
+                      <Icon icon={Hourglass} size={18} />
+                      <strong>Código expirado!</strong>
+                    </span>
+                    <br />
+                    Clique em "Reenviar Código" abaixo para solicitar um novo
+                  </>
+                ) : (
+                  <>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                      }}
+                    >
+                      <Icon icon={Clock} size={16} />
+                      Código válido por:
+                    </span>{' '}
+                    <strong>{formatTime(timeLeft)}</strong>
+                  </>
+                )}
                 </p>
               </div>
 
@@ -386,7 +415,17 @@ export default function ReativarContaPage() {
                   onClick={handleResendCode}
                   disabled={loading}
                 >
-                  {loading ? '⏳ Enviando...' : '🔄 Reenviar Código'}
+                  {loading ? (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Icon icon={Clock} size={16} />
+                      Enviando...
+                    </span>
+                  ) : (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Icon icon={RefreshCcw} size={16} />
+                      Reenviar Código
+                    </span>
+                  )}
                 </Button>
               )}
 
@@ -436,4 +475,3 @@ export default function ReativarContaPage() {
     </main>
   );
 }
-

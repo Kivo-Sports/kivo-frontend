@@ -3,5 +3,6 @@
  * @description Barrels export para templates
  */
 
-export { AuthLayout } from './AuthLayout';
-export { AppLayout } from './AppLayout';
+export { AuthLayout } from "./AuthLayout";
+export { AppLayout } from "./AppLayout";
+export { DashboardLayout } from "./DashboardLayout";

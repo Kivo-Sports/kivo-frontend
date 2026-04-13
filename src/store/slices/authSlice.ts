@@ -43,8 +43,6 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setCredentials: (state, action: PayloadAction<{ token: string; user: AuthenticatedUser }>) => {
-      // aqui eu preferi salvar token e user juntos para manter o estado coerente
-      // se um existir sem o outro, as telas protegidas tendem a ficar inconsistentes
       const { token, user } = action.payload;
 
       state.token = token;
