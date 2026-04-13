@@ -1,34 +1,63 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
+/**
+ * @file recuperar-senha/page.tsx
+ * @description Página de recuperação de senha com fluxo em 4 passos
+ * Segue o MESMO LAYOUT de /reativar-conta com ícone, título e descrição
+ *
+ * @author Kivo Sports - TCC
+ */
 
-import { Suspense, useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Spinner } from '@/components/atoms/Spinner';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+
+// Components
 import { Button } from '@/components/atoms/Button';
 import { Input } from '@/components/atoms/Input';
 import { Card } from '@/components/molecules/Card';
 import { VerificationCodeInput } from '@/components/molecules/VerificationCodeInput';
 import { FadeIn } from '@/components/atoms/FadeIn';
+
+// Hooks
 import { useToast } from '@/components/atoms/Toast';
-import { Icon } from '@/components/atoms/Icon';
-import { Unlock, Clock, RefreshCcw, Hourglass } from 'lucide-react';
 
-type Step = 'email' | 'code' | 'success';
+// Services
+import { enviarCodigoRecuperacaoSenha, confirmarRecuperacaoSenha } from '@/services/auth.service';
 
-function ReativarContaContent() {
+// Utils
+import { isEmailValid } from '@/lib/auth.utils';
+
+type Step = 'email' | 'code' | 'password' | 'success';
+
+type FormErrors = {
+  [key: string]: string;
+};
+
+export default function RecuperarSenhaPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { success: toastSuccess, error: toastError } = useToast();
 
-  const emailParam = searchParams.get('email') || '';
-
+  // Estado
   const [step, setStep] = useState<Step>('email');
-  const [email, setEmail] = useState(emailParam);
+  const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [errors, setErrors] = useState<FormErrors>({});
   const [timeLeft, setTimeLeft] = useState(0);
+
+  // Validação de requisitos de senha em tempo real
+  const [passwordReqs, setPasswordReqs] = useState({
+    hasUpperCase: false,
+    hasLowerCase: false,
+    hasNumbers: false,
+    hasSpecialChar: false,
+    hasMinLength: false,
+  });
+
+  const allRequirementsMet = Object.values(passwordReqs).every((req) => req);
 
   // Timer
   useEffect(() => {
@@ -37,6 +66,17 @@ function ReativarContaContent() {
       return () => clearTimeout(timer);
     }
   }, [timeLeft]);
+
+  // Atualizar requisitos de senha
+  useEffect(() => {
+    setPasswordReqs({
+      hasUpperCase: /[A-Z]/.test(newPassword),
+      hasLowerCase: /[a-z]/.test(newPassword),
+      hasNumbers: /[0-9]/.test(newPassword),
+      hasSpecialChar: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPassword),
+      hasMinLength: newPassword.length >= 6,
+    });
+  }, [newPassword]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -55,39 +95,24 @@ function ReativarContaContent() {
       return;
     }
 
-    setLoading(true);
-
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      if (!apiUrl) {
-        throw new Error('API URL não configurada');
-      }
-
-      const response = await fetch(`${apiUrl}/api/auth/enviar-codigo-reativacao`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: emailTrim }),
-      });
-
-      const data = await response.json().catch(() => ({}));
-
-      if (response.ok) {
-        toastSuccess('Código enviado!', undefined, 2000);
-        setStep('code');
-        setTimeLeft(300);
-      } else {
-        toastError(data.message || 'Erro ao enviar código', 'Erro', 5000);
-        setErrors({ email: data.message });
-      }
-    } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Erro de conexão';
-      toastError(errorMsg, 'Erro', 5000);
-      setErrors({ email: errorMsg });
-    } finally {
-      setLoading(false);
+    if (!isEmailValid(emailTrim)) {
+      setErrors({ email: 'Email inválido' });
+      return;
     }
+
+    setLoading(true);
+    const result = await enviarCodigoRecuperacaoSenha(emailTrim);
+
+    if (result.success) {
+      toastSuccess('Código enviado!', undefined, 2000);
+      setStep('code');
+      setTimeLeft(300);
+    } else {
+      toastError(result.error || 'Erro ao enviar código', 'Erro', 5000);
+      setErrors({ email: result.error || 'Erro ao enviar código' });
+    }
+
+    setLoading(false);
   };
 
   const handleConfirmCode = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -99,37 +124,50 @@ function ReativarContaContent() {
       return;
     }
 
+    // Avançar para próximo passo
+    setStep('password');
+  };
+
+  const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setErrors({});
+
+    if (!newPassword.trim()) {
+      setErrors({ newPassword: 'Nova senha é obrigatória' });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setErrors({ confirmPassword: 'Senhas não conferem' });
+      return;
+    }
+
+    if (!allRequirementsMet) {
+      setErrors({ newPassword: 'Atenda todos os requisitos' });
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      if (!apiUrl) {
-        throw new Error('API URL não configurada');
-      }
+      const result = await confirmarRecuperacaoSenha(
+        email.trim(),
+        code.trim(),
+        newPassword
+      );
 
-      const response = await fetch(`${apiUrl}/api/auth/confirmar-reativacao`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: email.trim(), codigo: code.trim() }),
-      });
-
-      const data = await response.json().catch(() => ({}));
-
-      if (response.ok) {
-        toastSuccess('Conta reativada!', undefined, 2000);
+      if (result.success) {
+        toastSuccess('Senha atualizada!', undefined, 2000);
         setStep('success');
         setTimeout(() => router.push('/login'), 3000);
       } else {
-        const errorMsg = data.message || 'Código inválido ou expirado';
-        toastError(errorMsg, 'Erro', 5000);
-        setErrors({ code: errorMsg });
+        toastError(result.error || 'Erro ao atualizar', 'Erro', 5000);
+        setErrors({ general: result.error || 'Erro ao atualizar' });
       }
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Erro de conexão';
       toastError(errorMsg, 'Erro', 5000);
-      setErrors({ code: errorMsg });
+      setErrors({ general: errorMsg });
     } finally {
       setLoading(false);
     }
@@ -157,18 +195,13 @@ function ReativarContaContent() {
             padding: 'var(--space-6)',
           }}
         >
-          {/* Header */}
-          <div style={{ marginBottom: 'var(--space-6)', textAlign: 'center' }}>
-            <div
-              style={{
-                fontSize: '3rem',
-                marginBottom: 'var(--space-3)',
-                color: 'var(--color-brand-primary)',
-                display: 'flex',
-                justifyContent: 'center',
-              }}
-            >
-              <Icon icon={Unlock} size={48} />
+          {/* ======== HEADER (TODOS OS PASSOS) ======== */}
+          <div style={{ marginBottom: 'var(--space-4)', textAlign: 'center' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-1)' }}>
+              {step === 'email' && '🔑'}
+              {step === 'code' && '📧'}
+              {step === 'password' && '🔐'}
+              {step === 'success' && '✅'}
             </div>
             <h1
               style={{
@@ -178,8 +211,9 @@ function ReativarContaContent() {
                 fontWeight: 700,
               }}
             >
-              {step === 'email' && 'Reativar Conta'}
+              {step === 'email' && 'Recuperar Senha'}
               {step === 'code' && 'Verificar Código'}
+              {step === 'password' && 'Nova Senha'}
               {step === 'success' && 'Sucesso!'}
             </h1>
             <p
@@ -191,7 +225,8 @@ function ReativarContaContent() {
             >
               {step === 'email' && 'Informe seu email para receber um código'}
               {step === 'code' && 'Insira o código enviado para seu email'}
-              {step === 'success' && 'Sua conta foi reativada com sucesso'}
+              {step === 'password' && 'Defina uma nova senha segura'}
+              {step === 'success' && 'Sua senha foi atualizada com sucesso'}
             </p>
           </div>
 
@@ -218,7 +253,7 @@ function ReativarContaContent() {
                     marginBottom: 'var(--space-1)',
                   }}
                 >
-                  Etapa 1 de 2
+                  Etapa 1 de 3
                 </p>
                 <p
                   style={{
@@ -297,7 +332,7 @@ function ReativarContaContent() {
                       margin: 0,
                     }}
                   >
-                    Etapa 2 de 2
+                    Etapa 2 de 3
                   </p>
                   <div
                     style={{
@@ -387,64 +422,25 @@ function ReativarContaContent() {
                     fontWeight: 600,
                   }}
                 >
-                {timeLeft === 0 ? (
-                  <>
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                      }}
-                    >
-                      <Icon icon={Hourglass} size={18} />
-                      <strong>Código expirado!</strong>
-                    </span>
-                    <br />
-                    Clique em "Reenviar Código" abaixo para solicitar um novo
-                  </>
-                ) : (
-                  <>
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '0.4rem',
-                      }}
-                    >
-                      <Icon icon={Clock} size={16} />
-                      Código válido por:
-                    </span>{' '}
-                    <strong>{formatTime(timeLeft)}</strong>
-                  </>
-                )}
+                  {timeLeft === 0 ? (
+                    <>
+                      ❌ Código expirado!<br />
+                      <span style={{ fontSize: 'var(--text-xs)', fontWeight: 400 }}>
+                        Clique em "Voltar" para solicitar um novo
+                      </span>
+                    </>
+                  ) : timeLeft < 60 ? (
+                    <>
+                      ⚠️ Apenas {formatTime(timeLeft)} para inserir o código!
+                    </>
+                  ) : (
+                    <>
+                      ✓ Código válido por {formatTime(timeLeft)}
+                    </>
+                  )}
                 </p>
               </div>
 
-              {/* Botão Reenviar (quando expirar) */}
-              {canResend && (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="md"
-                  fullWidth
-                  onClick={handleResendCode}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <Icon icon={Clock} size={16} />
-                      Enviando...
-                    </span>
-                  ) : (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <Icon icon={RefreshCcw} size={16} />
-                      Reenviar Código
-                    </span>
-                  )}
-                </Button>
-              )}
-
-              {/* Erro geral */}
               {errors.general && (
                 <div
                   style={{
@@ -490,7 +486,132 @@ function ReativarContaContent() {
             </form>
           )}
 
-          {/* ======== PASSO 3: SUCESSO ======== */}
+          {/* ======== PASSO 3: NOVA SENHA ======== */}
+          {step === 'password' && (
+            <form onSubmit={handleResetPassword} style={{ display: 'grid', gap: 'var(--space-4)' }}>
+              {/* Inputs lado a lado */}
+              <div>
+                <Input
+                  label="Nova Senha:"
+                  placeholder="••••••••"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  error={errors.newPassword}
+                  disabled={loading}
+                  autoComplete="new-password"
+                />
+              </div>
+
+              <div>
+                <Input
+                  label="Confirmar Senha:"
+                  placeholder="••••••••"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  error={errors.confirmPassword}
+                  disabled={loading}
+                  autoComplete="new-password"
+                />
+              </div>
+
+              {/* Card de requisitos */}
+              <Card
+                padding="sm"
+                style={{
+                  background: allRequirementsMet
+                    ? 'rgba(0, 230, 118, 0.08)'
+                    : 'var(--color-bg-elevated)',
+                  border: `1px solid ${
+                    allRequirementsMet ? 'rgba(0, 230, 118, 0.3)' : 'var(--color-border-default)'
+                  }`,
+                }}
+              >
+                <p
+                  style={{
+                    margin: '0 0 var(--space-2) 0',
+                    fontWeight: 700,
+                    fontSize: 'var(--text-sm)',
+                    color: 'var(--color-text-primary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 'var(--space-1)',
+                  }}
+                >
+                  🛡️ Requisitos: {Object.values(passwordReqs).filter(Boolean).length}/5
+                  {allRequirementsMet && (
+                    <span style={{ color: 'var(--color-brand-primary)' }}>✓</span>
+                  )}
+                </p>
+
+                <div style={{ display: 'grid', gap: 'var(--space-2)' }}>
+                  {[
+                    { met: passwordReqs.hasUpperCase, label: '✓ Maiúscula (A-Z)' },
+                    { met: passwordReqs.hasLowerCase, label: '✓ Minúscula (a-z)' },
+                    { met: passwordReqs.hasNumbers, label: '✓ Número (0-9)' },
+                    { met: passwordReqs.hasSpecialChar, label: '✓ Especial (!@#$%)' },
+                    { met: passwordReqs.hasMinLength, label: `✓ Mínimo 6 (${newPassword.length}/6)` },
+                  ].map((req, idx) => (
+                    <p
+                      key={idx}
+                      style={{
+                        margin: 0,
+                        fontSize: 'var(--text-xs)',
+                        color: req.met ? 'var(--color-brand-primary)' : 'var(--color-text-muted)',
+                      }}
+                    >
+                      {req.met ? '✓' : '○'} {req.label}
+                    </p>
+                  ))}
+                </div>
+              </Card>
+
+              {errors.general && (
+                <div
+                  style={{
+                    padding: 'var(--space-3)',
+                    background: 'var(--color-feedback-danger-bg)',
+                    border: '1px solid var(--color-feedback-danger)',
+                    borderRadius: 'var(--radius-md)',
+                    color: 'var(--color-feedback-danger)',
+                    fontSize: 'var(--text-sm)',
+                  }}
+                >
+                  {errors.general}
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                fullWidth
+                loading={loading}
+                disabled={loading || !allRequirementsMet}
+              >
+                Atualizar Senha
+              </Button>
+
+              <Button
+                type="button"
+                variant="secondary"
+                size="md"
+                fullWidth
+                onClick={() => {
+                  setStep('code');
+                  setNewPassword('');
+                  setConfirmPassword('');
+                  setErrors({});
+                }}
+                disabled={loading}
+              >
+                Voltar
+              </Button>
+            </form>
+          )}
+
+          {/* ======== PASSO 4: SUCESSO ======== */}
           {step === 'success' && (
             <div style={{ textAlign: 'center', padding: 'var(--space-4) 0' }}>
               <p

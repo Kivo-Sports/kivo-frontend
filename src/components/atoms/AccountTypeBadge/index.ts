@@ -1,0 +1,1 @@
+export { AccountTypeBadge } from './AccountTypeBadge';

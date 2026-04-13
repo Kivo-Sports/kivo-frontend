@@ -57,7 +57,6 @@ export default function DashboardPage() {
     if (mounted && (!isAuthenticated || !token)) {
       router.replace("/login");
     }
-  }, [isAuthenticated, token, mounted, router]);
 
   useEffect(() => {
     if (mounted && isAuthenticated && token && isOrganizadorTime(user?.cargo)) {
@@ -113,6 +112,7 @@ export default function DashboardPage() {
     },
   ];
 
+  // Tela de carregamento enquanto redireciona
   return (
     <AppLayout>
       <FadeIn delay={0} direction="up">
@@ -329,7 +329,19 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
-      </FadeIn>
-    </AppLayout>
+        <p style={{ margin: 0 }}>Redirecionando...</p>
+      </div>
+
+      <style>{`
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
+    </div>
   );
 }

@@ -49,6 +49,12 @@ export interface RegistrationErrorResponse {
   errors?: Record<string, string[]>;
 }
 
+interface ValidationProblemDetails {
+  title?: string;
+  status?: number;
+  errors?: Record<string, string[]>;
+}
+
 export interface LoginResponse {
   token: string;
   usuario: ApiUser & {
@@ -103,6 +109,7 @@ export interface CreateUserPayload {
     banco: string;
     agencia: string;
     conta: string;
+    tipo: string;
     chavePix: string;
   };
 }
@@ -138,6 +145,7 @@ const formatRegistrationData = (
         banco: formData.contaBanco.banco.trim(),
         agencia: formData.contaBanco.agencia.trim(),
         conta: formData.contaBanco.conta.trim(),
+        tipo: formData.contaBanco.tipo.trim(),
         chavePix: formData.contaBanco.chavePix.trim(),
       },
     };
@@ -155,6 +163,16 @@ const mapApiErrorsToFields = (errors?: Record<string, string[]>): Record<string,
   const fieldErrors: Record<string, string> = {};
 
   Object.entries(errors).forEach(([field, messages]) => {
+    // ContaBanco.Banco -> banco | Endereco.Cep -> cep
+    let normalizedField = field;
+    if (normalizedField.includes('.')) {
+      const parts = normalizedField.split('.');
+      normalizedField = parts[parts.length - 1] || normalizedField;
+    }
+
+    // ContaBanco[0] -> contaBanco
+    normalizedField = normalizedField.replace(/\[\d+\]/g, '');
+
     // Tentar mapear snake_case para camelCase (backend pode retornar data_nascimento)
     const mappedField = field
       .split("_")
@@ -168,6 +186,14 @@ const mapApiErrorsToFields = (errors?: Record<string, string[]>): Record<string,
   });
 
   return fieldErrors;
+};
+
+const getValidationMessage = (details: ValidationProblemDetails): string => {
+  const firstMessage = details.errors
+    ? Object.values(details.errors).flat()[0]
+    : undefined;
+
+  return firstMessage || details.title || 'Erro de validação ao criar conta';
 };
 
 // Detectar tipo de erro para exibir notificação apropriada
@@ -283,7 +309,7 @@ export async function registerUser(
     // Erro (400, 409, etc)
     if (response.status >= 400 && response.status < 500) {
       // Tentar parsear como JSON primeiro
-      let errorData: RegistrationErrorResponse | null = null;
+      let errorData: RegistrationErrorResponse | ValidationProblemDetails | string | null = null;
 
       try {
         errorData = JSON.parse(responseText);
@@ -292,13 +318,33 @@ export async function registerUser(
         errorData = null;
       }
 
-      if (errorData && errorData.message) {
+      if (typeof errorData === 'string') {
+        const errorType = detectErrorType(errorData);
+        const errorMessage = getErrorMessage(errorType, errorData);
+
+        return {
+          success: false,
+          error: errorMessage,
+          errorType,
+        };
+      }
+
+      if (errorData && 'message' in errorData && errorData.message) {
         // Se conseguiu fazer parse e tem mensagem estruturada
         return {
           success: false,
           error: errorData.message || "Erro ao criar conta",
           fieldErrors: mapApiErrorsToFields(errorData.errors),
           errorType: detectErrorType(errorData.message || responseText),
+        };
+      } else if (errorData && 'errors' in errorData && errorData.errors) {
+        const validationMessage = getValidationMessage(errorData);
+
+        return {
+          success: false,
+          error: validationMessage,
+          fieldErrors: mapApiErrorsToFields(errorData.errors),
+          errorType: detectErrorType(validationMessage),
         };
       } else {
         // Se for texto puro ou resposta inesperada

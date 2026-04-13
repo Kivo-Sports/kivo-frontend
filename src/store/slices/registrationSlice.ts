@@ -27,6 +27,7 @@ export interface ContaBanco {
   banco: string;
   agencia: string;
   conta: string;
+  tipo: string;
   chavePix: string;
 }
 
@@ -75,6 +76,7 @@ const emptyFormData: RegistrationFormData = {
     banco: '',
     agencia: '',
     conta: '',
+    tipo: '',
     chavePix: '',
   },
 };

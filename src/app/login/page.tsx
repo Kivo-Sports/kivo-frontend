@@ -166,14 +166,17 @@ export default function LoginPage() {
         toastSuccess(`Bem-vindo, ${result.user.name}!`, undefined, 10000);
 
         hadManualRedirect.current = true;
+        // Salvar credenciais no Redux
         dispatch(setCredentials({ token: result.token, user: result.user }));
 
-        // Aguardar notificação ser exibida antes de redirecionar
-        await new Promise((resolve) => setTimeout(resolve, 10000));
+        // Mostrar notificação de bem-vindo
+        toastSuccess(`Bem-vindo, ${result.user.name}!`);
 
         // Redirecionar para área inicial conforme perfil
         const rotaPosLogin = isOrganizadorTime(result.user.cargo) ? "/organizador" : "/dashboard";
         router.push(rotaPosLogin);
+        // Redirecionar para dashboard imediatamente
+        router.push("/dashboard");
       } else {
         // Se for conta desativada, mostrar modal
         if (result.errorType === "user-inactive") {
