@@ -7,7 +7,6 @@ export interface LoginResponse {
     cpf?: string;
     cargo?: string;
     ativo?: boolean;
-    nome?: string;
   };
 }
 

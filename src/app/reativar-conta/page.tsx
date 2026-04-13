@@ -16,6 +16,21 @@ import { Unlock, Clock, RefreshCcw, Hourglass } from 'lucide-react';
 
 type Step = 'email' | 'code' | 'success';
 
+function ReativarContaFallback() {
+  return (
+    <main
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Spinner size="lg" ariaLabel="Carregando página de reativação" />
+    </main>
+  );
+}
+
 function ReativarContaContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -130,6 +145,52 @@ function ReativarContaContent() {
       const errorMsg = err instanceof Error ? err.message : 'Erro de conexão';
       toastError(errorMsg, 'Erro', 5000);
       setErrors({ code: errorMsg });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const canResend = timeLeft === 0;
+
+  const handleResendCode = async () => {
+    const emailTrim = email.trim();
+    if (!emailTrim) {
+      setErrors({ general: 'Email inválido para reenviar código' });
+      return;
+    }
+
+    setLoading(true);
+    setErrors({});
+
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      if (!apiUrl) {
+        throw new Error('API URL não configurada');
+      }
+
+      const response = await fetch(`${apiUrl}/api/auth/enviar-codigo-reativacao`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: emailTrim }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (response.ok) {
+        toastSuccess('Novo código enviado!', undefined, 2000);
+        setCode('');
+        setTimeLeft(300);
+      } else {
+        const errorMsg = data.message || 'Erro ao reenviar código';
+        toastError(errorMsg, 'Erro', 5000);
+        setErrors({ general: errorMsg });
+      }
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Erro de conexão';
+      toastError(errorMsg, 'Erro', 5000);
+      setErrors({ general: errorMsg });
     } finally {
       setLoading(false);
     }
@@ -558,5 +619,13 @@ function ReativarContaContent() {
         </Card>
       </FadeIn>
     </main>
+  );
+}
+
+export default function ReativarContaPage() {
+  return (
+    <Suspense fallback={<ReativarContaFallback />}>
+      <ReativarContaContent />
+    </Suspense>
   );
 }
