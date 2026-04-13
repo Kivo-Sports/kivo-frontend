@@ -4,12 +4,15 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { clearCredentials } from '@/store/slices/authSlice';
+import { Icon } from '@/components/atoms/Icon';
+import { Settings, LogOut } from 'lucide-react';
 
 export function HeaderMobile() {
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
+  const homeRoute = isAuthenticated ? '/dashboard' : '/login';
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -109,16 +112,8 @@ export function HeaderMobile() {
             transition: 'opacity 0.2s ease',
           }}
           onClick={() => {
-            const homeRoute = getHomeRoute();
-            if (homeRoute !== '#') {
-              router.push(homeRoute);
-            }
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLDivElement).style.opacity = '0.8';
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLDivElement).style.opacity = '1';
+            router.push(homeRoute);
+            setIsMenuOpen(false);
           }}
         >
           <div
@@ -330,7 +325,10 @@ export function HeaderMobile() {
                         e.currentTarget.style.color = 'var(--color-text-secondary)';
                       }}
                     >
-                      ⚙️ Configurações
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <Icon icon={Settings} size={16} />
+                        Configurações
+                      </span>
                     </button>
 
                     <button
@@ -355,7 +353,10 @@ export function HeaderMobile() {
                         e.currentTarget.style.background = 'transparent';
                       }}
                     >
-                      🚪 Desconectar
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <Icon icon={LogOut} size={16} />
+                        Desconectar
+                      </span>
                     </button>
                   </div>
                 </div>

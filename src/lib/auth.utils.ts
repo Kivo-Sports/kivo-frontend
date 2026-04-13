@@ -12,6 +12,26 @@
 
 export type IdentifierType = "email" | "cpf" | "invalid";
 
+export function normalizeCargo(cargo?: string): string {
+  if (!cargo) {
+    return "";
+  }
+
+  return cargo
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[_\s]+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+export function isOrganizadorTime(cargo?: string): boolean {
+  const cargoNormalizado = normalizeCargo(cargo);
+
+  return cargoNormalizado === "organizador-time" || cargoNormalizado === "organizador-de-time";
+}
+
 /**
  * Detecta automaticamente o tipo de identificador
  * @param value - Valor do input
@@ -81,10 +101,7 @@ export function isEmailValid(email: string): boolean {
  * @param minLength - Minimo de caracteres (padrao: 6)
  * @returns true se valido
  */
-export function isPasswordValid(
-  password: string,
-  minLength: number = 6
-): boolean {
+export function isPasswordValid(password: string, minLength: number = 6): boolean {
   return password.length >= minLength;
 }
 
@@ -94,10 +111,7 @@ export function isPasswordValid(
  * @param type - Tipo do identificador
  * @returns Nome extraido
  */
-export function extractUserName(
-  identifier: string,
-  type: IdentifierType
-): string {
+export function extractUserName(identifier: string, type: IdentifierType): string {
   if (type === "email") {
     return identifier.split("@")[0];
   }

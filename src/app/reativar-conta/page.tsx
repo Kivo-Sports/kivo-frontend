@@ -11,8 +11,25 @@ import { Card } from '@/components/molecules/Card';
 import { VerificationCodeInput } from '@/components/molecules/VerificationCodeInput';
 import { FadeIn } from '@/components/atoms/FadeIn';
 import { useToast } from '@/components/atoms/Toast';
+import { Icon } from '@/components/atoms/Icon';
+import { Unlock, Clock, RefreshCcw, Hourglass } from 'lucide-react';
 
 type Step = 'email' | 'code' | 'success';
+
+function ReativarContaFallback() {
+  return (
+    <main
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Spinner size="lg" ariaLabel="Carregando página de reativação" />
+    </main>
+  );
+}
 
 function ReativarContaContent() {
   const router = useRouter();
@@ -133,6 +150,52 @@ function ReativarContaContent() {
     }
   };
 
+  const canResend = timeLeft === 0;
+
+  const handleResendCode = async () => {
+    const emailTrim = email.trim();
+    if (!emailTrim) {
+      setErrors({ general: 'Email inválido para reenviar código' });
+      return;
+    }
+
+    setLoading(true);
+    setErrors({});
+
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      if (!apiUrl) {
+        throw new Error('API URL não configurada');
+      }
+
+      const response = await fetch(`${apiUrl}/api/auth/enviar-codigo-reativacao`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: emailTrim }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (response.ok) {
+        toastSuccess('Novo código enviado!', undefined, 2000);
+        setCode('');
+        setTimeLeft(300);
+      } else {
+        const errorMsg = data.message || 'Erro ao reenviar código';
+        toastError(errorMsg, 'Erro', 5000);
+        setErrors({ general: errorMsg });
+      }
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Erro de conexão';
+      toastError(errorMsg, 'Erro', 5000);
+      setErrors({ general: errorMsg });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main
       style={{
@@ -155,12 +218,18 @@ function ReativarContaContent() {
             padding: 'var(--space-6)',
           }}
         >
-          {/* ======== HEADER (TODOS OS PASSOS) ======== */}
-          <div style={{ marginBottom: 'var(--space-4)', textAlign: 'center' }}>
-            <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-1)' }}>
-              {step === 'email' && '🔓'}
-              {step === 'code' && '📧'}
-              {step === 'success' && '✅'}
+          {/* Header */}
+          <div style={{ marginBottom: 'var(--space-6)', textAlign: 'center' }}>
+            <div
+              style={{
+                fontSize: '3rem',
+                marginBottom: 'var(--space-3)',
+                color: 'var(--color-brand-primary)',
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
+              <Icon icon={Unlock} size={48} />
             </div>
             <h1
               style={{
@@ -379,25 +448,64 @@ function ReativarContaContent() {
                     fontWeight: 600,
                   }}
                 >
-                  {timeLeft === 0 ? (
-                    <>
-                      ❌ Código expirado!<br />
-                      <span style={{ fontSize: 'var(--text-xs)', fontWeight: 400 }}>
-                        Clique em "Voltar" para solicitar um novo
-                      </span>
-                    </>
-                  ) : timeLeft < 60 ? (
-                    <>
-                      ⚠️ Apenas {formatTime(timeLeft)} para inserir o código!
-                    </>
-                  ) : (
-                    <>
-                      ✓ Código válido por {formatTime(timeLeft)}
-                    </>
-                  )}
+                {timeLeft === 0 ? (
+                  <>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                      }}
+                    >
+                      <Icon icon={Hourglass} size={18} />
+                      <strong>Código expirado!</strong>
+                    </span>
+                    <br />
+                    Clique em "Reenviar Código" abaixo para solicitar um novo
+                  </>
+                ) : (
+                  <>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                      }}
+                    >
+                      <Icon icon={Clock} size={16} />
+                      Código válido por:
+                    </span>{' '}
+                    <strong>{formatTime(timeLeft)}</strong>
+                  </>
+                )}
                 </p>
               </div>
 
+              {/* Botão Reenviar (quando expirar) */}
+              {canResend && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="md"
+                  fullWidth
+                  onClick={handleResendCode}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Icon icon={Clock} size={16} />
+                      Enviando...
+                    </span>
+                  ) : (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Icon icon={RefreshCcw} size={16} />
+                      Reenviar Código
+                    </span>
+                  )}
+                </Button>
+              )}
+
+              {/* Erro geral */}
               {errors.general && (
                 <div
                   style={{
@@ -516,7 +624,7 @@ function ReativarContaContent() {
 
 export default function ReativarContaPage() {
   return (
-    <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}><Spinner size="lg" /></div>}>
+    <Suspense fallback={<ReativarContaFallback />}>
       <ReativarContaContent />
     </Suspense>
   );

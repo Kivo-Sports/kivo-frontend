@@ -4,12 +4,15 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { clearCredentials } from '@/store/slices/authSlice';
+import { Icon } from '@/components/atoms/Icon';
+import { LogOut, Settings } from 'lucide-react';
 
 export function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
+  const homeRoute = isAuthenticated ? '/dashboard' : '/login';
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -333,7 +336,10 @@ export function Header() {
                       e.currentTarget.style.color = 'var(--color-text-secondary)';
                     }}
                   >
-                    ⚙️ Configurações
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Icon icon={Settings} size={16} />
+                      Configurações
+                    </span>
                   </button>
 
                   <button
@@ -358,7 +364,10 @@ export function Header() {
                       e.currentTarget.style.background = 'transparent';
                     }}
                   >
-                    🚪 Desconectar
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Icon icon={LogOut} size={16} />
+                      Desconectar
+                    </span>
                   </button>
                 </div>
               </div>

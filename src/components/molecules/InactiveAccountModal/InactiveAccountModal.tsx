@@ -9,6 +9,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/atoms/Button';
 import { Card } from '@/components/molecules/Card';
 import { useRouter } from 'next/navigation';
+import { Icon } from '@/components/atoms/Icon';
+import { Lock } from 'lucide-react';
 
 interface InactiveAccountModalProps {
   isOpen: boolean;
@@ -59,14 +61,14 @@ export function InactiveAccountModal({ isOpen, email, onClose }: InactiveAccount
                 textAlign: 'center',
               }}
             >
-              {/* Icon */}
               <div
                 style={{
                   fontSize: '3rem',
                   marginBottom: 'var(--space-3)',
+                  color: 'var(--color-feedback-danger)',
                 }}
               >
-                🔒
+                <Icon icon={Lock} size={36} />
               </div>
 
               {/* Title */}
