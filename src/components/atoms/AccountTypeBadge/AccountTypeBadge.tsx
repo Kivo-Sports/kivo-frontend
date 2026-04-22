@@ -65,7 +65,7 @@ export function AccountTypeBadge({
           justifyContent: 'center',
         }}
       >
-        {config.emoji}
+        <config.icon size={24} color={config.color} />
       </span>
 
       {showLabel && (

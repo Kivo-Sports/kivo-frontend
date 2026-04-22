@@ -3,6 +3,9 @@
  * @description Utilitários para tipos de conta com cores e labels
  */
 
+import { Medal, Users, Trophy, Crown , ClipboardList , Megaphone } from "lucide-react";
+import React from "react";
+
 export type AccountType = 'torcedor' | 'organizador-time' | 'organizador-campeonato' | 'admin' | 'Administrador' | 'Torcedor' | 'OrganizadorTime' | 'OrganizadorCampeonato';
 
 export interface AccountTypeConfig {
@@ -10,7 +13,7 @@ export interface AccountTypeConfig {
   color: string;
   bgColor: string;
   borderColor: string;
-  emoji: string;
+  icon: React.ComponentType<{ size?: number; color?: string }>;
 }
 
 export const ACCOUNT_TYPE_CONFIG: Record<string, AccountTypeConfig> = {
@@ -19,56 +22,56 @@ export const ACCOUNT_TYPE_CONFIG: Record<string, AccountTypeConfig> = {
     color: '#00E676',
     bgColor: 'rgba(0, 230, 118, 0.1)',
     borderColor: 'rgba(0, 230, 118, 0.3)',
-    emoji: '⚽',
+    icon: Megaphone,
   },
   Torcedor: {
     label: 'Torcedor',
     color: '#00E676',
     bgColor: 'rgba(0, 230, 118, 0.1)',
     borderColor: 'rgba(0, 230, 118, 0.3)',
-    emoji: '⚽',
+    icon: Megaphone,
   },
   'organizador-time': {
     label: 'Organizador de Time',
     color: '#00BFA5',
     bgColor: 'rgba(0, 191, 165, 0.1)',
     borderColor: 'rgba(0, 191, 165, 0.3)',
-    emoji: '🏟️',
+    icon: Medal,
   },
   OrganizadorTime: {
     label: 'Organizador de Time',
     color: '#00BFA5',
     bgColor: 'rgba(0, 191, 165, 0.1)',
     borderColor: 'rgba(0, 191, 165, 0.3)',
-    emoji: '🏟️',
+    icon: Medal,
   },
   'organizador-campeonato': {
     label: 'Organizador de Campeonato',
-    color: '#FFB300',
-    bgColor: 'rgba(255, 179, 0, 0.1)',
-    borderColor: 'rgba(255, 179, 0, 0.3)',
-    emoji: '🏆',
+    color: '#9900ff',
+    bgColor: 'rgba(153, 0, 255, 0.1)',
+    borderColor: 'rgba(153, 0, 255, 0.3)',
+    icon: ClipboardList,
   },
   OrganizadorCampeonato: {
     label: 'Organizador de Campeonato',
-    color: '#FFB300',
-    bgColor: 'rgba(255, 179, 0, 0.1)',
-    borderColor: 'rgba(255, 179, 0, 0.3)',
-    emoji: '🏆',
+    color: '#9900ff',
+    bgColor: 'rgba(153, 0, 255, 0.1)',
+    borderColor: 'rgba(153, 0, 255, 0.3)',
+    icon: ClipboardList,
   },
   admin: {
     label: 'Administrador',
     color: '#FFD700',
     bgColor: 'rgba(255, 215, 0, 0.1)',
     borderColor: 'rgba(255, 215, 0, 0.3)',
-    emoji: '👑',
+    icon: Crown,
   },
   Administrador: {
     label: 'Administrador',
     color: '#FFD700',
     bgColor: 'rgba(255, 215, 0, 0.1)',
     borderColor: 'rgba(255, 215, 0, 0.3)',
-    emoji: '👑',
+    icon: Crown,
   },
 };
 
@@ -83,4 +86,8 @@ export function getAccountTypeLabel(cargo?: string | null): string {
 
 export function getAccountTypeColor(cargo?: string | null): string {
   return getAccountTypeConfig(cargo).color;
+}
+
+export function getAccountTypeIcon(cargo?: string | null): React.ComponentType<{ size?: number; color?: string }> {
+  return getAccountTypeConfig(cargo).icon;
 }

@@ -19,6 +19,8 @@ import { DeactivateAccountModal } from '@/components/molecules/DeactivateAccount
 import { EditUserDataModal } from '@/components/molecules/EditUserDataModal';
 import { AccountTypeBadge } from '@/components/atoms/AccountTypeBadge';
 import { AppLayout } from '@/components/templates/AppLayout';
+import { Icon } from "@/components/atoms/Icon";
+import { SquarePen  } from "lucide-react";
 
 // Store
 import type { RootState } from '@/store';
@@ -217,7 +219,7 @@ export default function ConfiguracoesPage() {
                   onClick={() => setIsEditUserDataOpen(true)}
                   disabled={isLoadingUserData || !userData}
                 >
-                  ✏️ Editar
+                  <Icon icon={SquarePen} size={17} /> Editar
                 </Button>
               </div>
 

@@ -19,7 +19,9 @@ export function normalizeCargo(cargo?: string): string {
 
   return cargo
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[̀-ͯ]/g, "")
+    // Trata PascalCase do backend (ex: "OrganizadorTime" → "Organizador-Time")
+    .replace(/([a-z])([A-Z])/g, "$1-$2")
     .toLowerCase()
     .trim()
     .replace(/[_\s]+/g, "-")
@@ -132,4 +134,51 @@ export function extractUserName(identifier: string, type: IdentifierType): strin
 export function generateEmailFromCPF(cpf: string): string {
   const cleaned = cpf.replace(/\D/g, "");
   return `usuario${cleaned}@kivo.sports`;
+}
+
+/**
+ * Determina a rota de dashboard baseado no cargo do usuario
+ * @param cargo - Cargo/tipo de conta do usuario
+ * @returns Rota de dashboard
+ */
+export function getRedirectPathAfterLogin(cargo?: string | null): string {
+  if (!cargo) {
+    return "/dashboard";
+  }
+
+  const cargoNormalizado = normalizeCargo(cargo);
+
+  const routeMap: Record<string, string> = {
+    "torcedor": "/dashboard",
+    "organizador-time": "/organizador",
+    "organizador-de-time": "/organizador",
+    "organizador-campeonato": "/organizador-campeonato",
+    "organizador-de-campeonato": "/organizador-campeonato",
+    "administrador": "/dashboard",
+  };
+
+  return routeMap[cargoNormalizado] || "/dashboard";
+}
+
+/**
+ * Determina a rota de home baseado no cargo do usuario
+ * @param cargo - Cargo/tipo de conta do usuario
+ * @returns Rota de home
+ */
+export function getHomeRoute(cargo?: string | null): string {
+  if (!cargo) {
+    return "/dashboard";
+  }
+
+  const cargoNormalizado = normalizeCargo(cargo);
+
+  const homeRouteMap: Record<string, string> = {
+    "torcedor": "/home/torcedor",
+    "organizador-time": "/home/organizador-time",
+    "organizador-de-time": "/home/organizador-time",
+    "organizador-campeonato": "/home/organizador-campeonato",
+    "administrador": "/home/admin",
+  };
+
+  return homeRouteMap[cargoNormalizado] || "/dashboard";
 }

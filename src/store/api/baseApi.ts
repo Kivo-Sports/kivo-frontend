@@ -8,7 +8,7 @@ interface RootStateForApi {
 
 export const baseApi = createApi({
   reducerPath: "baseApi",
-  tagTypes: ["Time"],
+  tagTypes: ["Time", "Campeonato"],
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_URL,
     prepareHeaders: (headers, { getState }) => {
