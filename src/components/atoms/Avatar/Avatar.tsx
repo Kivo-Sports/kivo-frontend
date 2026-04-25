@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 
-type AvatarSize = "sm" | "md" | "lg";
+type AvatarSize = "sm" | "md" | "lg" | "xl" | "2xl";
 
 export interface AvatarProps {
   name: string;
@@ -17,6 +17,16 @@ const sizeStyles: Record<AvatarSize, CSSProperties> = {
   sm: { width: "2rem", height: "2rem", fontSize: "0.75rem", lineHeight: 1 },
   md: { width: "2.5rem", height: "2.5rem", fontSize: "0.875rem", lineHeight: 1 },
   lg: { width: "3rem", height: "3rem", fontSize: "1rem", lineHeight: 1 },
+  xl: { width: "7rem", height: "7rem", fontSize: "2rem", lineHeight: 1 },
+  "2xl": { width: "16rem", height: "16rem", fontSize: "4rem", lineHeight: 1 },
+};
+
+const imageSizeMap: Record<AvatarSize, string> = {
+  sm: "32px",
+  md: "40px",
+  lg: "48px",
+  xl: "112px",
+  "2xl": "256px",
 };
 
 function getInitials(name: string): string {
@@ -62,7 +72,7 @@ export function Avatar({ name, src, size = "md", className }: AvatarProps) {
           src={src as string}
           alt={name}
           fill
-          sizes="48px"
+          sizes={imageSizeMap[size]}
           unoptimized
           className="object-cover object-center"
           onError={() => setImageError(true)}

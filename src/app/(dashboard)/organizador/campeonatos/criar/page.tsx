@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { Trophy, Calendar, Star, CheckCircle, ArrowLeft, Loader2 } from "lucide-react";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { Button } from "@/components/atoms/Button";
@@ -59,7 +59,7 @@ export default function CriarCampeonatoPage() {
     watch,
     formState: { errors, isValid },
   } = useForm<CampeonatoFormValues>({
-    resolver: zodResolver(criarCampeonatoSchema),
+    resolver: zodResolver(criarCampeonatoSchema) as Resolver<CampeonatoFormValues>,
     defaultValues: {
       nome:          "",
       dataInicio:    "",
@@ -93,7 +93,7 @@ export default function CriarCampeonatoPage() {
       }).unwrap();
 
       toastSuccess("Campeonato criado com sucesso!");
-      router.push("/organizador-campeonato");
+      router.push("/organizador/campeonatos");
     } catch (error: unknown) {
       toastError(extrairMensagemErroApi(error), "Erro ao criar campeonato");
     }
@@ -119,7 +119,7 @@ export default function CriarCampeonatoPage() {
         style={{ marginBottom: "var(--space-5)" }}
       >
         <Link
-          href="/organizador-campeonato"
+          href="/organizador/campeonatos"
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -355,7 +355,7 @@ export default function CriarCampeonatoPage() {
                 </Button>
 
                 <Link
-                  href="/organizador-campeonato"
+                  href="/organizador/campeonatos"
                   style={{
                     textAlign: "center",
                     fontSize: "var(--text-sm)",

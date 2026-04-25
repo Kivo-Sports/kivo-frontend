@@ -34,6 +34,15 @@ export function isOrganizadorTime(cargo?: string): boolean {
   return cargoNormalizado === "organizador-time" || cargoNormalizado === "organizador-de-time";
 }
 
+export function isOrganizadorCampeonato(cargo?: string): boolean {
+  const cargoNormalizado = normalizeCargo(cargo);
+
+  return (
+    cargoNormalizado === "organizador-campeonato" ||
+    cargoNormalizado === "organizador-de-campeonato"
+  );
+}
+
 /**
  * Detecta automaticamente o tipo de identificador
  * @param value - Valor do input
@@ -150,10 +159,10 @@ export function getRedirectPathAfterLogin(cargo?: string | null): string {
 
   const routeMap: Record<string, string> = {
     "torcedor": "/dashboard",
-    "organizador-time": "/organizador",
-    "organizador-de-time": "/organizador",
-    "organizador-campeonato": "/organizador-campeonato",
-    "organizador-de-campeonato": "/organizador-campeonato",
+    "organizador-time": "/organizador/times",
+    "organizador-de-time": "/organizador/times",
+    "organizador-campeonato": "/organizador/campeonatos",
+    "organizador-de-campeonato": "/organizador/campeonatos",
     "administrador": "/dashboard",
   };
 

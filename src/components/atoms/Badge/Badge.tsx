@@ -8,6 +8,7 @@ export interface BadgeProps {
   variant?: BadgeVariant;
   size?: BadgeSize;
   className?: string;
+  style?: CSSProperties;
 }
 
 type VariantStyle = {
@@ -54,7 +55,7 @@ const variantStyles: Record<BadgeVariant, VariantStyle> = {
   },
 };
 
-export function Badge({ children, variant = "default", size = "md", className }: BadgeProps) {
+export function Badge({ children, variant = "default", size = "md", className, style }: BadgeProps) {
   const styleVariant: VariantStyle = variantStyles[variant];
 
   const badgeStyle: CSSProperties = {
@@ -62,6 +63,7 @@ export function Badge({ children, variant = "default", size = "md", className }:
     color: styleVariant.textColor,
     backgroundColor: styleVariant.backgroundColor,
     borderColor: styleVariant.borderColor,
+    ...style,
   };
 
   return (

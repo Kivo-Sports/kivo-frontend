@@ -7,6 +7,7 @@ export interface PerfilUsuarioResponse {
   cpf: string;
   cargo: string;
   organizadorCampeonatoId?: string;
+  organizadorTimeId?: string;
 }
 
 export const userApi = baseApi.injectEndpoints({
