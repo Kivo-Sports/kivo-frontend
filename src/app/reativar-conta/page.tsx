@@ -12,7 +12,7 @@ import { VerificationCodeInput } from '@/components/molecules/VerificationCodeIn
 import { FadeIn } from '@/components/atoms/FadeIn';
 import { useToast } from '@/components/atoms/Toast';
 import { Icon } from '@/components/atoms/Icon';
-import { Unlock, Clock, RefreshCcw, Hourglass } from 'lucide-react';
+import { Unlock, Clock, RefreshCcw, Hourglass, AlertTriangle, Check, Send, Timer } from 'lucide-react';
 
 type Step = 'email' | 'code' | 'success';
 
@@ -312,7 +312,10 @@ function ReativarContaContent() {
                 loading={loading}
                 disabled={loading}
               >
-                ✉️ Enviar Código
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <Icon icon={Send} size={16} />
+                  Enviar Código
+                </span>
               </Button>
 
               <Button
@@ -362,6 +365,9 @@ function ReativarContaContent() {
                   </p>
                   <div
                     style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
                       fontSize: '0.8rem',
                       fontWeight: 700,
                       color: 'var(--color-brand-primary)',
@@ -370,7 +376,8 @@ function ReativarContaContent() {
                       borderRadius: '4px',
                     }}
                   >
-                    ⏱️ {formatTime(timeLeft)}
+                    <Icon icon={Timer} size={13} />
+                    {formatTime(timeLeft)}
                   </div>
                 </div>
                 <p
@@ -516,9 +523,13 @@ function ReativarContaContent() {
                     color: 'var(--color-feedback-danger)',
                     fontSize: 'var(--text-sm)',
                     fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 'var(--space-2)',
                   }}
                 >
-                  ⚠️ {errors.general}
+                  <Icon icon={AlertTriangle} size={16} style={{ flexShrink: 0 }} />
+                  {errors.general}
                 </div>
               )}
 
@@ -530,7 +541,10 @@ function ReativarContaContent() {
                 loading={loading}
                 disabled={loading || timeLeft === 0}
               >
-                ✓ Validar Código
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <Icon icon={Check} size={16} />
+                  Validar Código
+                </span>
               </Button>
 
               <Button

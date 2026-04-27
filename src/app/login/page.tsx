@@ -163,15 +163,11 @@ export default function LoginPage() {
       const result = await loginUser(identifier, password);
 
       if (result.success && result.token && result.user) {
-        // Mostrar notificação de sucesso com toast
         toastSuccess(`Bem-vindo, ${result.user.name}!`, undefined, 10000);
 
         hadManualRedirect.current = true;
         // Salvar credenciais no Redux
         dispatch(setCredentials({ token: result.token, user: result.user }));
-
-        // Mostrar notificação de bem-vindo
-        toastSuccess(`Bem-vindo, ${result.user.name}!`);
 
         // Redirecionar para area correspondente ao perfil
         const rotaPosLogin = getRedirectPathAfterLogin(result.user.cargo);

@@ -291,51 +291,54 @@ export default function OrganizadorTimePage() {
           background: "linear-gradient(145deg, rgba(0, 230, 118, 0.15) 0%, rgba(0, 0, 0, 0.7) 100%)",
           border: "1px solid rgba(0, 230, 118, 0.2)",
           boxShadow: "0 20px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.05)",
+          display: "grid",
+          gridTemplateColumns: "minmax(0, 3fr) minmax(0, 2fr)",
+          gap: "var(--space-6)",
         }}
       >
-        <div data-times-list>
-          <p style={{ margin: "0 0 var(--space-1)", fontSize: "var(--text-xs)", letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--color-brand-primary)" }}>
-            Central de Times
-          </p>
-          <h1 style={{ margin: 0, fontSize: "clamp(1.75rem, 3.5vw, 2.75rem)", fontWeight: 700, color: "white", lineHeight: 1.15 }}>
-            Olá, {userName}
-          </h1>
-          <p className="text-secondary" style={{ marginTop: "var(--space-2)", maxWidth: "30rem", lineHeight: 1.6 }}>
-            Organize seus times, acompanhe o status de cada frente e mantenha torcedores engajados.
-          </p>
-
-          <div style={{ marginTop: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-            <div>
-              <Button
-                variant="secondary"
-                onClick={() => router.push("/organizador/times/criar")}
-                style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-2)" }}
-              >
-                <Icon icon={Plus} size={16} />
-                Criar time
-              </Button>
-            </div>
-            <div data-times-hero-stats style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "var(--space-3)", maxWidth: "24rem" }}>
-              {heroStats.map((stat) => (
-                <Card
-                  key={stat.label}
-                  padding="sm"
-                  style={{
-                    background: "rgba(255, 255, 255, 0.04)",
-                    border: "1px solid rgba(255, 255, 255, 0.08)",
-                    borderRadius: "var(--radius-lg)",
-                    textAlign: "center",
-                  }}
-                >
-                  <Icon icon={stat.icon} size={18} style={{ color: "var(--color-brand-primary)", margin: "0 auto var(--space-2)" }} />
-                  <p style={{ margin: 0, fontSize: "var(--text-xl)", fontWeight: 700, color: "white" }}>{stat.value}</p>
-                  <p style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", letterSpacing: "0.1em" }}>
-                    {stat.label}
-                  </p>
-                </Card>
-              ))}
-            </div>
+        <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div>
+            <p style={{ margin: "0 0 var(--space-1)", fontSize: "var(--text-xs)", letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--color-brand-primary)" }}>
+              Central de Times
+            </p>
+            <h1 style={{ margin: 0, fontSize: "clamp(1.75rem, 3.5vw, 2.75rem)", fontWeight: 700, color: "white", lineHeight: 1.15 }}>
+              Olá, {userName}
+            </h1>
+            <p className="text-secondary" style={{ marginTop: "var(--space-2)", maxWidth: "30rem", lineHeight: 1.6 }}>
+              Organize seus times, acompanhe o status de cada frente e mantenha torcedores engajados.
+            </p>
           </div>
+          <div style={{ marginTop: "var(--space-4)", display: "flex", gap: "var(--space-3)", flexWrap: "wrap", alignItems: "center" }}>
+            <Button
+              variant="secondary"
+              onClick={() => router.push("/organizador/times/criar")}
+              style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-2)" }}
+            >
+              <Icon icon={Plus} size={16} />
+              Criar time
+            </Button>
+          </div>
+        </div>
+
+        <div data-times-hero-stats style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "var(--space-3)", alignContent: "center" }}>
+          {heroStats.map((stat) => (
+            <Card
+              key={stat.label}
+              padding="sm"
+              style={{
+                background: "rgba(255, 255, 255, 0.04)",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
+                borderRadius: "var(--radius-lg)",
+                textAlign: "center",
+              }}
+            >
+              <Icon icon={stat.icon} size={20} style={{ color: "var(--color-brand-primary)", margin: "0 auto var(--space-2)" }} />
+              <p style={{ margin: 0, fontSize: "var(--text-2xl)", fontWeight: 700, color: "white" }}>{stat.value}</p>
+              <p style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", letterSpacing: "0.1em" }}>
+                {stat.label}
+              </p>
+            </Card>
+          ))}
         </div>
       </motion.div>
 
@@ -760,7 +763,7 @@ export default function OrganizadorTimePage() {
       </div>
 
       <style>{`
-        @media (max-width: 1100px) {
+        @media (max-width: 768px) {
           [data-times-layout] {
             grid-template-columns: 1fr !important;
           }
@@ -773,14 +776,10 @@ export default function OrganizadorTimePage() {
           [data-times-sidebar] {
             order: -1;
           }
-          [data-times-list] {
-            order: 1;
-          }
           [data-times-hero] {
+            grid-template-columns: 1fr !important;
+            gap: var(--space-4) !important;
             padding: var(--space-4) !important;
-          }
-          [data-times-hero-stats] {
-            max-width: 100% !important;
           }
           [data-times-cards-grid] {
             grid-template-columns: 1fr !important;

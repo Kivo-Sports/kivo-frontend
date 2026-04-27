@@ -13,9 +13,11 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 // Components
+import { KeyRound, Mail, LockKeyhole, CheckCircle2, Send, Timer, XCircle, AlertTriangle, Shield, Check } from 'lucide-react';
 import { Button } from '@/components/atoms/Button';
 import { Input } from '@/components/atoms/Input';
 import { Card } from '@/components/molecules/Card';
+import { Icon } from '@/components/atoms/Icon';
 import { VerificationCodeInput } from '@/components/molecules/VerificationCodeInput';
 import { FadeIn } from '@/components/atoms/FadeIn';
 
@@ -197,11 +199,11 @@ export default function RecuperarSenhaPage() {
         >
           {/* ======== HEADER (TODOS OS PASSOS) ======== */}
           <div style={{ marginBottom: 'var(--space-4)', textAlign: 'center' }}>
-            <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-1)' }}>
-              {step === 'email' && '🔑'}
-              {step === 'code' && '📧'}
-              {step === 'password' && '🔐'}
-              {step === 'success' && '✅'}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'var(--space-3)', color: 'var(--color-brand-primary)' }}>
+              {step === 'email' && <Icon icon={KeyRound} size={48} />}
+              {step === 'code' && <Icon icon={Mail} size={48} />}
+              {step === 'password' && <Icon icon={LockKeyhole} size={48} />}
+              {step === 'success' && <Icon icon={CheckCircle2} size={48} style={{ color: 'var(--color-feedback-success)' }} />}
             </div>
             <h1
               style={{
@@ -286,7 +288,10 @@ export default function RecuperarSenhaPage() {
                 loading={loading}
                 disabled={loading}
               >
-                ✉️ Enviar Código
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <Icon icon={Send} size={16} />
+                  Enviar Código
+                </span>
               </Button>
 
               <Button
@@ -342,9 +347,13 @@ export default function RecuperarSenhaPage() {
                       padding: '2px 8px',
                       background: 'rgba(0, 230, 118, 0.2)',
                       borderRadius: '4px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
                     }}
                   >
-                    ⏱️ {formatTime(timeLeft)}
+                    <Icon icon={Timer} size={13} />
+                    {formatTime(timeLeft)}
                   </div>
                 </div>
                 <p
@@ -424,19 +433,25 @@ export default function RecuperarSenhaPage() {
                 >
                   {timeLeft === 0 ? (
                     <>
-                      ❌ Código expirado!<br />
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <Icon icon={XCircle} size={16} />
+                        <strong>Código expirado!</strong>
+                      </span>
+                      <br />
                       <span style={{ fontSize: 'var(--text-xs)', fontWeight: 400 }}>
                         Clique em "Voltar" para solicitar um novo
                       </span>
                     </>
                   ) : timeLeft < 60 ? (
-                    <>
-                      ⚠️ Apenas {formatTime(timeLeft)} para inserir o código!
-                    </>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <Icon icon={AlertTriangle} size={16} />
+                      Apenas {formatTime(timeLeft)} para inserir o código!
+                    </span>
                   ) : (
-                    <>
-                      ✓ Código válido por {formatTime(timeLeft)}
-                    </>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <Icon icon={Check} size={16} />
+                      Código válido por {formatTime(timeLeft)}
+                    </span>
                   )}
                 </p>
               </div>
@@ -451,9 +466,13 @@ export default function RecuperarSenhaPage() {
                     color: 'var(--color-feedback-danger)',
                     fontSize: 'var(--text-sm)',
                     fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 'var(--space-2)',
                   }}
                 >
-                  ⚠️ {errors.general}
+                  <Icon icon={AlertTriangle} size={16} style={{ flexShrink: 0 }} />
+                  {errors.general}
                 </div>
               )}
 
@@ -465,7 +484,10 @@ export default function RecuperarSenhaPage() {
                 loading={loading}
                 disabled={loading || timeLeft === 0}
               >
-                ✓ Validar Código
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <Icon icon={Check} size={16} />
+                  Validar Código
+                </span>
               </Button>
 
               <Button
@@ -539,7 +561,8 @@ export default function RecuperarSenhaPage() {
                     gap: 'var(--space-1)',
                   }}
                 >
-                  🛡️ Requisitos: {Object.values(passwordReqs).filter(Boolean).length}/5
+                  <Icon icon={Shield} size={14} />
+                  Requisitos: {Object.values(passwordReqs).filter(Boolean).length}/5
                   {allRequirementsMet && (
                     <span style={{ color: 'var(--color-brand-primary)' }}>✓</span>
                   )}
