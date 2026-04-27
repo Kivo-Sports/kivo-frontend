@@ -209,7 +209,7 @@ export default function CriarTimePage() {
         </Link>
       </motion.div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 5fr) minmax(0, 7fr)", gap: "var(--space-6)", alignItems: "start" }}>
+      <div data-criar-grid style={{ display: "grid", gridTemplateColumns: "minmax(0, 5fr) minmax(0, 7fr)", gap: "var(--space-6)", alignItems: "start" }}>
 
         {/* Painel esquerdo */}
         <motion.div
@@ -497,6 +497,13 @@ export default function CriarTimePage() {
           </Card>
         </motion.div>
       </div>
+      <style>{`
+        @media (max-width: 720px) {
+          [data-criar-grid] {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </motion.main>
   );
 }

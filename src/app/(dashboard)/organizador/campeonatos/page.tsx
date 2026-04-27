@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { Calendar, Trophy, Users, Plus, TrendingUp, ArrowUpRight, Search, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Calendar, Trophy, Users, Plus, TrendingUp, ArrowUpRight, Search, X, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
 import { Spinner } from "@/components/atoms/Spinner";
@@ -43,6 +43,190 @@ const STATUS_LINE: Record<string, string> = {
   Finalizado:        "rgba(180,180,180,0.25)",
   Cancelado:         "linear-gradient(90deg, rgba(255,72,68,0.9), rgba(255,72,68,0.1))",
 };
+
+const STATUS_DOT: Record<string, string> = {
+  todos:             "rgba(255,255,255,0.3)",
+  Rascunho:          "rgba(180,180,180,0.7)",
+  InscricoesAbertas: "rgba(0,230,118,0.9)",
+  EmAndamento:       "rgba(96,165,250,0.9)",
+  Finalizado:        "rgba(160,160,160,0.6)",
+  Cancelado:         "rgba(255,72,68,0.9)",
+};
+
+// ─── Select de status customizado ────────────────────────────────────────────
+
+function StatusSelect({
+  value,
+  onChange,
+  options,
+}: {
+  value: StatusFilter;
+  onChange: (v: StatusFilter) => void;
+  options: { key: StatusFilter; label: string; count: number }[];
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = options.find((o) => o.key === value)!;
+
+  return (
+    <div style={{ position: "relative", width: "100%" }}>
+      {/* Trigger */}
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        style={{
+          width: "100%",
+          height: "42px",
+          background: open ? "rgba(0,230,118,0.04)" : "rgba(255,255,255,0.04)",
+          border: `1px solid ${open ? "rgba(0,230,118,0.45)" : "rgba(255,255,255,0.08)"}`,
+          borderRadius: "var(--radius-lg)",
+          padding: "0 var(--space-3)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "var(--space-2)",
+          cursor: "pointer",
+          boxSizing: "border-box",
+          transition: "border-color 0.15s, background 0.15s, box-shadow 0.15s",
+          boxShadow: open ? "0 0 0 2px rgba(0,230,118,0.1)" : "none",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+          <span
+            style={{
+              width: "7px",
+              height: "7px",
+              borderRadius: "50%",
+              background: STATUS_DOT[value] ?? "rgba(255,255,255,0.3)",
+              flexShrink: 0,
+              transition: "background 0.2s",
+            }}
+          />
+          <span style={{ fontSize: "var(--text-sm)", color: open ? "var(--color-brand-primary)" : "var(--color-text-primary)", transition: "color 0.15s" }}>
+            {selected.label}
+          </span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+          {value !== "todos" && selected.count > 0 && (
+            <span
+              style={{
+                fontSize: "10px",
+                fontWeight: 700,
+                color: "var(--color-brand-primary)",
+                background: "rgba(0,230,118,0.14)",
+                padding: "1px 7px",
+                borderRadius: "var(--radius-full)",
+                lineHeight: 1.6,
+              }}
+            >
+              {selected.count}
+            </span>
+          )}
+          <Icon
+            icon={ChevronDown}
+            size={14}
+            style={{
+              color: open ? "var(--color-brand-primary)" : "var(--color-text-muted)",
+              transform: open ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform 0.2s, color 0.15s",
+            }}
+          />
+        </div>
+      </button>
+
+      {/* Overlay fecha ao clicar fora */}
+      {open && (
+        <div
+          style={{ position: "fixed", inset: 0, zIndex: 49 }}
+          onClick={() => setOpen(false)}
+        />
+      )}
+
+      {/* Dropdown */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            key="status-dropdown"
+            initial={{ opacity: 0, y: -6, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.98 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+            style={{
+              position: "absolute",
+              top: "calc(100% + 6px)",
+              left: 0,
+              right: 0,
+              background: "rgba(13,13,13,0.98)",
+              border: "1px solid rgba(0,230,118,0.22)",
+              borderRadius: "var(--radius-lg)",
+              zIndex: 50,
+              overflow: "hidden",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,230,118,0.06)",
+            }}
+          >
+            {options.map((opt, i) => {
+              const isActive = opt.key === value;
+              return (
+                <button
+                  key={opt.key}
+                  type="button"
+                  onClick={() => { onChange(opt.key); setOpen(false); }}
+                  style={{
+                    width: "100%",
+                    padding: "10px var(--space-4)",
+                    background: isActive ? "rgba(0,230,118,0.07)" : "transparent",
+                    border: "none",
+                    borderTop: i > 0 ? "1px solid rgba(255,255,255,0.04)" : "none",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: "var(--space-3)",
+                    transition: "background 0.12s",
+                    textAlign: "left",
+                  }}
+                  onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
+                  onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+                    <span
+                      style={{
+                        width: "7px",
+                        height: "7px",
+                        borderRadius: "50%",
+                        flexShrink: 0,
+                        background: STATUS_DOT[opt.key] ?? "rgba(255,255,255,0.2)",
+                      }}
+                    />
+                    <span style={{ fontSize: "var(--text-sm)", fontWeight: isActive ? 600 : 400, color: isActive ? "var(--color-brand-primary)" : "var(--color-text-primary)" }}>
+                      {opt.label}
+                    </span>
+                  </div>
+                  {opt.count > 0 && (
+                    <span
+                      style={{
+                        fontSize: "10px",
+                        fontWeight: 700,
+                        color: isActive ? "var(--color-brand-primary)" : "var(--color-text-muted)",
+                        background: isActive ? "rgba(0,230,118,0.15)" : "rgba(255,255,255,0.07)",
+                        padding: "1px 7px",
+                        borderRadius: "var(--radius-full)",
+                        lineHeight: 1.6,
+                        minWidth: "20px",
+                        textAlign: "center",
+                      }}
+                    >
+                      {opt.count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 export default function OrganizadorCampeonatoPage() {
   const router   = useRouter();
@@ -91,6 +275,7 @@ export default function OrganizadorCampeonatoPage() {
 
       {/* Hero */}
       <motion.div
+        data-camp-list-hero
         variants={fadeInUp}
         initial="initial"
         animate="animate"
@@ -135,7 +320,7 @@ export default function OrganizadorCampeonatoPage() {
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "var(--space-3)", alignContent: "center" }}>
+        <div data-camp-list-hero-stats style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "var(--space-3)", alignContent: "center" }}>
           {heroStats.map((stat) => (
             <Card
               key={stat.label}
@@ -240,68 +425,15 @@ export default function OrganizadorCampeonatoPage() {
             <div style={{ height: "1px", background: "rgba(255,255,255,0.05)" }} />
 
             {/* Filtros de status */}
-            <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap", alignItems: "center" }}>
-              <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)", letterSpacing: "0.05em", marginRight: "var(--space-1)", flexShrink: 0 }}>
-                Status:
-              </span>
-              {STATUS_FILTERS.map((f) => {
-                const count    = f.key === "todos" ? campeonatos.length : campeonatos.filter((c) => c.status === f.key).length;
-                const isActive = activeFilter === f.key;
-                return (
-                  <button
-                    key={f.key}
-                    onClick={() => setActiveFilter(f.key)}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      padding: "5px 12px",
-                      borderRadius: "var(--radius-full)",
-                      border: `1px solid ${isActive ? "rgba(0,230,118,0.45)" : "rgba(255,255,255,0.08)"}`,
-                      background: isActive ? "rgba(0,230,118,0.1)" : "rgba(255,255,255,0.03)",
-                      color: isActive ? "var(--color-brand-primary)" : "var(--color-text-secondary)",
-                      fontSize: "var(--text-xs)",
-                      cursor: "pointer",
-                      transition: "all 0.15s ease",
-                      fontWeight: isActive ? 600 : 400,
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.background = "rgba(255,255,255,0.06)";
-                        e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
-                        e.currentTarget.style.color = "var(--color-text-primary)";
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.background = "rgba(255,255,255,0.03)";
-                        e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-                        e.currentTarget.style.color = "var(--color-text-secondary)";
-                      }
-                    }}
-                  >
-                    {f.label}
-                    {count > 0 && (
-                      <span
-                        style={{
-                          fontSize: "10px",
-                          fontWeight: 700,
-                          color: isActive ? "var(--color-brand-primary)" : "var(--color-text-muted)",
-                          background: isActive ? "rgba(0,230,118,0.15)" : "rgba(255,255,255,0.07)",
-                          padding: "1px 6px",
-                          borderRadius: "var(--radius-full)",
-                          lineHeight: 1.6,
-                          minWidth: "18px",
-                          textAlign: "center",
-                        }}
-                      >
-                        {count}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
+            <StatusSelect
+              value={activeFilter}
+              onChange={setActiveFilter}
+              options={STATUS_FILTERS.map((f) => ({
+                key: f.key,
+                label: f.label,
+                count: f.key === "todos" ? campeonatos.length : campeonatos.filter((c) => c.status === f.key).length,
+              }))}
+            />
           </div>
         </motion.div>
       )}
@@ -461,6 +593,15 @@ export default function OrganizadorCampeonatoPage() {
           </motion.div>
         )}
       </div>
+      <style>{`
+        @media (max-width: 720px) {
+          [data-camp-list-hero] {
+            grid-template-columns: 1fr !important;
+            gap: var(--space-4) !important;
+            padding: var(--space-4) !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

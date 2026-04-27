@@ -405,7 +405,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
             </div>
 
             {/* Quick stats */}
-            <div style={{ display: "flex", gap: "var(--space-5)", flexShrink: 0 }}>
+            <div data-camp-hero-stats style={{ display: "flex", gap: "var(--space-5)", flexShrink: 0, flexWrap: "wrap" }}>
               <div style={{ textAlign: "center" }}>
                 <p style={{ margin: 0, fontSize: "var(--text-3xl)", fontWeight: 700, color: "var(--color-brand-primary)", lineHeight: 1 }}>
                   {campeonato.totalTimes}
@@ -414,7 +414,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                   Times
                 </p>
               </div>
-              <div style={{ width: 1, background: "rgba(255,255,255,0.08)", alignSelf: "stretch" }} />
+              <div data-camp-stat-divider style={{ width: 1, background: "rgba(255,255,255,0.08)", alignSelf: "stretch" }} />
               <div style={{ textAlign: "center" }}>
                 <p style={{ margin: 0, fontSize: "var(--text-3xl)", fontWeight: 700, color: diasRestantes > 0 ? "white" : "var(--color-text-muted)", lineHeight: 1 }}>
                   {diasRestantes > 0 ? diasRestantes : "—"}
@@ -423,7 +423,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                   {diasRestantes > 0 ? "Dias rest." : "Encerrado"}
                 </p>
               </div>
-              <div style={{ width: 1, background: "rgba(255,255,255,0.08)", alignSelf: "stretch" }} />
+              <div data-camp-stat-divider style={{ width: 1, background: "rgba(255,255,255,0.08)", alignSelf: "stretch" }} />
               {/* Pontuação compacta */}
               <div style={{ textAlign: "center" }}>
                 <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center" }}>
@@ -782,8 +782,19 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
 
       {/* ── Modais ───────────────────────────────────────────────────────── */}
       <style>{`
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
           [data-camp-grid] { grid-template-columns: 1fr !important; }
+        }
+
+        @media (max-width: 640px) {
+          [data-camp-hero-stats] {
+            flex-shrink: 1 !important;
+            width: 100%;
+            gap: var(--space-3) !important;
+          }
+          [data-camp-stat-divider] {
+            display: none !important;
+          }
         }
       `}</style>
 
