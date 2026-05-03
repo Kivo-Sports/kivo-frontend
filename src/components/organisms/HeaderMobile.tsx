@@ -7,17 +7,20 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { clearCredentials } from '@/store/slices/authSlice';
 import { Icon } from '@/components/atoms/Icon';
 import { Settings, LogOut } from 'lucide-react';
+import { getRedirectPathAfterLogin, getHomeRoute } from '@/lib/auth.utils';
 
 export function HeaderMobile() {
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
-  const homeRoute = isAuthenticated ? '/dashboard' : '/login';
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const userDropdownRef = useRef<HTMLDivElement>(null);
+
+  const dashboardRoute = getRedirectPathAfterLogin(user?.cargo);
+  const homeRoute = getHomeRoute(user?.cargo);
 
   const isActive = (path: string) => pathname === path;
 
@@ -58,25 +61,6 @@ export function HeaderMobile() {
     router.push('/login');
   };
 
-  // Função para redirecionar para home específica do usuário
-  const getHomeRoute = () => {
-    if (!user?.cargo) return '#';
-
-    const cargo = user.cargo.toLowerCase();
-    switch (cargo) {
-      case 'torcedor':
-        return '/home/torcedor';
-      case 'organizadortime':
-        return '/home/organizador-time';
-      case 'organizadorcampeonato':
-        return '/home/organizador-campeonato';
-      case 'administrador':
-        return '/home/admin';
-      default:
-        return '#';
-    }
-  };
-
   return (
     <header
       ref={menuRef}
@@ -113,7 +97,7 @@ export function HeaderMobile() {
             transition: 'opacity 0.2s ease',
           }}
           onClick={() => {
-            router.push(homeRoute);
+            if (isAuthenticated) router.push(homeRoute);
             setIsMenuOpen(false);
           }}
         >
@@ -375,17 +359,36 @@ export function HeaderMobile() {
           }}
         >
           <a
-            href={getHomeRoute()}
+            href={dashboardRoute}
             onClick={() => setIsMenuOpen(false)}
-            style={getNavLinkStyle(getHomeRoute())}
+            style={getNavLinkStyle(dashboardRoute)}
             onMouseEnter={(e) => {
-              if (!isActive(getHomeRoute())) {
+              if (!isActive(dashboardRoute)) {
                 e.currentTarget.style.background = 'rgba(0, 230, 118, 0.1)';
                 e.currentTarget.style.color = 'var(--color-brand-primary)';
               }
             }}
             onMouseLeave={(e) => {
-              if (!isActive(getHomeRoute())) {
+              if (!isActive(dashboardRoute)) {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = 'var(--color-text-secondary)';
+              }
+            }}
+          >
+            Dashboard
+          </a>
+          <a
+            href={homeRoute}
+            onClick={() => setIsMenuOpen(false)}
+            style={getNavLinkStyle(homeRoute)}
+            onMouseEnter={(e) => {
+              if (!isActive(homeRoute)) {
+                e.currentTarget.style.background = 'rgba(0, 230, 118, 0.1)';
+                e.currentTarget.style.color = 'var(--color-brand-primary)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isActive(homeRoute)) {
                 e.currentTarget.style.background = 'transparent';
                 e.currentTarget.style.color = 'var(--color-text-secondary)';
               }
@@ -393,44 +396,26 @@ export function HeaderMobile() {
           >
             Home
           </a>
-          <a
-            href="/times"
-            onClick={() => setIsMenuOpen(false)}
-            style={getNavLinkStyle('/times')}
-            onMouseEnter={(e) => {
-              if (!isActive('/times')) {
-                e.currentTarget.style.background = 'rgba(0, 230, 118, 0.1)';
-                e.currentTarget.style.color = 'var(--color-brand-primary)';
-              }
+          <span
+            style={{
+              ...getNavLinkStyle('/times'),
+              opacity: 0.4,
+              cursor: 'not-allowed',
             }}
-            onMouseLeave={(e) => {
-              if (!isActive('/times')) {
-                e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.color = 'var(--color-text-secondary)';
-              }
-            }}
+            title="Em breve"
           >
             Times
-          </a>
-          <a
-            href="/campeonatos"
-            onClick={() => setIsMenuOpen(false)}
-            style={getNavLinkStyle('/campeonatos')}
-            onMouseEnter={(e) => {
-              if (!isActive('/campeonatos')) {
-                e.currentTarget.style.background = 'rgba(0, 230, 118, 0.1)';
-                e.currentTarget.style.color = 'var(--color-brand-primary)';
-              }
+          </span>
+          <span
+            style={{
+              ...getNavLinkStyle('/campeonatos'),
+              opacity: 0.4,
+              cursor: 'not-allowed',
             }}
-            onMouseLeave={(e) => {
-              if (!isActive('/campeonatos')) {
-                e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.color = 'var(--color-text-secondary)';
-              }
-            }}
+            title="Em breve"
           >
             Campeonatos
-          </a>
+          </span>
         </div>
       )}
 

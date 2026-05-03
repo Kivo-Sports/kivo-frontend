@@ -242,7 +242,7 @@ export default function DetalheTimePage({ params }: { params: Promise<{ id: stri
   const logoInputRef = useRef<HTMLInputElement | null>(null);
   const { data: todosCampeonatos = [] } = useListarCampeonatosQuery();
 
-  const campeonatosDoTime    = todosCampeonatos.filter(c => c.timeIds?.includes(id) ?? false);
+  const campeonatosDoTime    = todosCampeonatos.filter(c => c.times?.includes(id) ?? false);
   const campeonatosAtivos    = campeonatosDoTime.filter(c => c.status === "InscricoesAbertas" || c.status === "EmAndamento");
   const campeonatosEncerrados = campeonatosDoTime.filter(c => c.status === "Finalizado" || c.status === "Cancelado");
 

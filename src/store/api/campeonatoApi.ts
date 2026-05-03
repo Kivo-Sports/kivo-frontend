@@ -5,7 +5,6 @@ import type {
   ConviteRequest,
   ResponderConviteRequest,
   ConvitePendenteResponse,
-  ParticipacaoResponse,
 } from "@/types/campeonato";
 import type { TimeResponse } from "@/types/time";
 
@@ -58,13 +57,6 @@ export const campeonatoApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Campeonato"],
     }),
-    listarParticipacoesCampeonato: builder.query<ParticipacaoResponse[], string>({
-      query: (campeonatoId) => ({
-        url: `/api/campeonato/${campeonatoId}/participacoes`,
-        method: "GET",
-      }),
-      providesTags: ["Campeonato"],
-    }),
     responderConvite: builder.mutation<void, { participacaoId: string; body: ResponderConviteRequest }>({
       query: ({ participacaoId, body }) => ({
         url: `/api/campeonato/responder-convite/${participacaoId}`,
@@ -84,6 +76,5 @@ export const {
   useConvidarTimeMutation,
   useListarTodosOsTimesQuery,
   useListarConvitesPendentesQuery,
-  useListarParticipacoesCampeonatoQuery,
   useResponderConviteMutation,
 } = campeonatoApi;

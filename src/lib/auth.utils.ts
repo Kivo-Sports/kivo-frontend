@@ -174,20 +174,6 @@ export function getRedirectPathAfterLogin(cargo?: string | null): string {
  * @param cargo - Cargo/tipo de conta do usuario
  * @returns Rota de home
  */
-export function getHomeRoute(cargo?: string | null): string {
-  if (!cargo) {
-    return "/dashboard";
-  }
-
-  const cargoNormalizado = normalizeCargo(cargo);
-
-  const homeRouteMap: Record<string, string> = {
-    "torcedor": "/home/torcedor",
-    "organizador-time": "/home/organizador-time",
-    "organizador-de-time": "/home/organizador-time",
-    "organizador-campeonato": "/home/organizador-campeonato",
-    "administrador": "/home/admin",
-  };
-
-  return homeRouteMap[cargoNormalizado] || "/dashboard";
+export function getHomeRoute(_cargo?: string | null): string {
+  return "/home";
 }

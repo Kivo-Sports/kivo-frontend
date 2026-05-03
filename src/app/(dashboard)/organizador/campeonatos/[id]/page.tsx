@@ -25,9 +25,8 @@ import {
   useCancelarCampeonatoMutation,
   useConvidarTimeMutation,
   useListarTodosOsTimesQuery,
-  useListarParticipacoesCampeonatoQuery,
 } from "@/store/api/campeonatoApi";
-import type { CampeonatoResponse, ParticipacaoResponse } from "@/types/campeonato";
+import type { CampeonatoResponse } from "@/types/campeonato";
 import type { TimeResponse } from "@/types/time";
 
 // ─── Status helpers ───────────────────────────────────────────────────────────
@@ -65,7 +64,7 @@ const FEATURES: { icon: LucideIcon; title: string; desc: string }[] = [
 function ConvidarTimeModal({ campeonato, onClose }: { campeonato: CampeonatoResponse; onClose: () => void }) {
   const [busca, setBusca]               = useState("");
   const [convidandoId, setConvidandoId] = useState<string | null>(null);
-  const [convidados, setConvidados]     = useState<Set<string>>(() => new Set(campeonato.timeIds ?? []));
+  const [convidados, setConvidados]     = useState<Set<string>>(() => new Set(campeonato.times ?? []));
   const { success: toastSuccess, error: toastError } = useToast();
 
   const { data: todosOsTimes = [], isLoading } = useListarTodosOsTimesQuery();
@@ -231,30 +230,27 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
   const [modalCancelar, setModalCancelar] = useState(false);
   const [teamSearch, setTeamSearch]       = useState("");
 
-  const { data: todos = [], isLoading }           = useListarCampeonatosQuery();
-  const { data: todosOsTimes = [] }               = useListarTodosOsTimesQuery();
-  const { data: participacoes = [], isError: isErrorPartic } = useListarParticipacoesCampeonatoQuery(id);
-  const [abrirInscricoes, { isLoading: isAbrindo }]         = useAbrirInscricoesMutation();
-  const [cancelarCampeonato, { isLoading: isCancelando }]   = useCancelarCampeonatoMutation();
+  const { data: todos = [], isLoading }         = useListarCampeonatosQuery();
+  const { data: todosOsTimes = [] }             = useListarTodosOsTimesQuery();
+  const [abrirInscricoes, { isLoading: isAbrindo }]       = useAbrirInscricoesMutation();
+  const [cancelarCampeonato, { isLoading: isCancelando }] = useCancelarCampeonatoMutation();
 
   const campeonato = todos.find((c) => c.id === id) ?? null;
 
-  // Usa participações (com status) se disponível; fallback para timeIds como "Convidado"
-  const participacoesDisplay: ParticipacaoResponse[] = isErrorPartic || participacoes.length === 0
-    ? (campeonato?.timeIds ?? []).map((tid) => {
-        const t = todosOsTimes.find((x) => x.id === tid);
-        return {
-          participacaoId: tid,
-          timeId: tid,
-          nomeTime: t?.nome ?? "Time",
-          logoUrl: t?.logoUrl ?? null,
-          cidade: t?.cidade ?? "",
-          estado: t?.estado ?? "",
-          convidadoEm: "",
-          aceito: null,
-        };
-      })
-    : participacoes;
+  // times retornados pelo backend são apenas os aceitos
+  const participacoesDisplay = (campeonato?.times ?? []).map((tid) => {
+    const t = todosOsTimes.find((x) => x.id === tid);
+    return {
+      participacaoId: tid,
+      timeId: tid,
+      nomeTime: t?.nome ?? "Time",
+      logoUrl: t?.logoUrl ?? null,
+      cidade: t?.cidade ?? "",
+      estado: t?.estado ?? "",
+      convidadoEm: "",
+      aceito: true as boolean | null,
+    };
+  });
 
   const participacoesBuscadas = participacoesDisplay.filter((p) =>
     teamSearch === "" ||

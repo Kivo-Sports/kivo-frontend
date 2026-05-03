@@ -20,7 +20,7 @@ export interface CampeonatoResponse {
   pontosVitoria: number;
   pontosDerrota: number;
   pontosEmpate: number;
-  timeIds: string[];
+  times: string[];
 }
 
 export interface CampeonatoFormValues {
