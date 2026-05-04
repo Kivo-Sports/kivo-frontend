@@ -193,7 +193,7 @@ export function Header() {
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                maxWidth: '100%',
+                maxWidth: '180px',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = 'rgba(0, 230, 118, 0.15)';
@@ -351,7 +351,32 @@ export function Header() {
               </div>
             )}
           </div>
-        ) : null}
+        ) : (
+          <div style={{ minWidth: '120px', textAlign: 'right' }}>
+            <button
+              onClick={() => router.push('/login')}
+              style={{
+                padding: 'var(--space-2) var(--space-4)',
+                background: 'var(--color-brand-primary)',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 700,
+                color: '#000',
+                fontSize: '13px',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = '0.85';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = '1';
+              }}
+            >
+              Fazer login
+            </button>
+          </div>
+        )}
       </div>
 
       <style>{`

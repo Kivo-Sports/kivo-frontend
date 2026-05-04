@@ -119,6 +119,28 @@ export function HeaderMobile() {
             gap: 'var(--space-3)',
           }}
         >
+          {/* Botão de login — apenas para não autenticados */}
+          {!isAuthenticated && (
+            <button
+              onClick={() => router.push('/login')}
+              style={{
+                padding: '8px 18px',
+                background: 'var(--color-brand-primary)',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 700,
+                color: '#000',
+                fontSize: '13px',
+                transition: 'opacity 0.2s ease',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
+            >
+              Fazer login
+            </button>
+          )}
+
           {/* Hamburger Menu */}
           {isAuthenticated && (
             <button

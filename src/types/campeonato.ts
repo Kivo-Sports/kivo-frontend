@@ -66,3 +66,12 @@ export interface ConvitePendenteResponse {
   pontosEmpate: number;
   statusCampeonato: string;
 }
+
+export interface ConviteCampeonatoResponse {
+  participacaoId: string;
+  timeId: string;
+  nomeTime: string;
+  statusParticipacao: "Pendente" | "Aceito" | "Recusado";
+  convidadoEm: string;
+  respondidoEm: string | null;
+}

@@ -25,6 +25,7 @@ import {
   useCancelarCampeonatoMutation,
   useConvidarTimeMutation,
   useListarTodosOsTimesQuery,
+  useListarConvitesCampeonatoQuery,
 } from "@/store/api/campeonatoApi";
 import type { CampeonatoResponse } from "@/types/campeonato";
 import type { TimeResponse } from "@/types/time";
@@ -61,10 +62,10 @@ const FEATURES: { icon: LucideIcon; title: string; desc: string }[] = [
 
 // ─── Modal: Convidar Time ─────────────────────────────────────────────────────
 
-function ConvidarTimeModal({ campeonato, onClose }: { campeonato: CampeonatoResponse; onClose: () => void }) {
+function ConvidarTimeModal({ campeonato, onClose, convidadosIniciais }: { campeonato: CampeonatoResponse; onClose: () => void; convidadosIniciais: string[] }) {
   const [busca, setBusca]               = useState("");
   const [convidandoId, setConvidandoId] = useState<string | null>(null);
-  const [convidados, setConvidados]     = useState<Set<string>>(() => new Set(campeonato.times ?? []));
+  const [convidados, setConvidados]     = useState<Set<string>>(() => new Set(convidadosIniciais));
   const { success: toastSuccess, error: toastError } = useToast();
 
   const { data: todosOsTimes = [], isLoading } = useListarTodosOsTimesQuery();
@@ -232,25 +233,30 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
 
   const { data: todos = [], isLoading }         = useListarCampeonatosQuery();
   const { data: todosOsTimes = [] }             = useListarTodosOsTimesQuery();
+  const { data: convitesCampeonato = [] }       = useListarConvitesCampeonatoQuery(id);
   const [abrirInscricoes, { isLoading: isAbrindo }]       = useAbrirInscricoesMutation();
   const [cancelarCampeonato, { isLoading: isCancelando }] = useCancelarCampeonatoMutation();
 
   const campeonato = todos.find((c) => c.id === id) ?? null;
 
-  // times retornados pelo backend são apenas os aceitos
-  const participacoesDisplay = (campeonato?.times ?? []).map((tid) => {
-    const t = todosOsTimes.find((x) => x.id === tid);
+  const participacoesDisplay = convitesCampeonato.map((convite) => {
+    const t = todosOsTimes.find((x) => x.id === convite.timeId);
+    const aceito =
+      convite.statusParticipacao === "Aceito" ? true :
+      convite.statusParticipacao === "Recusado" ? false : null;
     return {
-      participacaoId: tid,
-      timeId: tid,
-      nomeTime: t?.nome ?? "Time",
+      participacaoId: convite.participacaoId,
+      timeId: convite.timeId,
+      nomeTime: t?.nome ?? convite.nomeTime,
       logoUrl: t?.logoUrl ?? null,
       cidade: t?.cidade ?? "",
       estado: t?.estado ?? "",
-      convidadoEm: "",
-      aceito: true as boolean | null,
+      convidadoEm: convite.convidadoEm,
+      aceito: aceito as boolean | null,
     };
   });
+
+  const todosConvidadosIds = convitesCampeonato.map((c) => c.timeId);
 
   const participacoesBuscadas = participacoesDisplay.filter((p) =>
     teamSearch === "" ||
@@ -301,10 +307,33 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
     );
   }
 
-  const statusCfg      = STATUS_CONFIG[campeonato.status] ?? { label: campeonato.status, variant: "default" as const };
-  const dataInicio     = new Date(campeonato.dataInicio);
-  const dataFim        = new Date(campeonato.dataFim);
-  const diasRestantes  = Math.ceil((dataFim.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+  const statusCfg  = STATUS_CONFIG[campeonato.status] ?? { label: campeonato.status, variant: "default" as const };
+  const dataInicio = new Date(campeonato.dataInicio);
+  const dataFim    = new Date(campeonato.dataFim);
+
+  const diasParaInicio = Math.ceil((dataInicio.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+  const diasParaFim    = Math.ceil((dataFim.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+
+  const contagem = (() => {
+    switch (campeonato.status) {
+      case "Rascunho":
+      case "InscricoesAbertas":
+      case "InscricoesEncerradas":
+        return diasParaInicio > 0
+          ? { valor: diasParaInicio, label: "Dias p/ início" }
+          : { valor: null as null, label: "Iniciando" };
+      case "EmAndamento":
+        return diasParaFim > 0
+          ? { valor: diasParaFim, label: "Dias p/ fim" }
+          : { valor: null as null, label: "Encerrando" };
+      case "Finalizado":
+        return { valor: null as null, label: "Finalizado" };
+      case "Cancelado":
+        return { valor: null as null, label: "Cancelado" };
+      default:
+        return { valor: null as null, label: "—" };
+    }
+  })();
   const podeConvidar   = campeonato.status === "InscricoesAbertas";
   const podeAbrir      = campeonato.status === "Rascunho";
   const podeCancelar   = !["Finalizado", "Cancelado"].includes(campeonato.status);
@@ -314,10 +343,14 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
   const grpPendentes   = participacoesBuscadas.filter((p) => p.aceito === null);
   const grpRecusados   = participacoesBuscadas.filter((p) => p.aceito === false);
 
+  const mostrarTodos = campeonato.status === "InscricoesAbertas";
+
   const GRUPOS = [
     { key: "confirmados", label: "Confirmados", items: grpConfirmados, color: "var(--color-feedback-success)",  bg: "rgba(0,230,118,0.06)",  border: "rgba(0,230,118,0.18)",  icon: CheckCircle },
-    { key: "pendentes",   label: "Pendentes",   items: grpPendentes,   color: "rgba(255,193,7,0.9)",            bg: "rgba(255,193,7,0.06)",  border: "rgba(255,193,7,0.2)",   icon: Clock       },
-    { key: "recusados",   label: "Recusados",   items: grpRecusados,   color: "var(--color-feedback-danger)",   bg: "rgba(255,72,68,0.06)",  border: "rgba(255,72,68,0.18)",  icon: XCircle     },
+    ...(mostrarTodos ? [
+      { key: "pendentes", label: "Pendentes",   items: grpPendentes,   color: "rgba(255,193,7,0.9)",            bg: "rgba(255,193,7,0.06)",  border: "rgba(255,193,7,0.2)",   icon: Clock       },
+      { key: "recusados", label: "Recusados",   items: grpRecusados,   color: "var(--color-feedback-danger)",   bg: "rgba(255,72,68,0.06)",  border: "rgba(255,72,68,0.18)",  icon: XCircle     },
+    ] : []),
   ].filter((g) => g.items.length > 0);
 
   // ─── Render ──────────────────────────────────────────────────────────────
@@ -412,11 +445,11 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
               </div>
               <div data-camp-stat-divider style={{ width: 1, background: "rgba(255,255,255,0.08)", alignSelf: "stretch" }} />
               <div style={{ textAlign: "center" }}>
-                <p style={{ margin: 0, fontSize: "var(--text-3xl)", fontWeight: 700, color: diasRestantes > 0 ? "white" : "var(--color-text-muted)", lineHeight: 1 }}>
-                  {diasRestantes > 0 ? diasRestantes : "—"}
+                <p style={{ margin: 0, fontSize: "var(--text-3xl)", fontWeight: 700, color: contagem.valor != null ? "white" : "var(--color-text-muted)", lineHeight: 1 }}>
+                  {contagem.valor ?? "—"}
                 </p>
                 <p style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.12em" }}>
-                  {diasRestantes > 0 ? "Dias rest." : "Encerrado"}
+                  {contagem.label}
                 </p>
               </div>
               <div data-camp-stat-divider style={{ width: 1, background: "rgba(255,255,255,0.08)", alignSelf: "stretch" }} />
@@ -620,8 +653,8 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                           const r = participacoesDisplay.filter((x) => x.aceito === false).length;
                           return [
                             c > 0 && `${c} confirmado${c !== 1 ? "s" : ""}`,
-                            p > 0 && `${p} pendente${p !== 1 ? "s" : ""}`,
-                            r > 0 && `${r} recusado${r !== 1 ? "s" : ""}`,
+                            mostrarTodos && p > 0 && `${p} pendente${p !== 1 ? "s" : ""}`,
+                            mostrarTodos && r > 0 && `${r} recusado${r !== 1 ? "s" : ""}`,
                           ].filter(Boolean).join(" · ");
                         })()
                     }
@@ -796,7 +829,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
 
       <AnimatePresence>
         {modalConvidar && (
-          <ConvidarTimeModal campeonato={campeonato} onClose={() => setModalConvidar(false)} />
+          <ConvidarTimeModal campeonato={campeonato} onClose={() => setModalConvidar(false)} convidadosIniciais={todosConvidadosIds} />
         )}
         {modalCancelar && (
           <CancelarModal

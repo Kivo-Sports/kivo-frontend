@@ -503,11 +503,25 @@ export default function OrganizadorCampeonatoPage() {
             style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "var(--space-4)" }}
           >
             {campeonatosFiltrados.map((campeonato) => {
-              const statusCfg     = STATUS_CONFIG[campeonato.status] ?? { label: campeonato.status, variant: "default" as const };
-              const dataInicio    = new Date(campeonato.dataInicio);
-              const dataFim       = new Date(campeonato.dataFim);
-              const hoje          = new Date();
-              const diasRestantes = Math.ceil((dataFim.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+              const statusCfg      = STATUS_CONFIG[campeonato.status] ?? { label: campeonato.status, variant: "default" as const };
+              const dataInicio     = new Date(campeonato.dataInicio);
+              const dataFim        = new Date(campeonato.dataFim);
+              const agora          = Date.now();
+              const diasParaInicio = Math.ceil((dataInicio.getTime() - agora) / (1000 * 60 * 60 * 24));
+              const diasParaFim    = Math.ceil((dataFim.getTime() - agora) / (1000 * 60 * 60 * 24));
+              const contagem = (() => {
+                switch (campeonato.status) {
+                  case "Rascunho":
+                  case "InscricoesAbertas":
+                  case "InscricoesEncerradas":
+                    return diasParaInicio > 0 ? `${diasParaInicio} dias p/ início` : "Iniciando";
+                  case "EmAndamento":
+                    return diasParaFim > 0 ? `${diasParaFim} dias p/ fim` : "Encerrando";
+                  case "Finalizado": return "Finalizado";
+                  case "Cancelado":  return "Cancelado";
+                  default:           return "—";
+                }
+              })();
 
               return (
                 <motion.div key={campeonato.id} variants={itemVariants}>
@@ -565,7 +579,7 @@ export default function OrganizadorCampeonatoPage() {
                       <div style={{ display: "flex", alignItems: "center", gap: "var(--space-1)" }}>
                         <Icon icon={Calendar} size={11} style={{ color: "var(--color-text-muted)" }} />
                         <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
-                          {diasRestantes > 0 ? `${diasRestantes} dias restantes` : "Encerrado"}
+                          {contagem}
                         </span>
                       </div>
                     </div>
