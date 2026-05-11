@@ -48,6 +48,10 @@ const estadosBrasileiros: ReadonlyArray<{ sigla: string; nome: string }> = [
   { sigla: "SP", nome: "São Paulo" }, { sigla: "SE", nome: "Sergipe" },
   { sigla: "TO", nome: "Tocantins" },
 ];
+const BR_STATE_CODES = estadosBrasileiros.map((estado) => estado.sigla);
+const TEAM_NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9' .-]+$/;
+const CITY_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ' -]+$/;
+const MAX_LOGO_SIZE_BYTES = 5 * 1024 * 1024;
 
 const CAMP_STATUS: Record<string, { label: string; color: string; border: string; bg: string }> = {
   InscricoesAbertas: { label: "Inscrições Abertas", color: "var(--color-brand-primary)", border: "rgba(0,230,118,0.3)", bg: "rgba(0,230,118,0.08)" },
@@ -58,9 +62,20 @@ const CAMP_STATUS: Record<string, { label: string; color: string; border: string
 };
 
 const editarTimeSchema = z.object({
-  nome:    z.string().min(3, "Mínimo 3 caracteres"),
-  cidade:  z.string().min(1, "Campo obrigatório"),
-  estado:  z.string().min(1, "Selecione um estado"),
+  nome: z.string()
+    .trim()
+    .min(3, "Mínimo 3 caracteres")
+    .max(80, "Máximo 80 caracteres")
+    .regex(TEAM_NAME_REGEX, "Use apenas letras, números, espaços, ponto, apóstrofo ou hífen"),
+  cidade: z.string()
+    .trim()
+    .min(2, "Mínimo 2 caracteres")
+    .max(80, "Máximo 80 caracteres")
+    .regex(CITY_REGEX, "Use apenas letras, espaços, apóstrofo ou hífen"),
+  estado: z.string()
+    .trim()
+    .length(2, "Selecione um estado")
+    .refine((value) => BR_STATE_CODES.includes(value), "Estado inválido"),
 });
 
 function extrairMensagemErroApi(error: unknown, fallback: string): string {
@@ -292,6 +307,9 @@ export default function DetalheTimePage({ params }: { params: Promise<{ id: stri
     const tiposPermitidos = ["image/png", "image/jpeg", "image/webp", "image/jpg"];
     if (!tiposPermitidos.includes(arquivo.type)) {
       return "Formato inválido. Use PNG, JPG/JPEG ou WEBP.";
+    }
+    if (arquivo.size > MAX_LOGO_SIZE_BYTES) {
+      return "Logo deve ter no máximo 5 MB.";
     }
     return null;
   };
@@ -598,7 +616,7 @@ export default function DetalheTimePage({ params }: { params: Promise<{ id: stri
                   <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
                     {logoFile
                       ? `${logoFile.name} (${formatarTamanhoArquivo(logoFile.size)})`
-                      : "PNG, JPG/JPEG ou WEBP"}
+                      : "PNG, JPG/JPEG ou WEBP até 5 MB"}
                   </p>
                 </div>
                 {logoError ? (

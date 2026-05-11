@@ -28,6 +28,14 @@ export interface BankValidationResult {
   errors: Record<string, string>;
 }
 
+const NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ' -]+$/;
+const ADDRESS_TEXT_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9'.,ºª -]+$/;
+const BR_STATES = [
+  'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
+  'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
+  'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO',
+];
+
 // ============================================================================
 // ============================= NOME =======================================
 // ============================================================================
@@ -47,6 +55,10 @@ export function validateNome(nome: string): ValidationResult {
     return { isValid: false, error: 'Nome deve ter no máximo 100 caracteres' };
   }
 
+  if (!NAME_REGEX.test(trimmed)) {
+    return { isValid: false, error: 'Nome deve conter apenas letras, espaços, apóstrofo ou hífen' };
+  }
+
   return { isValid: true };
 }
 
@@ -64,6 +76,10 @@ export function validateEmail(email: string): ValidationResult {
 
   if (!emailRegex.test(trimmed)) {
     return { isValid: false, error: 'Email inválido. Use: usuario@dominio.com' };
+  }
+
+  if (trimmed.length > 254) {
+    return { isValid: false, error: 'Email deve ter no máximo 254 caracteres' };
   }
 
   return { isValid: true };
@@ -154,6 +170,10 @@ export function validateTelefone(telefone: string): ValidationResult {
     return { isValid: false, error: 'Telefone deve ter 11 dígitos (DDD + 9 dígitos)' };
   }
 
+  if (!/^[1-9]{2}9\d{8}$/.test(cleaned)) {
+    return { isValid: false, error: 'Telefone celular inválido. Use DDD + 9 dígitos' };
+  }
+
   return { isValid: true };
 }
 
@@ -186,6 +206,10 @@ export function validateDataNascimento(data: string): ValidationResult {
 
   if (age > 130) {
     return { isValid: false, error: 'Data de nascimento inválida' };
+  }
+
+  if (date > today) {
+    return { isValid: false, error: 'Data de nascimento não pode ser futura' };
   }
 
   return { isValid: true };
@@ -282,6 +306,14 @@ export function validateRua(rua: string): ValidationResult {
     return { isValid: false, error: 'Rua deve ter no mínimo 3 caracteres' };
   }
 
+  if (trimmed.length > 120) {
+    return { isValid: false, error: 'Rua deve ter no máximo 120 caracteres' };
+  }
+
+  if (!ADDRESS_TEXT_REGEX.test(trimmed)) {
+    return { isValid: false, error: 'Rua contém caracteres inválidos' };
+  }
+
   return { isValid: true };
 }
 
@@ -290,6 +322,32 @@ export function validateNumero(numero: string): ValidationResult {
 
   if (!trimmed) {
     return { isValid: false, error: 'Número é obrigatório' };
+  }
+
+  if (trimmed.length > 10) {
+    return { isValid: false, error: 'Número deve ter no máximo 10 caracteres' };
+  }
+
+  if (!/^[A-Za-z0-9/-]+$/.test(trimmed)) {
+    return { isValid: false, error: 'Número deve conter apenas letras, números, barra ou hífen' };
+  }
+
+  return { isValid: true };
+}
+
+export function validateComplemento(complemento: string = ''): ValidationResult {
+  const trimmed = complemento.trim();
+
+  if (!trimmed) {
+    return { isValid: true };
+  }
+
+  if (trimmed.length > 60) {
+    return { isValid: false, error: 'Complemento deve ter no máximo 60 caracteres' };
+  }
+
+  if (!ADDRESS_TEXT_REGEX.test(trimmed)) {
+    return { isValid: false, error: 'Complemento contém caracteres inválidos' };
   }
 
   return { isValid: true };
@@ -306,6 +364,14 @@ export function validateCidade(cidade: string): ValidationResult {
     return { isValid: false, error: 'Cidade deve ter no mínimo 2 caracteres' };
   }
 
+  if (trimmed.length > 80) {
+    return { isValid: false, error: 'Cidade deve ter no máximo 80 caracteres' };
+  }
+
+  if (!NAME_REGEX.test(trimmed)) {
+    return { isValid: false, error: 'Cidade deve conter apenas letras, espaços, apóstrofo ou hífen' };
+  }
+
   return { isValid: true };
 }
 
@@ -320,13 +386,7 @@ export function validateEstado(estado: string): ValidationResult {
     return { isValid: false, error: 'Estado deve ser uma sigla (ex: SP, RJ)' };
   }
 
-  const estadosValidos = [
-    'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
-    'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
-    'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO',
-  ];
-
-  if (!estadosValidos.includes(trimmed)) {
+  if (!BR_STATES.includes(trimmed)) {
     return { isValid: false, error: 'Estado inválido' };
   }
 
@@ -348,6 +408,14 @@ export function validateBanco(banco: string): ValidationResult {
     return { isValid: false, error: 'Banco deve ter no mínimo 2 caracteres' };
   }
 
+  if (trimmed.length > 80) {
+    return { isValid: false, error: 'Banco deve ter no máximo 80 caracteres' };
+  }
+
+  if (!ADDRESS_TEXT_REGEX.test(trimmed)) {
+    return { isValid: false, error: 'Banco contém caracteres inválidos' };
+  }
+
   return { isValid: true };
 }
 
@@ -360,6 +428,14 @@ export function validateAgencia(agencia: string): ValidationResult {
 
   if (trimmed.length < 3) {
     return { isValid: false, error: 'Agência deve ter no mínimo 3 dígitos' };
+  }
+
+  if (trimmed.length > 10) {
+    return { isValid: false, error: 'Agência deve ter no máximo 10 caracteres' };
+  }
+
+  if (!/^\d{3,6}-?\d?$/.test(trimmed)) {
+    return { isValid: false, error: 'Agência deve conter apenas números e dígito opcional' };
   }
 
   return { isValid: true };
@@ -376,11 +452,36 @@ export function validateConta(conta: string): ValidationResult {
     return { isValid: false, error: 'Conta deve ter no mínimo 4 dígitos' };
   }
 
+  if (trimmed.length > 20) {
+    return { isValid: false, error: 'Conta deve ter no máximo 20 caracteres' };
+  }
+
+  if (!/^\d{4,15}-?\d?$/.test(trimmed)) {
+    return { isValid: false, error: 'Conta deve conter apenas números e dígito opcional' };
+  }
+
+  return { isValid: true };
+}
+
+export function validateTipoConta(tipo: string): ValidationResult {
+  const trimmed = tipo.trim().toLowerCase();
+
+  if (!trimmed) {
+    return { isValid: false, error: 'Tipo de conta é obrigatório' };
+  }
+
+  const tiposValidos = ['corrente', 'poupança', 'poupanca', 'pagamento'];
+
+  if (!tiposValidos.includes(trimmed)) {
+    return { isValid: false, error: 'Tipo de conta deve ser Corrente, Poupança ou Pagamento' };
+  }
+
   return { isValid: true };
 }
 
 export function validateChavePix(chavePix: string): ValidationResult {
   const trimmed = chavePix.trim();
+  const digitsOnly = trimmed.replace(/\D/g, '');
 
   if (!trimmed) {
     return { isValid: false, error: 'Chave PIX é obrigatória' };
@@ -389,13 +490,12 @@ export function validateChavePix(chavePix: string): ValidationResult {
   // Aceita: email, telefone (11 dígitos), CPF (11 dígitos), ou UUID
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const phoneRegex = /^\d{11}$/;
-  const cpfRegex = /^\d{11}$/;
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
   if (
     !emailRegex.test(trimmed) &&
-    !phoneRegex.test(trimmed) &&
-    !cpfRegex.test(trimmed) &&
+    !phoneRegex.test(digitsOnly) &&
+    !validateCPF(digitsOnly).isValid &&
     !uuidRegex.test(trimmed)
   ) {
     return {
@@ -411,6 +511,7 @@ export function validateBank(
   banco: string,
   agencia: string,
   conta: string,
+  tipo: string,
   chavePix: string
 ): BankValidationResult {
   const errors: Record<string, string> = {};
@@ -423,6 +524,9 @@ export function validateBank(
 
   const contaResult = validateConta(conta);
   if (!contaResult.isValid) errors.conta = contaResult.error!;
+
+  const tipoResult = validateTipoConta(tipo);
+  if (!tipoResult.isValid) errors.tipo = tipoResult.error!;
 
   const chaveResult = validateChavePix(chavePix);
   if (!chaveResult.isValid) errors.chavePix = chaveResult.error!;
@@ -577,6 +681,9 @@ export function validateStep3(data: {
   const numeroResult = validateNumero(data.numero);
   if (!numeroResult.isValid) errors.numero = numeroResult.error!;
 
+  const complementoResult = validateComplemento(data.complemento);
+  if (!complementoResult.isValid) errors.complemento = complementoResult.error!;
+
   const cidadeResult = validateCidade(data.cidade);
   if (!cidadeResult.isValid) errors.cidade = cidadeResult.error!;
 
@@ -593,9 +700,10 @@ export function validateStep5(data: {
   banco: string;
   agencia: string;
   conta: string;
+  tipo: string;
   chavePix: string;
 }): StepValidationResult {
-  const bankResult = validateBank(data.banco, data.agencia, data.conta, data.chavePix);
+  const bankResult = validateBank(data.banco, data.agencia, data.conta, data.tipo, data.chavePix);
 
   return {
     isValid: bankResult.isValid,
