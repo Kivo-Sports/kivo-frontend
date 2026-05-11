@@ -49,7 +49,13 @@ export function AnimatedNumber({ value, duration = 0.6, className, style }: Anim
     <motion.span
       key={value}
       className={className}
-      style={{ display: "inline-block", fontVariantNumeric: "tabular-nums", ...style }}
+      style={{
+        display: "inline-block",
+        fontVariantNumeric: "tabular-nums",
+        backfaceVisibility: "hidden",
+        WebkitFontSmoothing: "antialiased",
+        ...style,
+      }}
       variants={scoreVariants}
       initial="idle"
       animate="animate"

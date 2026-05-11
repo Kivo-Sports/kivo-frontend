@@ -4,14 +4,21 @@
    Imports, reset moderno e configuração HTML.
    ========================================================================== */
 
-/* ——— FONTES DO GOOGLE (deve vir primeiro) ——— */
-@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap");
+/* ——— TAILWIND CSS V4 ——— */
+@import "tailwindcss";
+@source "../**/*.{js,jsx,ts,tsx,mdx}";
 
 /* ——— DESIGN TOKENS E TEMAS ——— */
 @import "../styles/tokens.css";
 @import "../styles/themes/theme-dark.css";
 @import "../styles/themes/theme-light.css";
 @import "../styles/utils.css";
+
+:root {
+  --font-display: var(--font-barlow-condensed), sans-serif;
+  --font-body: var(--font-dm-sans), sans-serif;
+  --font-mono: var(--font-dm-mono), monospace;
+}
 
 /* ============================================================================
    RESET CSS MODERNO
@@ -23,11 +30,14 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 html {
   /* Tema padrão definido via :root e seletor [data-theme] */
   scroll-behavior: smooth;
+  overflow-x: hidden;
   font-family: var(--font-body);
   font-size: var(--text-base);
   color: var(--color-text-primary);
@@ -47,6 +57,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
 
 /* ——— TIPOGRAFIA ——— */

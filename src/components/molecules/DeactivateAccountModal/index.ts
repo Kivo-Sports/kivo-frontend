@@ -1,0 +1,1 @@
+export { DeactivateAccountModal } from './DeactivateAccountModal';

@@ -12,19 +12,33 @@
 
 // - Framer Motion
 import { motion, type HTMLMotionProps } from "framer-motion";
+import { useState } from "react";
 
 // - Motion config
 import { cardHover, cardTap, quickMotionTransition } from "@/lib/motion";
 
 type MotionCardProps = HTMLMotionProps<"div">;
 
-export function MotionCard({ children, className, ...props }: MotionCardProps) {
+export function MotionCard({ children, className, style, ...props }: MotionCardProps) {
+  const [isInteracting, setIsInteracting] = useState<boolean>(false);
+
   return (
     <motion.div
       className={className ?? "card"}
       whileHover={cardHover}
       whileTap={cardTap}
       transition={quickMotionTransition}
+      onHoverStart={() => setIsInteracting(true)}
+      onHoverEnd={() => setIsInteracting(false)}
+      onTapStart={() => setIsInteracting(true)}
+      onTapCancel={() => setIsInteracting(false)}
+      onTap={() => setIsInteracting(false)}
+      style={{
+        willChange: isInteracting ? "transform" : "auto",
+        backfaceVisibility: "hidden",
+        WebkitFontSmoothing: "antialiased",
+        ...style,
+      }}
       {...props}
     >
       {children}
