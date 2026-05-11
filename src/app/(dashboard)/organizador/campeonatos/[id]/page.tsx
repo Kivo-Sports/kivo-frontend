@@ -8,7 +8,7 @@ import {
   ArrowLeft, Trophy, Calendar, Users, Star,
   CheckCircle, XCircle, UserPlus, AlertTriangle,
   Search, X, Clock, Play, Lock, Bell,
-  Activity, FileText, Award, Pencil,
+  Activity, FileText, Award, Pencil, Trash2, MapPin,
   type LucideIcon,
 } from "lucide-react";
 import { Avatar } from "@/components/atoms/Avatar";
@@ -23,6 +23,7 @@ import {
   useListarCampeonatosQuery,
   useAbrirInscricoesMutation,
   useCancelarCampeonatoMutation,
+  useRemoverTimeDoCampeonatoMutation,
   useConvidarTimeMutation,
   useListarTodosOsTimesQuery,
   useListarConvitesCampeonatoQuery,
@@ -184,6 +185,155 @@ function ConvidarTimeModal({ campeonato, onClose, convidadosIniciais }: { campeo
   );
 }
 
+// ─── Tipo compartilhado ───────────────────────────────────────────────────────
+
+interface ParticipacaoDisplay {
+  participacaoId: string;
+  timeId: string;
+  nomeTime: string;
+  logoUrl: string | null;
+  cidade: string;
+  estado: string;
+  convidadoEm: string;
+  aceito: boolean | null;
+}
+
+// ─── Modal: Detalhes do Time ──────────────────────────────────────────────────
+
+function TimeDetalhesModal({ participacao, podeRemover, onRemover, onClose }: {
+  participacao: ParticipacaoDisplay;
+  podeRemover: boolean;
+  onRemover: () => void;
+  onClose: () => void;
+}) {
+  const statusLabel = participacao.aceito === true ? "Confirmado" : participacao.aceito === false ? "Recusado" : "Pendente";
+  const statusColor = participacao.aceito === true ? "var(--color-feedback-success)" : participacao.aceito === false ? "var(--color-feedback-danger)" : "rgba(255,193,7,0.9)";
+  const statusBg    = participacao.aceito === true ? "rgba(0,230,118,0.08)"         : participacao.aceito === false ? "rgba(255,72,68,0.08)"          : "rgba(255,193,7,0.08)";
+
+  return (
+    <div
+      style={{ position: "fixed", inset: 0, zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center", padding: "var(--space-4)", background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)" }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 12 }}
+        transition={{ duration: 0.2 }}
+        onClick={(e) => e.stopPropagation()}
+        style={{ width: "100%", maxWidth: "360px", background: "rgba(18,18,18,0.99)", border: "1px solid rgba(0,230,118,0.2)", borderRadius: "var(--radius-2xl)", overflow: "hidden", boxShadow: "0 24px 80px rgba(0,0,0,0.6)" }}
+      >
+        {/* Header */}
+        <div style={{ padding: "var(--space-4) var(--space-5)", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <p style={{ margin: 0, fontSize: "var(--text-xs)", letterSpacing: "0.25em", textTransform: "uppercase", color: "var(--color-brand-primary)" }}>
+            Detalhes do time
+          </p>
+          <button
+            onClick={onClose}
+            style={{ width: "28px", height: "28px", borderRadius: "50%", border: "1px solid rgba(255,255,255,0.1)", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--color-text-muted)" }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "white"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--color-text-muted)"; }}
+          >
+            <Icon icon={X} size={14} />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div style={{ padding: "var(--space-5)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)", marginBottom: "var(--space-4)" }}>
+            <Avatar name={participacao.nomeTime} src={participacao.logoUrl || undefined} size="lg" />
+            <div>
+              <h2 style={{ margin: "0 0 var(--space-1)", fontSize: "var(--text-lg)", fontWeight: 700, color: "white" }}>
+                {participacao.nomeTime}
+              </h2>
+              {(participacao.cidade || participacao.estado) && (
+                <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                  <Icon icon={MapPin} size={12} style={{ color: "var(--color-text-muted)" }} />
+                  <p style={{ margin: 0, fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
+                    {[participacao.cidade, participacao.estado].filter(Boolean).join(" · ")}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)", padding: "var(--space-3)", borderRadius: "var(--radius-lg)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>Status</span>
+              <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, color: statusColor, background: statusBg, padding: "2px 10px", borderRadius: "var(--radius-full)", border: `1px solid ${statusColor}33` }}>
+                {statusLabel}
+              </span>
+            </div>
+            <div style={{ height: 1, background: "rgba(255,255,255,0.05)" }} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>Convidado em</span>
+              <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
+                {new Date(participacao.convidadoEm).toLocaleDateString("pt-BR")}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        {podeRemover && (
+          <div style={{ padding: "0 var(--space-5) var(--space-5)" }}>
+            <Button
+              variant="danger"
+              fullWidth
+              onClick={onRemover}
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--space-2)" }}
+            >
+              <Icon icon={Trash2} size={14} />
+              Remover do campeonato
+            </Button>
+          </div>
+        )}
+      </motion.div>
+    </div>
+  );
+}
+
+// ─── Modal: Remover Time ──────────────────────────────────────────────────────
+
+function RemoverTimeModal({ nomeTime, onConfirm, onClose, isLoading }: {
+  nomeTime: string;
+  onConfirm: () => void;
+  onClose: () => void;
+  isLoading: boolean;
+}) {
+  return (
+    <div
+      style={{ position: "fixed", inset: 0, zIndex: 2100, display: "flex", alignItems: "center", justifyContent: "center", padding: "var(--space-4)", background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)" }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 12 }}
+        transition={{ duration: 0.2 }}
+        onClick={(e) => e.stopPropagation()}
+        style={{ width: "100%", maxWidth: "400px", background: "rgba(18,18,18,0.99)", border: "1px solid rgba(255,72,68,0.3)", borderRadius: "var(--radius-2xl)", padding: "var(--space-6)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)", textAlign: "center" }}
+      >
+        <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "rgba(255,72,68,0.1)", border: "1px solid rgba(255,72,68,0.3)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto var(--space-4)" }}>
+          <Icon icon={Trash2} size={22} style={{ color: "var(--color-feedback-danger)" }} />
+        </div>
+        <h2 style={{ margin: "0 0 var(--space-2)", fontSize: "var(--text-lg)", fontWeight: 600, color: "white" }}>
+          Remover time?
+        </h2>
+        <p style={{ margin: "0 0 var(--space-5)", fontSize: "var(--text-sm)", color: "var(--color-text-secondary)", lineHeight: 1.6 }}>
+          <strong style={{ color: "white" }}>{nomeTime}</strong> será removido do campeonato. O convite será cancelado.
+        </p>
+        <div style={{ display: "flex", gap: "var(--space-3)", justifyContent: "center" }}>
+          <Button variant="ghost" onClick={onClose} disabled={isLoading}>Voltar</Button>
+          <Button variant="danger" onClick={onConfirm} loading={isLoading} style={{ minWidth: "120px" }}>
+            Remover time
+          </Button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 // ─── Modal: Cancelar Campeonato ───────────────────────────────────────────────
 
 function CancelarModal({ nome, onConfirm, onClose, isLoading }: { nome: string; onConfirm: () => void; onClose: () => void; isLoading: boolean }) {
@@ -230,12 +380,15 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
   const [modalConvidar, setModalConvidar] = useState(false);
   const [modalCancelar, setModalCancelar] = useState(false);
   const [teamSearch, setTeamSearch]       = useState("");
+  const [timeDetalhes,   setTimeDetalhes]   = useState<ParticipacaoDisplay | null>(null);
+  const [timeParaRemover, setTimeParaRemover] = useState<ParticipacaoDisplay | null>(null);
 
   const { data: todos = [], isLoading }         = useListarCampeonatosQuery();
   const { data: todosOsTimes = [] }             = useListarTodosOsTimesQuery();
   const { data: convitesCampeonato = [] }       = useListarConvitesCampeonatoQuery(id);
-  const [abrirInscricoes, { isLoading: isAbrindo }]       = useAbrirInscricoesMutation();
-  const [cancelarCampeonato, { isLoading: isCancelando }] = useCancelarCampeonatoMutation();
+  const [abrirInscricoes, { isLoading: isAbrindo }]          = useAbrirInscricoesMutation();
+  const [cancelarCampeonato, { isLoading: isCancelando }]    = useCancelarCampeonatoMutation();
+  const [removerTime,        { isLoading: isRemovendoTime }] = useRemoverTimeDoCampeonatoMutation();
 
   const campeonato = todos.find((c) => c.id === id) ?? null;
 
@@ -271,6 +424,18 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
       toastSuccess("Inscrições abertas com sucesso!");
     } catch {
       toastError("Não foi possível abrir as inscrições. Tente novamente.", "Erro");
+    }
+  };
+
+  const handleConfirmarRemocaoTime = async () => {
+    if (!campeonato || !timeParaRemover) return;
+    try {
+      await removerTime({ campeonatoId: campeonato.id, timeId: timeParaRemover.timeId }).unwrap();
+      toastSuccess(`${timeParaRemover.nomeTime} foi removido do campeonato.`);
+      setTimeParaRemover(null);
+      setTimeDetalhes(null);
+    } catch {
+      toastError("Não foi possível remover o time. Tente novamente.", "Erro");
     }
   };
 
@@ -520,37 +685,34 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                 </Button>
               )}
 
-              {/* Encerrar inscrições — placeholder */}
-              {podeConvidar && (
-                <Button
-                  variant="ghost"
-                  fullWidth
-                  disabled
-                  style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "var(--space-2)", opacity: 0.45, cursor: "not-allowed" }}
-                >
-                  <Icon icon={Lock} size={14} />
-                  Encerrar Inscrições
-                  <span style={{ marginLeft: "auto", fontSize: "10px", background: "rgba(255,255,255,0.08)", padding: "2px 6px", borderRadius: "var(--radius-full)", letterSpacing: "0.05em" }}>
-                    Em breve
-                  </span>
-                </Button>
-              )}
-
-              {/* Iniciar campeonato — placeholder */}
-              {campeonato.status === "InscricoesAbertas" && (
-                <Button
-                  variant="ghost"
-                  fullWidth
-                  disabled
-                  style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "var(--space-2)", opacity: 0.45, cursor: "not-allowed" }}
-                >
-                  <Icon icon={Lock} size={14} />
-                  Iniciar Campeonato
-                  <span style={{ marginLeft: "auto", fontSize: "10px", background: "rgba(255,255,255,0.08)", padding: "2px 6px", borderRadius: "var(--radius-full)", letterSpacing: "0.05em" }}>
-                    Em breve
-                  </span>
-                </Button>
-              )}
+              {/* Info: times confirmados */}
+              {campeonato.status === "InscricoesAbertas" && (() => {
+                const MIN_TIMES = 8;
+                const confirmados = participacoesDisplay.filter((p) => p.aceito === true).length;
+                const faltam = Math.max(0, MIN_TIMES - confirmados);
+                const progresso = Math.min(100, (confirmados / MIN_TIMES) * 100);
+                return (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)", padding: "var(--space-3)", borderRadius: "var(--radius-md)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+                      <Icon icon={Users} size={14} style={{ color: faltam === 0 ? "var(--color-feedback-success)" : "var(--color-text-muted)", flexShrink: 0 }} />
+                      <div style={{ flex: 1 }}>
+                        <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Times confirmados</p>
+                        <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: faltam === 0 ? "var(--color-feedback-success)" : "white" }}>
+                          {confirmados}/{MIN_TIMES} confirmados
+                          {faltam > 0 && (
+                            <span style={{ fontWeight: 400, color: "rgba(255,193,7,0.85)", marginLeft: "6px" }}>
+                              (faltam {faltam})
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                    <div style={{ height: "4px", borderRadius: "var(--radius-full)", background: "rgba(255,255,255,0.07)", overflow: "hidden" }}>
+                      <div style={{ height: "100%", width: `${progresso}%`, borderRadius: "var(--radius-full)", background: faltam === 0 ? "var(--color-feedback-success)" : "rgba(255,193,7,0.7)", transition: "width 0.3s ease" }} />
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Encerrar campeonato — placeholder */}
               {campeonato.status === "EmAndamento" && (
@@ -734,6 +896,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                         <motion.div
                           key={p.participacaoId}
                           variants={itemVariants}
+                          onClick={() => setTimeDetalhes(p)}
                           style={{
                             display: "flex",
                             alignItems: "center",
@@ -743,6 +906,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                             background: "rgba(255,255,255,0.025)",
                             border: `1px solid ${grupo.border}`,
                             transition: "background 0.15s",
+                            cursor: "pointer",
                           }}
                           onMouseEnter={(e) => { e.currentTarget.style.background = grupo.bg; }}
                           onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.025)"; }}
@@ -762,6 +926,17 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                             <Icon icon={grupo.icon} size={10} />
                             {grupo.label}
                           </span>
+                          {podeConvidar && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setTimeParaRemover(p); }}
+                              title="Remover do campeonato"
+                              style={{ flexShrink: 0, width: "28px", height: "28px", borderRadius: "var(--radius-md)", border: "1px solid rgba(255,72,68,0.2)", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,72,68,0.5)", transition: "all 0.15s" }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,72,68,0.1)"; e.currentTarget.style.color = "var(--color-feedback-danger)"; e.currentTarget.style.borderColor = "rgba(255,72,68,0.4)"; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "rgba(255,72,68,0.5)"; e.currentTarget.style.borderColor = "rgba(255,72,68,0.2)"; }}
+                            >
+                              <Icon icon={Trash2} size={12} />
+                            </button>
+                          )}
                         </motion.div>
                       ))}
                     </div>
@@ -837,6 +1012,22 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
             onConfirm={handleConfirmarCancelamento}
             onClose={() => setModalCancelar(false)}
             isLoading={isCancelando}
+          />
+        )}
+        {timeDetalhes && !timeParaRemover && (
+          <TimeDetalhesModal
+            participacao={timeDetalhes}
+            podeRemover={podeConvidar}
+            onRemover={() => setTimeParaRemover(timeDetalhes)}
+            onClose={() => setTimeDetalhes(null)}
+          />
+        )}
+        {timeParaRemover && (
+          <RemoverTimeModal
+            nomeTime={timeParaRemover.nomeTime}
+            onConfirm={handleConfirmarRemocaoTime}
+            onClose={() => setTimeParaRemover(null)}
+            isLoading={isRemovendoTime}
           />
         )}
       </AnimatePresence>

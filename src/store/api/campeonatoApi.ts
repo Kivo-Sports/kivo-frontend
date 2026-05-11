@@ -40,6 +40,14 @@ export const campeonatoApi = baseApi.injectEndpoints({
       query: (id) => ({ url: `/api/campeonato/${id}/cancelar`, method: "PATCH" }),
       invalidatesTags: ["Campeonato"],
     }),
+    removerTimeDoCampeonato: builder.mutation<void, { campeonatoId: string; timeId: string }>({
+      query: (body) => ({
+        url: "/api/campeonato/remover-time",
+        method: "DELETE",
+        body: { campeonatoId: body.campeonatoId, timeId: body.timeId },
+      }),
+      invalidatesTags: ["Campeonato"],
+    }),
     convidarTime: builder.mutation<void, ConviteRequest>({
       query: (body) => ({
         url: "/api/campeonato/convidar-time",
@@ -79,6 +87,7 @@ export const {
   useListarCampeonatosQuery,
   useAbrirInscricoesMutation,
   useCancelarCampeonatoMutation,
+  useRemoverTimeDoCampeonatoMutation,
   useConvidarTimeMutation,
   useListarTodosOsTimesQuery,
   useListarConvitesPendentesQuery,
