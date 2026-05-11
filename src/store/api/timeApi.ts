@@ -26,6 +26,7 @@ function buildTimeFormData(body: {
 }
 
 export const timeApi = baseApi.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
     criarTime: builder.mutation<TimeResponse, CriarTimeRequest>({
       query: (body) => ({
@@ -36,7 +37,7 @@ export const timeApi = baseApi.injectEndpoints({
       invalidatesTags: ["Time"],
     }),
     listarTimesOrganizador: builder.query<TimeResponse[], void>({
-      query: () => ({ url: "/api/time", method: "GET" }),
+      query: () => ({ url: "/api/time/organizador", method: "GET" }),
       providesTags: ["Time"],
     }),
     obterTimePorId: builder.query<TimeResponse, string>({

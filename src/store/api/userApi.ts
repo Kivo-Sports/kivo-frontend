@@ -11,6 +11,7 @@ export interface PerfilUsuarioResponse {
 }
 
 export const userApi = baseApi.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
     getPerfilUsuario: builder.query<PerfilUsuarioResponse, string>({
       query: (id) => ({

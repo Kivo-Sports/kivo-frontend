@@ -10,6 +10,7 @@ import type {
 import type { TimeResponse } from "@/types/time";
 
 export const campeonatoApi = baseApi.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
     criarCampeonato: builder.mutation<CampeonatoResponse, CriarCampeonatoRequest>({
       query: (body) => ({
