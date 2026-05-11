@@ -94,10 +94,19 @@ export default function CadastroFormPage() {
   const [expandedStep, setExpandedStep] = useState<number>(1);
   const [isLoadingCEP, setIsLoadingCEP] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [cepFilledFields, setCepFilledFields] = useState({
+    rua: false,
+    cidade: false,
+    estado: false,
+  });
 
   const tipoUrl = (params?.tipo as string)?.replace(/-/g, '-') as UserType | undefined;
 
   useEffect(() => {
+    if (isTransitioning) {
+      return;
+    }
+
     if (!tipoUrl) {
       router.push('/cadastro');
       return;
@@ -106,19 +115,25 @@ export default function CadastroFormPage() {
     if (userType !== tipoUrl) {
       router.push('/cadastro');
     }
-  }, [tipoUrl, userType, router]);
+  }, [isTransitioning, tipoUrl, userType, router]);
 
   useEffect(() => {
     router.prefetch('/dashboard');
     router.prefetch('/login');
   }, [router]);
 
-  if (!userType || userType !== tipoUrl) {
+  if ((!userType || userType !== tipoUrl) && !isTransitioning) {
     return null;
   }
 
-  const stepsConfig = getStepConfig(userType);
-  const totalSteps = getTotalSteps(userType);
+  const resolvedUserType = userType ?? tipoUrl;
+
+  if (!resolvedUserType) {
+    return null;
+  }
+
+  const stepsConfig = getStepConfig(resolvedUserType);
+  const totalSteps = getTotalSteps(resolvedUserType);
 
   const stepperSteps = stepsConfig
     .filter((s) => s.numero !== 4)
@@ -136,6 +151,7 @@ export default function CadastroFormPage() {
       finalValue = formatCPF(value);
     } else if (field === 'endereco.cep') {
       finalValue = formatCEP(value);
+      setCepFilledFields({ rua: false, cidade: false, estado: false });
 
       // Se CEP está completo (8 dígitos), buscar dados
       if (finalValue.replace(/\D/g, '').length === 8) {
@@ -159,7 +175,13 @@ export default function CadastroFormPage() {
         dispatch(updateFormField({ field: 'endereco.rua', value: result.data.rua }));
         dispatch(updateFormField({ field: 'endereco.cidade', value: result.data.cidade }));
         dispatch(updateFormField({ field: 'endereco.estado', value: result.data.estado }));
+        setCepFilledFields({
+          rua: Boolean(result.data.rua),
+          cidade: Boolean(result.data.cidade),
+          estado: Boolean(result.data.estado),
+        });
       } else {
+        setCepFilledFields({ rua: false, cidade: false, estado: false });
         dispatch(setStepErrors({ cep: result.error || 'CEP não encontrado' }));
       }
     } finally {
@@ -202,11 +224,12 @@ export default function CadastroFormPage() {
         break;
 
       case 5:
-        if (userType === 'organizador-campeonato' && formData.contaBanco) {
+        if (resolvedUserType === 'organizador-campeonato' && formData.contaBanco) {
           validationResult = validateStep5({
             banco: formData.contaBanco.banco,
             agencia: formData.contaBanco.agencia,
             conta: formData.contaBanco.conta,
+            tipo: formData.contaBanco.tipo,
             chavePix: formData.contaBanco.chavePix,
           });
         } else {
@@ -240,7 +263,7 @@ export default function CadastroFormPage() {
     e.preventDefault();
 
     // Verificar se todos os passos necessários foram completados
-    const stepsNeeded = userType === 'organizador-campeonato' ? [1, 2, 3, 5] : [1, 2, 3];
+    const stepsNeeded = resolvedUserType === 'organizador-campeonato' ? [1, 2, 3, 5] : [1, 2, 3];
     const allStepsCompleted = stepsNeeded.every(step => registration.completedSteps.includes(step));
 
     if (!allStepsCompleted) {
@@ -252,7 +275,7 @@ export default function CadastroFormPage() {
     dispatch(setSubmitError(null));
 
     try {
-      const result = await registerUser(userType, formData);
+      const result = await registerUser(resolvedUserType, formData);
 
       if (result.success && result.token && result.user) {
         setIsTransitioning(true);
@@ -260,7 +283,7 @@ export default function CadastroFormPage() {
 
         // Mostrar notificação com toast
         const nomeUsuario = result.user.name.split(' ')[0];
-        const tipoLabel = getUserTypeLabel(userType);
+        const tipoLabel = getUserTypeLabel(resolvedUserType);
 
         toastSuccess(
           `Bem-vindo, ${nomeUsuario}!`,
@@ -268,9 +291,11 @@ export default function CadastroFormPage() {
           5000
         );
 
-        dispatch(resetRegistration());
-        const rotaPosCadastro = userType === 'organizador-time' ? '/organizador/times/criar' : '/dashboard';
+        const rotaPosCadastro = resolvedUserType === 'organizador-time' ? '/organizador/times/criar' : '/dashboard';
         router.replace(rotaPosCadastro);
+        window.setTimeout(() => {
+          dispatch(resetRegistration());
+        }, 500);
         return;
       } else if (result.success) {
         setIsTransitioning(true);
@@ -280,12 +305,14 @@ export default function CadastroFormPage() {
           5000
         );
 
-        dispatch(resetRegistration());
         router.replace('/login');
+        window.setTimeout(() => {
+          dispatch(resetRegistration());
+        }, 500);
         return;
       } else {
         // Notificação de erro com tipo específico
-        const errorType = (result as any).errorType || 'generic-error';
+        const errorType = result.errorType || 'generic-error';
         const title = getErrorTitle(errorType);
 
         toastError(result.error || 'Erro ao criar conta', title, 5000);
@@ -390,7 +417,7 @@ export default function CadastroFormPage() {
                 margin: 0,
               }}
             >
-              {getUserTypeLabel(userType)}
+              {getUserTypeLabel(resolvedUserType)}
             </h2>
           </div>
 
@@ -709,27 +736,29 @@ export default function CadastroFormPage() {
                     label="Rua"
                     placeholder="Avenida Paulista"
                     value={formData.endereco.rua}
-                    onChange={(e) =>
-                      dispatch(
-                        updateFormField({
-                          field: 'endereco.rua',
-                          value: e.target.value,
-                        })
-                      )
+	                    onChange={(e) =>
+	                      dispatch(
+	                        updateFormField({
+	                          field: 'endereco.rua',
+	                          value: e.target.value,
+	                        })
+	                      )
                     }
                     error={errors.rua}
+                    readOnly={isLoadingCEP || cepFilledFields.rua}
                   />
 
                   <Input
-                    label="Número"
-                    placeholder="1000"
+	                    label="Número"
+	                    placeholder="1000"
                     value={formData.endereco.numero}
+                    maxLength={10}
                     onChange={(e) =>
                       dispatch(
                         updateFormField({
-                          field: 'endereco.numero',
-                          value: e.target.value,
-                        })
+	                          field: 'endereco.numero',
+	                          value: e.target.value,
+	                        })
                       )
                     }
                     error={errors.numero}
@@ -753,15 +782,16 @@ export default function CadastroFormPage() {
                     label="Cidade"
                     placeholder="São Paulo"
                     value={formData.endereco.cidade}
-                    onChange={(e) =>
-                      dispatch(
-                        updateFormField({
-                          field: 'endereco.cidade',
-                          value: e.target.value,
-                        })
-                      )
+	                    onChange={(e) =>
+	                      dispatch(
+	                        updateFormField({
+	                          field: 'endereco.cidade',
+	                          value: e.target.value,
+	                        })
+	                      )
                     }
                     error={errors.cidade}
+                    readOnly={isLoadingCEP || cepFilledFields.cidade}
                   />
 
                   <Input
@@ -769,15 +799,16 @@ export default function CadastroFormPage() {
                     placeholder="SP"
                     maxLength={2}
                     value={formData.endereco.estado}
-                    onChange={(e) =>
-                      dispatch(
-                        updateFormField({
-                          field: 'endereco.estado',
-                          value: e.target.value.toUpperCase(),
-                        })
-                      )
+	                    onChange={(e) =>
+	                      dispatch(
+	                        updateFormField({
+	                          field: 'endereco.estado',
+	                          value: e.target.value.toUpperCase(),
+	                        })
+	                      )
                     }
                     error={errors.estado}
+                    readOnly={isLoadingCEP || cepFilledFields.estado}
                   />
                 </div>
 
@@ -805,18 +836,18 @@ export default function CadastroFormPage() {
                     size="lg"
                     fullWidth
                     onClick={async () => {
-                      const nextStepNumber = userType === 'organizador-campeonato' ? 5 : 4;
+                      const nextStepNumber = resolvedUserType === 'organizador-campeonato' ? 5 : 4;
                       await validateAndProgress(3, nextStepNumber);
                     }}
                     disabled={isSubmitting}
                   >
-                    {userType === 'organizador-campeonato' ? 'Próximo' : 'Finalizar'}
+                    {resolvedUserType === 'organizador-campeonato' ? 'Próximo' : 'Finalizar'}
                   </Button>
                 </div>
               </FormSection>
 
               {/* ============ PASSO 4: DADOS BANCÁRIOS (APENAS ORGANIZADOR CAMPEONATO) ============ */}
-              {userType === 'organizador-campeonato' && (
+              {resolvedUserType === 'organizador-campeonato' && (
                 <FormSection
                   stepNumber={4}
                   title="Dados Bancários"
@@ -1077,7 +1108,7 @@ export default function CadastroFormPage() {
                   </div>
 
                   {/* Dados Bancários (só mostra se for organizador de campeonato) */}
-                  {userType === 'organizador-campeonato' && formData.contaBanco && (
+                  {resolvedUserType === 'organizador-campeonato' && formData.contaBanco && (
                     <div>
                       <p
                         style={{

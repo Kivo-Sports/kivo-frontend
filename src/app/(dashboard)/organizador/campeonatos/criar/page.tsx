@@ -19,16 +19,52 @@ import { useAppSelector } from "@/store/hooks";
 import { Icon } from "@/components/atoms/Icon";
 import type { CampeonatoFormValues } from "@/types/campeonato";
 
+const CHAMPIONSHIP_NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9' .-]+$/;
+
+function parseLocalDate(value: string): Date {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function isValidDateInput(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = parseLocalDate(value);
+  return !Number.isNaN(date.getTime());
+}
+
+function startOfToday(): Date {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
+}
+
+const pontuacaoSchema = z
+  .union([z.string(), z.number()])
+  .refine((value) => String(value).trim() !== "", "Campo obrigatório")
+  .transform((value) => Number(value))
+  .refine((value) => Number.isInteger(value), "Use apenas números inteiros")
+  .refine((value) => value >= 0, "Mínimo 0")
+  .refine((value) => value <= 100, "Máximo 100");
+
 const criarCampeonatoSchema = z
   .object({
-    nome:          z.string().min(3, "Mínimo 3 caracteres"),
-    dataInicio:    z.string().min(1, "Campo obrigatório"),
-    dataFim:       z.string().min(1, "Campo obrigatório"),
-    pontosVitoria: z.coerce.number().int().min(0, "Mínimo 0"),
-    pontosDerrota: z.coerce.number().int().min(0, "Mínimo 0"),
-    pontosEmpate:  z.coerce.number().int().min(0, "Mínimo 0"),
+    nome: z.string()
+      .trim()
+      .min(3, "Mínimo 3 caracteres")
+      .max(100, "Máximo 100 caracteres")
+      .regex(CHAMPIONSHIP_NAME_REGEX, "Use apenas letras, números, espaços, ponto, apóstrofo ou hífen"),
+    dataInicio: z.string()
+      .min(1, "Campo obrigatório")
+      .refine(isValidDateInput, "Data de início inválida")
+      .refine((value) => parseLocalDate(value) >= startOfToday(), "Data de início não pode ser anterior a hoje"),
+    dataFim: z.string()
+      .min(1, "Campo obrigatório")
+      .refine(isValidDateInput, "Data de fim inválida"),
+    pontosVitoria: pontuacaoSchema,
+    pontosDerrota: pontuacaoSchema,
+    pontosEmpate:  pontuacaoSchema,
   })
-  .refine((d) => new Date(d.dataFim) > new Date(d.dataInicio), {
+  .refine((d) => parseLocalDate(d.dataFim) > parseLocalDate(d.dataInicio), {
     message: "A data de fim deve ser posterior à de início",
     path: ["dataFim"],
   });
