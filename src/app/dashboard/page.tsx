@@ -7,7 +7,7 @@ import { AppLayout } from "@/components/templates/AppLayout";
 import { Card } from "@/components/molecules/Card";
 import { FadeIn } from "@/components/atoms/FadeIn";
 import { Spinner } from "@/components/atoms/Spinner";
-import { isOrganizadorTime, normalizeCargo } from "@/lib/auth.utils";
+import { isOrganizadorTime, normalizeCargo, getRedirectPathAfterLogin } from "@/lib/auth.utils";
 import { Icon } from "@/components/atoms/Icon";
 import { Shield, Trophy, BarChart3, MessageCircle } from "lucide-react";
 
@@ -60,8 +60,11 @@ export default function DashboardPage() {
   }, [mounted, isAuthenticated, token, router]);
 
   useEffect(() => {
-    if (mounted && isAuthenticated && token && isOrganizadorTime(user?.cargo)) {
-      router.replace("/organizador");
+    if (mounted && isAuthenticated && token) {
+      const redirectRoute = getRedirectPathAfterLogin(user?.cargo);
+      if (redirectRoute !== "/dashboard") {
+        router.replace(redirectRoute);
+      }
     }
   }, [mounted, isAuthenticated, token, user?.cargo, router]);
 

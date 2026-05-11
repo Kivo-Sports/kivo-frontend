@@ -76,12 +76,33 @@ const authSlice = createSlice({
 
         if (token && userJson) {
           try {
-            const user = JSON.parse(userJson);
-            state.token = token;
-            state.user = user;
-            state.isAuthenticated = true;
-          } catch (error) {
-            // Se falhar ao parsear, limpar localStorage
+            // Verificar se o JWT expirou antes de restaurar
+            const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+            const isExpired = typeof payload.exp === 'number' && payload.exp * 1000 < Date.now();
+
+            if (isExpired) {
+              localStorage.removeItem('auth_token');
+              localStorage.removeItem('auth_user');
+            } else {
+              const user: AuthenticatedUser = JSON.parse(userJson);
+              // Compat: extrai cargo do JWT se o objeto salvo não tiver (sessão antiga)
+              if (!user.cargo) {
+                try {
+                  const jwtPayload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+                  const rawCargo: string = jwtPayload['Cargo'] || jwtPayload['cargo'] || '';
+                  if (rawCargo) {
+                    user.cargo = rawCargo;
+                    localStorage.setItem('auth_user', JSON.stringify(user));
+                  }
+                } catch {
+                  // falha silenciosa na decodificação do JWT
+                }
+              }
+              state.token = token;
+              state.user = user;
+              state.isAuthenticated = true;
+            }
+          } catch {
             localStorage.removeItem('auth_token');
             localStorage.removeItem('auth_user');
           }

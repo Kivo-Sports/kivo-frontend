@@ -7,8 +7,10 @@
 
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/atoms/Button';
 import { Card } from '@/components/molecules/Card';
+import { Icon } from '@/components/atoms/Icon';
 import { useToast } from '@/components/atoms/Toast';
 
 interface DeactivateAccountModalProps {
@@ -102,12 +104,18 @@ export function DeactivateAccountModal({
               {/* Ícone de Alerta */}
               <div
                 style={{
-                  fontSize: '2.5rem',
-                  marginBottom: 'var(--space-3)',
-                  textAlign: 'center',
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '50%',
+                  background: 'rgba(255, 72, 68, 0.1)',
+                  border: '1px solid rgba(255, 72, 68, 0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto var(--space-4)',
                 }}
               >
-                ⚠️
+                <Icon icon={AlertTriangle} size={22} style={{ color: 'var(--color-feedback-danger)' }} />
               </div>
 
               <h2

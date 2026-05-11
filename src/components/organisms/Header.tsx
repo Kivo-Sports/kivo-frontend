@@ -7,13 +7,13 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { clearCredentials } from '@/store/slices/authSlice';
 import { Icon } from '@/components/atoms/Icon';
 import { LogOut, Settings } from 'lucide-react';
+import { getRedirectPathAfterLogin, getHomeRoute } from '@/lib/auth.utils';
 
 export function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
-  const homeRoute = isAuthenticated ? '/dashboard' : '/login';
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -30,24 +30,8 @@ export function Header() {
     borderBottom: isActive(path) ? '2px solid var(--color-brand-primary)' : 'none',
   });
 
-  // Função para redirecionar para home específica do usuário
-  const getHomeRoute = () => {
-    if (!user?.cargo) return '#';
-
-    const cargo = user.cargo.toLowerCase();
-    switch (cargo) {
-      case 'torcedor':
-        return '/home/torcedor';
-      case 'organizadortime':
-        return '/home/organizador-time';
-      case 'organizadorcampeonato':
-        return '/home/organizador-campeonato';
-      case 'administrador':
-        return '/home/admin';
-      default:
-        return '#';
-    }
-  };
+  const dashboardRoute = getRedirectPathAfterLogin(user?.cargo);
+  const homeRoute = getHomeRoute(user?.cargo);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -104,8 +88,7 @@ export function Header() {
             transition: 'opacity 0.2s ease',
           }}
           onClick={() => {
-            const homeRoute = getHomeRoute();
-            if (homeRoute !== '#') {
+            if (isAuthenticated) {
               router.push(homeRoute);
             }
           }}
@@ -138,53 +121,57 @@ export function Header() {
             }}
           >
             <a
-              href={getHomeRoute()}
-              style={getNavLinkStyle(getHomeRoute())}
+              href={dashboardRoute}
+              style={getNavLinkStyle(dashboardRoute)}
               onMouseEnter={(e) => {
-                if (!isActive(getHomeRoute())) {
+                if (!isActive(dashboardRoute)) {
                   e.currentTarget.style.color = 'var(--color-brand-primary)';
                 }
               }}
               onMouseLeave={(e) => {
-                if (!isActive(getHomeRoute())) {
+                if (!isActive(dashboardRoute)) {
+                  e.currentTarget.style.color = 'var(--color-text-secondary)';
+                }
+              }}
+            >
+              Dashboard
+            </a>
+            <a
+              href={homeRoute}
+              style={getNavLinkStyle(homeRoute)}
+              onMouseEnter={(e) => {
+                if (!isActive(homeRoute)) {
+                  e.currentTarget.style.color = 'var(--color-brand-primary)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive(homeRoute)) {
                   e.currentTarget.style.color = 'var(--color-text-secondary)';
                 }
               }}
             >
               Home
             </a>
-            <a
-              href="/times"
-              style={getNavLinkStyle('/times')}
-              onMouseEnter={(e) => {
-                if (!isActive('/times')) {
-                  e.currentTarget.style.color = 'var(--color-brand-primary)';
-                }
+            <span
+              style={{
+                ...getNavLinkStyle('/times'),
+                opacity: 0.4,
+                cursor: 'not-allowed',
               }}
-              onMouseLeave={(e) => {
-                if (!isActive('/times')) {
-                  e.currentTarget.style.color = 'var(--color-text-secondary)';
-                }
-              }}
+              title="Em breve"
             >
               Times
-            </a>
-            <a
-              href="/campeonatos"
-              style={getNavLinkStyle('/campeonatos')}
-              onMouseEnter={(e) => {
-                if (!isActive('/campeonatos')) {
-                  e.currentTarget.style.color = 'var(--color-brand-primary)';
-                }
+            </span>
+            <span
+              style={{
+                ...getNavLinkStyle('/campeonatos'),
+                opacity: 0.4,
+                cursor: 'not-allowed',
               }}
-              onMouseLeave={(e) => {
-                if (!isActive('/campeonatos')) {
-                  e.currentTarget.style.color = 'var(--color-text-secondary)';
-                }
-              }}
+              title="Em breve"
             >
               Campeonatos
-            </a>
+            </span>
           </nav>
         )}
 
@@ -206,7 +193,7 @@ export function Header() {
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                maxWidth: '100%',
+                maxWidth: '180px',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = 'rgba(0, 230, 118, 0.15)';
@@ -364,7 +351,32 @@ export function Header() {
               </div>
             )}
           </div>
-        ) : null}
+        ) : (
+          <div style={{ minWidth: '120px', textAlign: 'right' }}>
+            <button
+              onClick={() => router.push('/login')}
+              style={{
+                padding: 'var(--space-2) var(--space-4)',
+                background: 'var(--color-brand-primary)',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 700,
+                color: '#000',
+                fontSize: '13px',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = '0.85';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = '1';
+              }}
+            >
+              Fazer login
+            </button>
+          </div>
+        )}
       </div>
 
       <style>{`

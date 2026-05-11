@@ -121,14 +121,24 @@ const registrationSlice = createSlice({
       const keys = field.split('.');
 
       if (keys.length === 1) {
-        (state.formData as any)[field] = value;
+        const formField = keys[0] as keyof Omit<RegistrationFormData, "endereco" | "contaBanco">;
+        state.formData[formField] = value;
       } else if (keys.length === 2) {
-        (state.formData as any)[keys[0]][keys[1]] = value;
+        const [group, nestedField] = keys;
+        if (group === "endereco") {
+          state.formData.endereco[nestedField as keyof Endereco] = value;
+        } else if (group === "contaBanco" && state.formData.contaBanco) {
+          state.formData.contaBanco[nestedField as keyof ContaBanco] = value;
+        }
       }
 
       // Limpar erro do campo quando usuário digita
       if (state.errors[field]) {
         delete state.errors[field];
+      }
+      const normalizedField = keys[keys.length - 1];
+      if (normalizedField && state.errors[normalizedField]) {
+        delete state.errors[normalizedField];
       }
     },
 

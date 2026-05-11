@@ -10,12 +10,14 @@ import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAppSelector } from '@/store/hooks';
+import { Icon } from "@/components/atoms/Icon";
+import { User , UserStar } from "lucide-react";
 
 interface SettingsItem {
   id: string;
   label: string;
   href: string;
-  icon: string;
+  icon: React.ReactNode;
   adminOnly?: boolean;
 }
 
@@ -24,13 +26,13 @@ const settingsItems: SettingsItem[] = [
     id: 'account',
     label: 'Minha Conta',
     href: '/configuracoes',
-    icon: '👤',
+    icon: <Icon icon={User} size={30} color="var(--color-brand-primary)" />,
   },
   {
     id: 'manage-admins',
     label: 'Gerenciar Admins',
     href: '/configuracoes/admin',
-    icon: '👨‍💼',
+    icon: <Icon icon={UserStar} size={30} color="var(--color-brand-primary)" />,
     adminOnly: true,
   },
 ];

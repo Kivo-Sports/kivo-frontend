@@ -43,7 +43,7 @@ import {
   isEmailValid,
   isCPFValid,
   isPasswordValid,
-  isOrganizadorTime,
+  getRedirectPathAfterLogin,
 } from "@/lib/auth.utils";
 
 // - Services
@@ -74,7 +74,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (isHydrated && isAuthenticated && !hadManualRedirect.current) {
-      const target = isOrganizadorTime(user?.cargo) ? "/organizador" : "/dashboard";
+      const target = getRedirectPathAfterLogin(user?.cargo);
       router.replace(target);
     }
   }, [isAuthenticated, isHydrated, router, user?.cargo]);
@@ -163,21 +163,15 @@ export default function LoginPage() {
       const result = await loginUser(identifier, password);
 
       if (result.success && result.token && result.user) {
-        // Mostrar notificação de sucesso com toast
         toastSuccess(`Bem-vindo, ${result.user.name}!`, undefined, 10000);
 
         hadManualRedirect.current = true;
         // Salvar credenciais no Redux
         dispatch(setCredentials({ token: result.token, user: result.user }));
 
-        // Mostrar notificação de bem-vindo
-        toastSuccess(`Bem-vindo, ${result.user.name}!`);
-
-        // Redirecionar para área inicial conforme perfil
-        const rotaPosLogin = isOrganizadorTime(result.user.cargo) ? "/organizador" : "/dashboard";
+        // Redirecionar para area correspondente ao perfil
+        const rotaPosLogin = getRedirectPathAfterLogin(result.user.cargo);
         router.push(rotaPosLogin);
-        // Redirecionar para dashboard imediatamente
-        router.push("/dashboard");
       } else {
         // Se for conta desativada, mostrar modal
         if (result.errorType === "user-inactive") {
