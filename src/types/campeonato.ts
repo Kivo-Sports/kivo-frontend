@@ -1,3 +1,27 @@
+export type FormatoCampeonato = "PontosCorridos" | "MataMata" | "Hibrido";
+
+// Valor numérico esperado pelo enum EnumFormatoCampeonato no backend
+export const FORMATO_CAMPEONATO: Record<
+  FormatoCampeonato,
+  { valor: number; label: string; desc: string }
+> = {
+  PontosCorridos: {
+    valor: 0,
+    label: "Pontos Corridos",
+    desc: "Todos jogam contra todos; vence quem somar mais pontos.",
+  },
+  MataMata: {
+    valor: 1,
+    label: "Mata-Mata",
+    desc: "Confrontos eliminatórios diretos. Exige potência de 2 (4, 8, 16…).",
+  },
+  Hibrido: {
+    valor: 2,
+    label: "Híbrido",
+    desc: "Fase de pontos corridos seguida de mata-mata entre os classificados.",
+  },
+};
+
 export interface CriarCampeonatoRequest {
   organizadorCampeonatoId: string;
   nome: string;
@@ -6,6 +30,20 @@ export interface CriarCampeonatoRequest {
   pontosVitoria: number;
   pontosDerrota: number;
   pontosEmpate: number;
+  formatoCampeonato: number;
+  quantidadeTimesClassificam: number;
+}
+
+export interface EditarCampeonatoRequest {
+  id: string;
+  nome: string;
+  dataInicio: string;
+  dataFim: string;
+  pontosVitoria: number;
+  pontosDerrota: number;
+  pontosEmpate: number;
+  formatoCampeonato: number;
+  quantidadeTimesClassificam: number;
 }
 
 export interface CampeonatoResponse {
@@ -21,6 +59,8 @@ export interface CampeonatoResponse {
   pontosDerrota: number;
   pontosEmpate: number;
   times: string[];
+  formatoCampeonato: string;
+  quantidadeTimesClassificam: number;
 }
 
 export interface CampeonatoFormValues {

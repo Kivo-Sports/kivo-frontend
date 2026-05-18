@@ -125,12 +125,8 @@ export default function CriarTimePage() {
       toastError("Perfil de organizador não encontrado. Tente novamente.", "Erro");
       return;
     }
-    if (!logoFile) {
-      setLogoError("Selecione uma imagem de logo para o time.");
-      return;
-    }
     try {
-      await criarTime({ ...values, organizadorTimeId: perfil.organizadorTimeId, logo: logoFile }).unwrap();
+      await criarTime({ ...values, organizadorTimeId: perfil.organizadorTimeId, logo: logoFile ?? undefined }).unwrap();
       toastSuccess("Time criado com sucesso!");
       router.push("/organizador/times");
     } catch (error: unknown) {
@@ -175,7 +171,7 @@ export default function CriarTimePage() {
   };
 
   const isPerfilReady = !isLoadingPerfil && !!perfil?.organizadorTimeId;
-  const canSubmit     = isPerfilReady && !isLoading && !!logoFile && !logoError;
+  const canSubmit     = isPerfilReady && !isLoading && !logoError;
 
   const selectStyles = [
     "h-12",
@@ -427,7 +423,7 @@ export default function CriarTimePage() {
                   htmlFor="logo"
                   className="mb-2 inline-block text-sm font-semibold text-(--color-text-primary)"
                 >
-                  Logo do time
+                  Logo do time <span style={{ fontWeight: 400, color: "var(--color-text-muted)" }}>(opcional)</span>
                 </label>
                 <input
                   ref={logoInputRef}

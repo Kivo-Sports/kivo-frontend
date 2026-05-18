@@ -5,10 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft, Trophy, Calendar, Users, Star,
+  ArrowLeft, Trophy, Calendar, Users,
   CheckCircle, XCircle, UserPlus, AlertTriangle,
   Search, X, Clock, Play, Lock, Bell,
   Activity, FileText, Award, Pencil, Trash2, MapPin,
+  Swords, BarChart3, GitFork, PlayCircle, ChevronRight,
   type LucideIcon,
 } from "lucide-react";
 import { Avatar } from "@/components/atoms/Avatar";
@@ -22,13 +23,26 @@ import { containerVariants, fadeInUp, getFadeTransition, itemVariants } from "@/
 import {
   useListarCampeonatosQuery,
   useAbrirInscricoesMutation,
+  useIniciarCampeonatoMutation,
+  useEditarCampeonatoMutation,
   useCancelarCampeonatoMutation,
   useRemoverTimeDoCampeonatoMutation,
   useConvidarTimeMutation,
   useListarTodosOsTimesQuery,
   useListarConvitesCampeonatoQuery,
 } from "@/store/api/campeonatoApi";
-import type { CampeonatoResponse } from "@/types/campeonato";
+import {
+  useObterClassificacaoQuery,
+  useObterChaveamentoQuery,
+  useListarJogosQuery,
+} from "@/store/api/partidaApi";
+import { Chaveamento } from "@/components/organisms/Chaveamento";
+import { FORMATO_CAMPEONATO, type CampeonatoResponse, type FormatoCampeonato } from "@/types/campeonato";
+
+// Valida potência de 2 (2, 4, 8, 16…) — exigido para a fase de mata-mata
+function ehPotenciaDeDois(n: number): boolean {
+  return Number.isInteger(n) && n >= 2 && (n & (n - 1)) === 0;
+}
 import type { TimeResponse } from "@/types/time";
 
 // ─── Status helpers ───────────────────────────────────────────────────────────
@@ -53,8 +67,6 @@ const STATUS_LINE: Record<string, string> = {
 // ─── Funcionalidades futuras ──────────────────────────────────────────────────
 
 const FEATURES: { icon: LucideIcon; title: string; desc: string }[] = [
-  { icon: Activity,  title: "Tabela de Classificação", desc: "Acompanhe pontuação e posição de cada time em tempo real." },
-  { icon: Trophy,    title: "Rodadas e Partidas",       desc: "Organize e registre resultados de cada jogo do campeonato." },
   { icon: Activity,  title: "Estatísticas",             desc: "Métricas detalhadas por time: gols, assistências, cartões." },
   { icon: FileText,  title: "Regulamento",              desc: "Publique as regras oficiais acessíveis a todos os times." },
   { icon: Award,     title: "Premiação",                desc: "Configure troféus e reconhecimentos para os melhores." },
@@ -370,6 +382,177 @@ function CancelarModal({ nome, onConfirm, onClose, isLoading }: { nome: string; 
   );
 }
 
+// ─── Modal: Editar Campeonato ─────────────────────────────────────────────────
+
+function EditarCampeonatoModal({ campeonato, onClose }: { campeonato: CampeonatoResponse; onClose: () => void }) {
+  const { success: toastSuccess, error: toastError } = useToast();
+  const [editarCampeonato, { isLoading }] = useEditarCampeonatoMutation();
+
+  const [nome, setNome] = useState(campeonato.nome);
+  const [dataInicio, setDataInicio] = useState(campeonato.dataInicio.slice(0, 10));
+  const [dataFim, setDataFim] = useState(campeonato.dataFim.slice(0, 10));
+  const [pVitoria, setPVitoria] = useState(String(campeonato.pontosVitoria));
+  const [pEmpate, setPEmpate] = useState(String(campeonato.pontosEmpate));
+  const [pDerrota, setPDerrota] = useState(String(campeonato.pontosDerrota));
+  const [formato, setFormato] = useState<FormatoCampeonato>(
+    (["PontosCorridos", "MataMata", "Hibrido"].includes(campeonato.formatoCampeonato)
+      ? campeonato.formatoCampeonato
+      : "PontosCorridos") as FormatoCampeonato,
+  );
+  const [classificam, setClassificam] = useState(
+    String(campeonato.quantidadeTimesClassificam > 0 ? campeonato.quantidadeTimesClassificam : 4),
+  );
+
+  const labelStyle = { margin: "0 0 4px", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", display: "block" } as const;
+  const inputStyle = {
+    width: "100%",
+    height: "38px",
+    background: "rgba(255,255,255,0.04)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: "var(--radius-md)",
+    padding: "0 var(--space-3)",
+    color: "white",
+    fontSize: "var(--text-sm)",
+    outline: "none",
+    boxSizing: "border-box" as const,
+  };
+
+  const handleSalvar = async () => {
+    if (nome.trim().length < 3) {
+      toastError("O nome deve ter ao menos 3 caracteres.", "Dados inválidos");
+      return;
+    }
+    if (!dataInicio || !dataFim || new Date(dataFim) <= new Date(dataInicio)) {
+      toastError("A data de fim deve ser posterior à data de início.", "Dados inválidos");
+      return;
+    }
+    const qtd = Number(classificam);
+    if (formato === "Hibrido" && !ehPotenciaDeDois(qtd)) {
+      toastError("Times que classificam deve ser uma potência de 2 (2, 4, 8, 16…).", "Dados inválidos");
+      return;
+    }
+    try {
+      await editarCampeonato({
+        id: campeonato.id,
+        nome: nome.trim(),
+        dataInicio: new Date(dataInicio).toISOString(),
+        dataFim: new Date(dataFim).toISOString(),
+        pontosVitoria: Number(pVitoria) || 0,
+        pontosEmpate: Number(pEmpate) || 0,
+        pontosDerrota: Number(pDerrota) || 0,
+        formatoCampeonato: FORMATO_CAMPEONATO[formato].valor,
+        quantidadeTimesClassificam: formato === "Hibrido" ? qtd : 0,
+      }).unwrap();
+      toastSuccess("Campeonato atualizado com sucesso!");
+      onClose();
+    } catch (err) {
+      const msg =
+        typeof err === "object" && err !== null && "data" in err && typeof (err as { data: unknown }).data === "string"
+          ? (err as { data: string }).data
+          : "Não foi possível salvar as alterações. Tente novamente.";
+      toastError(msg, "Erro");
+    }
+  };
+
+  return (
+    <div
+      style={{ position: "fixed", inset: 0, zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center", padding: "var(--space-4)", background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)" }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 12 }}
+        transition={{ duration: 0.2 }}
+        onClick={(e) => e.stopPropagation()}
+        style={{ width: "100%", maxWidth: "440px", background: "rgba(18,18,18,0.99)", border: "1px solid rgba(0,230,118,0.25)", borderRadius: "var(--radius-2xl)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)", display: "flex", flexDirection: "column", maxHeight: "85vh", overflow: "hidden" }}
+      >
+        <div style={{ padding: "var(--space-4) var(--space-5)", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
+          <p style={{ margin: 0, fontSize: "var(--text-xs)", letterSpacing: "0.25em", textTransform: "uppercase", color: "var(--color-brand-primary)" }}>
+            Editar Campeonato
+          </p>
+          <button
+            onClick={onClose}
+            style={{ width: "28px", height: "28px", borderRadius: "50%", border: "1px solid rgba(255,255,255,0.1)", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--color-text-muted)" }}
+          >
+            <Icon icon={X} size={14} />
+          </button>
+        </div>
+
+        <div style={{ padding: "var(--space-5)", overflowY: "auto", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+          <div>
+            <label style={labelStyle}>Nome</label>
+            <input style={inputStyle} value={nome} onChange={(e) => setNome(e.target.value)} />
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
+            <div>
+              <label style={labelStyle}>Data de início</label>
+              <input type="date" style={inputStyle} value={dataInicio} onChange={(e) => setDataInicio(e.target.value)} />
+            </div>
+            <div>
+              <label style={labelStyle}>Data de fim</label>
+              <input type="date" style={inputStyle} value={dataFim} onChange={(e) => setDataFim(e.target.value)} />
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "var(--space-3)" }}>
+            <div>
+              <label style={labelStyle}>Vitória</label>
+              <input type="number" min={0} style={inputStyle} value={pVitoria} onChange={(e) => setPVitoria(e.target.value)} />
+            </div>
+            <div>
+              <label style={labelStyle}>Empate</label>
+              <input type="number" min={0} style={inputStyle} value={pEmpate} onChange={(e) => setPEmpate(e.target.value)} />
+            </div>
+            <div>
+              <label style={labelStyle}>Derrota</label>
+              <input type="number" min={0} style={inputStyle} value={pDerrota} onChange={(e) => setPDerrota(e.target.value)} />
+            </div>
+          </div>
+
+          <div>
+            <label style={labelStyle}>Formato</label>
+            <select
+              style={{ ...inputStyle, cursor: "pointer" }}
+              value={formato}
+              onChange={(e) => setFormato(e.target.value as FormatoCampeonato)}
+            >
+              {(Object.keys(FORMATO_CAMPEONATO) as FormatoCampeonato[]).map((key) => (
+                <option key={key} value={key} style={{ background: "#121212" }}>
+                  {FORMATO_CAMPEONATO[key].label}
+                </option>
+              ))}
+            </select>
+            <p style={{ margin: "4px 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", lineHeight: 1.5 }}>
+              {FORMATO_CAMPEONATO[formato].desc}
+            </p>
+          </div>
+
+          {formato === "Hibrido" && (
+            <div>
+              <label style={labelStyle}>Times que classificam para o mata-mata</label>
+              <input type="number" min={2} style={inputStyle} value={classificam} onChange={(e) => setClassificam(e.target.value)} />
+              <p style={{ margin: "4px 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
+                Deve ser uma potência de 2 (2, 4, 8, 16…).
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div style={{ padding: "var(--space-4) var(--space-5)", borderTop: "1px solid rgba(255,255,255,0.06)", display: "flex", gap: "var(--space-3)", flexShrink: 0 }}>
+          <Button variant="ghost" onClick={onClose} disabled={isLoading} fullWidth>
+            Cancelar
+          </Button>
+          <Button variant="primary" onClick={handleSalvar} loading={isLoading} fullWidth>
+            Salvar alterações
+          </Button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 // ─── Página de detalhes ───────────────────────────────────────────────────────
 
 export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ id: string }> }) {
@@ -379,18 +562,35 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
 
   const [modalConvidar, setModalConvidar] = useState(false);
   const [modalCancelar, setModalCancelar] = useState(false);
+  const [modalEditar, setModalEditar]     = useState(false);
   const [teamSearch, setTeamSearch]       = useState("");
   const [timeDetalhes,   setTimeDetalhes]   = useState<ParticipacaoDisplay | null>(null);
   const [timeParaRemover, setTimeParaRemover] = useState<ParticipacaoDisplay | null>(null);
+  const [aba, setAba]                     = useState<"times" | "tabela" | "jogos">("times");
 
   const { data: todos = [], isLoading }         = useListarCampeonatosQuery();
   const { data: todosOsTimes = [] }             = useListarTodosOsTimesQuery();
   const { data: convitesCampeonato = [] }       = useListarConvitesCampeonatoQuery(id);
   const [abrirInscricoes, { isLoading: isAbrindo }]          = useAbrirInscricoesMutation();
+  const [iniciarCampeonato, { isLoading: isIniciando }]      = useIniciarCampeonatoMutation();
   const [cancelarCampeonato, { isLoading: isCancelando }]    = useCancelarCampeonatoMutation();
   const [removerTime,        { isLoading: isRemovendoTime }] = useRemoverTimeDoCampeonatoMutation();
 
   const campeonato = todos.find((c) => c.id === id) ?? null;
+
+  const iniciado          = !!campeonato && ["EmAndamento", "Finalizado"].includes(campeonato.status);
+  const temPontosCorridos = campeonato?.formatoCampeonato === "PontosCorridos" || campeonato?.formatoCampeonato === "Hibrido";
+  const temMataMata       = campeonato?.formatoCampeonato === "MataMata" || campeonato?.formatoCampeonato === "Hibrido";
+
+  const { data: classificacaoData = [], isFetching: carregandoClassificacao } = useObterClassificacaoQuery(id, {
+    skip: !iniciado || !temPontosCorridos,
+  });
+  const { data: chaveamentoData = [], isFetching: carregandoChaveamento } = useObterChaveamentoQuery(id, {
+    skip: !iniciado || !temMataMata,
+  });
+  const { data: jogosData = [], isError: erroJogos, isFetching: carregandoJogos } = useListarJogosQuery(id, {
+    skip: !iniciado || !temPontosCorridos,
+  });
 
   const participacoesDisplay = convitesCampeonato.map((convite) => {
     const t = todosOsTimes.find((x) => x.id === convite.timeId);
@@ -424,6 +624,20 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
       toastSuccess("Inscrições abertas com sucesso!");
     } catch {
       toastError("Não foi possível abrir as inscrições. Tente novamente.", "Erro");
+    }
+  };
+
+  const handleIniciarCampeonato = async () => {
+    if (!campeonato) return;
+    try {
+      await iniciarCampeonato(campeonato.id).unwrap();
+      toastSuccess("Campeonato iniciado! Gere a tabela de jogos para começar.");
+    } catch (err) {
+      const msg =
+        typeof err === "object" && err !== null && "data" in err && typeof (err as { data: unknown }).data === "string"
+          ? (err as { data: string }).data
+          : "Não foi possível iniciar o campeonato. Tente novamente.";
+      toastError(msg, "Erro");
     }
   };
 
@@ -501,8 +715,20 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
   })();
   const podeConvidar   = campeonato.status === "InscricoesAbertas";
   const podeAbrir      = campeonato.status === "Rascunho";
+  const podeIniciar    = campeonato.status === "InscricoesAbertas";
+  const podeEditar     = !["EmAndamento", "Finalizado", "Cancelado"].includes(campeonato.status);
   const podeCancelar   = !["Finalizado", "Cancelado"].includes(campeonato.status);
   const isClosed       = ["Finalizado", "Cancelado"].includes(campeonato.status);
+
+  const formato = campeonato.formatoCampeonato;
+  const mostraClassificacao = formato === "PontosCorridos" || formato === "Hibrido";
+  const mostraChaveamento   = formato === "MataMata" || formato === "Hibrido";
+
+  const NAV_GESTAO: { href: string; icon: LucideIcon; title: string; desc: string }[] = [
+    { href: `/organizador/campeonatos/${id}/jogos`, icon: Swords, title: "Jogos & Placares", desc: "Gere a tabela de jogos e registre os placares das partidas." },
+    ...(mostraClassificacao ? [{ href: `/organizador/campeonatos/${id}/classificacao`, icon: BarChart3, title: "Classificação", desc: "Acompanhe a pontuação e a posição de cada time." }] : []),
+    ...(mostraChaveamento ? [{ href: `/organizador/campeonatos/${id}/chaveamento`, icon: GitFork, title: "Chaveamento", desc: "Visualize os confrontos da fase eliminatória." }] : []),
+  ];
 
   const grpConfirmados = participacoesBuscadas.filter((p) => p.aceito === true);
   const grpPendentes   = participacoesBuscadas.filter((p) => p.aceito === null);
@@ -517,6 +743,27 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
       { key: "recusados", label: "Recusados",   items: grpRecusados,   color: "var(--color-feedback-danger)",   bg: "rgba(255,72,68,0.06)",  border: "rgba(255,72,68,0.18)",  icon: XCircle     },
     ] : []),
   ].filter((g) => g.items.length > 0);
+
+  // ─── Dados das abas (campeonato em andamento) ────────────────────────────
+  const abaTabelaLabel = temMataMata && !temPontosCorridos ? "Chaveamento" : "Tabela";
+
+  const proximosJogos: { id: string; casa: string; visitante: string; etiqueta: string }[] = [];
+  if (temPontosCorridos) {
+    for (const j of jogosData) {
+      if (!j.finalizado) {
+        proximosJogos.push({ id: j.id, casa: j.nomeTimeCasa, visitante: j.nomeTimeVisitante, etiqueta: `Rodada ${j.rodada}` });
+      }
+    }
+  }
+  if (temMataMata) {
+    for (const fase of chaveamentoData) {
+      for (const p of fase.partidas) {
+        if (!p.finalizado && p.timeCasa !== "A definir" && p.timeVisitante !== "A definir") {
+          proximosJogos.push({ id: p.id, casa: p.timeCasa, visitante: p.timeVisitante, etiqueta: fase.fase });
+        }
+      }
+    }
+  }
 
   // ─── Render ──────────────────────────────────────────────────────────────
 
@@ -580,6 +827,10 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                     {campeonato.nome}
                   </h1>
                   <Badge variant={statusCfg.variant}>{statusCfg.label}</Badge>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "3px 10px", borderRadius: "var(--radius-full)", fontSize: "var(--text-xs)", fontWeight: 600, color: "var(--color-brand-primary)", background: "rgba(0,230,118,0.1)", border: "1px solid rgba(0,230,118,0.25)" }}>
+                    <Icon icon={GitFork} size={11} />
+                    {FORMATO_CAMPEONATO[campeonato.formatoCampeonato as FormatoCampeonato]?.label ?? campeonato.formatoCampeonato}
+                  </span>
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-4)" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "var(--space-1)" }}>
@@ -641,7 +892,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
         data-camp-grid
         style={{ display: "grid", gridTemplateColumns: "minmax(0,5fr) minmax(0,7fr)", gap: "var(--space-6)", alignItems: "start" }}
       >
-        {/* ── Esquerda: Ações + Configurações ──────────────────────────── */}
+        {/* ── Esquerda: Ações + Gestão ─────────────────────────────────── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -656,6 +907,35 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
             <p style={{ margin: "0 0 var(--space-3)", fontSize: "var(--text-xs)", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--color-text-muted)" }}>
               Ações disponíveis
             </p>
+
+            {/* Info: times confirmados — contexto antes das ações */}
+            {campeonato.status === "InscricoesAbertas" && (() => {
+              const MIN_TIMES = 8;
+              const confirmados = participacoesDisplay.filter((p) => p.aceito === true).length;
+              const faltam = Math.max(0, MIN_TIMES - confirmados);
+              const progresso = Math.min(100, (confirmados / MIN_TIMES) * 100);
+              return (
+                <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)", marginBottom: "var(--space-3)", padding: "var(--space-3)", borderRadius: "var(--radius-md)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+                    <Icon icon={Users} size={14} style={{ color: faltam === 0 ? "var(--color-feedback-success)" : "var(--color-text-muted)", flexShrink: 0 }} />
+                    <div style={{ flex: 1 }}>
+                      <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Times confirmados</p>
+                      <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: faltam === 0 ? "var(--color-feedback-success)" : "white" }}>
+                        {confirmados}/{MIN_TIMES} confirmados
+                        {faltam > 0 && (
+                          <span style={{ fontWeight: 400, color: "rgba(255,193,7,0.85)", marginLeft: "6px" }}>
+                            (faltam {faltam})
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <div style={{ height: "4px", borderRadius: "var(--radius-full)", background: "rgba(255,255,255,0.07)", overflow: "hidden" }}>
+                    <div style={{ height: "100%", width: `${progresso}%`, borderRadius: "var(--radius-full)", background: faltam === 0 ? "var(--color-feedback-success)" : "rgba(255,193,7,0.7)", transition: "width 0.3s ease" }} />
+                  </div>
+                </div>
+              );
+            })()}
 
             <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
               {/* Abrir inscrições */}
@@ -685,34 +965,32 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                 </Button>
               )}
 
-              {/* Info: times confirmados */}
-              {campeonato.status === "InscricoesAbertas" && (() => {
-                const MIN_TIMES = 8;
-                const confirmados = participacoesDisplay.filter((p) => p.aceito === true).length;
-                const faltam = Math.max(0, MIN_TIMES - confirmados);
-                const progresso = Math.min(100, (confirmados / MIN_TIMES) * 100);
-                return (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)", padding: "var(--space-3)", borderRadius: "var(--radius-md)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
-                      <Icon icon={Users} size={14} style={{ color: faltam === 0 ? "var(--color-feedback-success)" : "var(--color-text-muted)", flexShrink: 0 }} />
-                      <div style={{ flex: 1 }}>
-                        <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Times confirmados</p>
-                        <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: faltam === 0 ? "var(--color-feedback-success)" : "white" }}>
-                          {confirmados}/{MIN_TIMES} confirmados
-                          {faltam > 0 && (
-                            <span style={{ fontWeight: 400, color: "rgba(255,193,7,0.85)", marginLeft: "6px" }}>
-                              (faltam {faltam})
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                    <div style={{ height: "4px", borderRadius: "var(--radius-full)", background: "rgba(255,255,255,0.07)", overflow: "hidden" }}>
-                      <div style={{ height: "100%", width: `${progresso}%`, borderRadius: "var(--radius-full)", background: faltam === 0 ? "var(--color-feedback-success)" : "rgba(255,193,7,0.7)", transition: "width 0.3s ease" }} />
-                    </div>
-                  </div>
-                );
-              })()}
+              {/* Iniciar campeonato */}
+              {podeIniciar && (
+                <Button
+                  variant="primary"
+                  fullWidth
+                  loading={isIniciando}
+                  onClick={handleIniciarCampeonato}
+                  style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "var(--space-2)" }}
+                >
+                  <Icon icon={PlayCircle} size={14} />
+                  Iniciar Campeonato
+                </Button>
+              )}
+
+              {/* Editar campeonato */}
+              {podeEditar && (
+                <Button
+                  variant="secondary"
+                  fullWidth
+                  onClick={() => setModalEditar(true)}
+                  style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "var(--space-2)" }}
+                >
+                  <Icon icon={Pencil} size={14} />
+                  Editar campeonato
+                </Button>
+              )}
 
               {/* Encerrar campeonato — placeholder */}
               {campeonato.status === "EmAndamento" && (
@@ -757,32 +1035,32 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
             </div>
           </Card>
 
-          {/* Configurações — placeholders */}
+          {/* Gestão do campeonato */}
           <Card
             padding="md"
-            style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "var(--radius-xl)" }}
+            style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "var(--radius-2xl)" }}
           >
             <p style={{ margin: "0 0 var(--space-3)", fontSize: "var(--text-xs)", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--color-text-muted)" }}>
-              Configurações
+              Gestão do campeonato
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
-              {[
-                { icon: Pencil,   label: "Editar datas"      },
-                { icon: Star,     label: "Editar pontuação"  },
-                { icon: FileText, label: "Regulamento"       },
-                { icon: Award,    label: "Premiação"         },
-              ].map((item) => (
-                <button
-                  key={item.label}
-                  disabled
-                  style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", padding: "var(--space-2) var(--space-3)", borderRadius: "var(--radius-md)", background: "transparent", border: "none", cursor: "not-allowed", opacity: 0.45, width: "100%", textAlign: "left" }}
-                >
-                  <Icon icon={item.icon} size={13} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
-                  <span style={{ fontSize: "var(--text-sm)", color: "var(--color-text-secondary)", flex: 1 }}>{item.label}</span>
-                  <span style={{ fontSize: "10px", background: "rgba(255,255,255,0.06)", padding: "2px 6px", borderRadius: "var(--radius-full)", color: "var(--color-text-muted)", letterSpacing: "0.05em", whiteSpace: "nowrap" }}>
-                    Em breve
-                  </span>
-                </button>
+              {NAV_GESTAO.map((item) => (
+                <Link key={item.href} href={item.href} style={{ textDecoration: "none" }}>
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", padding: "var(--space-3)", borderRadius: "var(--radius-lg)", background: "rgba(0,230,118,0.04)", border: "1px solid rgba(0,230,118,0.12)", transition: "all 0.15s", cursor: "pointer" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,230,118,0.09)"; e.currentTarget.style.borderColor = "rgba(0,230,118,0.35)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(0,230,118,0.04)"; e.currentTarget.style.borderColor = "rgba(0,230,118,0.12)"; }}
+                  >
+                    <div style={{ width: "2rem", height: "2rem", borderRadius: "var(--radius-md)", background: "rgba(0,230,118,0.1)", border: "1px solid rgba(0,230,118,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <Icon icon={item.icon} size={15} style={{ color: "var(--color-brand-primary)" }} />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>{item.title}</p>
+                      <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)", lineHeight: 1.4 }}>{item.desc}</p>
+                    </div>
+                    <Icon icon={ChevronRight} size={14} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
+                  </div>
+                </Link>
               ))}
             </div>
           </Card>
@@ -798,6 +1076,39 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
             padding="lg"
             style={{ background: "linear-gradient(160deg, rgba(15,15,15,0.98), rgba(8,8,8,0.99))", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "var(--radius-2xl)", boxShadow: "0 16px 48px rgba(0,0,0,0.4)" }}
           >
+            {/* Seletor de abas — campeonato em andamento */}
+            {iniciado && (
+              <div style={{ display: "flex", gap: "4px", marginBottom: "var(--space-5)", padding: "4px", background: "rgba(255,255,255,0.03)", borderRadius: "var(--radius-lg)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                {([
+                  { key: "times" as const,  label: "Times",       icon: Users },
+                  { key: "tabela" as const, label: abaTabelaLabel, icon: temMataMata && !temPontosCorridos ? GitFork : BarChart3 },
+                  { key: "jogos" as const,  label: "Jogos",        icon: Swords },
+                ]).map((t) => {
+                  const ativo = aba === t.key;
+                  return (
+                    <button
+                      key={t.key}
+                      onClick={() => setAba(t.key)}
+                      style={{
+                        flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
+                        padding: "var(--space-2) var(--space-1)", borderRadius: "var(--radius-md)", border: "none", cursor: "pointer",
+                        fontSize: "var(--text-sm)", fontWeight: 600,
+                        background: ativo ? "rgba(0,230,118,0.12)" : "transparent",
+                        color: ativo ? "var(--color-brand-primary)" : "var(--color-text-muted)",
+                        boxShadow: ativo ? "0 1px 8px rgba(0,230,118,0.12)" : "none",
+                        transition: "all 0.15s",
+                      }}
+                    >
+                      <Icon icon={t.icon} size={14} />
+                      {t.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {(!iniciado || aba === "times") && (
+            <>
             {/* Cabeçalho */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-3)", marginBottom: "var(--space-4)", paddingBottom: "var(--space-4)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
@@ -944,6 +1255,122 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                 ))}
               </motion.div>
             )}
+            </>
+            )}
+
+            {/* ── Aba: Tabela / Chaveamento ────────────────────────────── */}
+            {iniciado && aba === "tabela" && (
+              <div>
+                {temMataMata && !temPontosCorridos ? (
+                  carregandoChaveamento ? (
+                    <div style={{ display: "flex", justifyContent: "center", padding: "var(--space-6)" }}>
+                      <Spinner size="md" ariaLabel="Carregando chaveamento" />
+                    </div>
+                  ) : chaveamentoData.length === 0 ? (
+                    <p style={{ textAlign: "center", color: "var(--color-text-muted)", padding: "var(--space-6)", fontSize: "var(--text-sm)", margin: 0 }}>
+                      O chaveamento aparece após a geração dos jogos.
+                    </p>
+                  ) : (
+                    <Chaveamento chaveamento={chaveamentoData} />
+                  )
+                ) : carregandoClassificacao ? (
+                  <div style={{ display: "flex", justifyContent: "center", padding: "var(--space-6)" }}>
+                    <Spinner size="md" ariaLabel="Carregando classificação" />
+                  </div>
+                ) : classificacaoData.length === 0 ? (
+                  <p style={{ textAlign: "center", color: "var(--color-text-muted)", padding: "var(--space-6)", fontSize: "var(--text-sm)", margin: 0 }}>
+                    A classificação aparece após os placares serem lançados.
+                  </p>
+                ) : (
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                        <th style={{ padding: "var(--space-2)", textAlign: "left", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", fontWeight: 600, width: "28px" }}>#</th>
+                        <th style={{ padding: "var(--space-2)", textAlign: "left", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", fontWeight: 600 }}>Time</th>
+                        {[{ k: "pontos", l: "P" }, { k: "jogos", l: "J" }, { k: "vitorias", l: "V" }, { k: "saldoGols", l: "SG" }].map((c) => (
+                          <th key={c.k} style={{ padding: "var(--space-2)", textAlign: "center", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", fontWeight: 600, width: "36px" }}>{c.l}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {classificacaoData.map((linha) => (
+                        <tr key={linha.timeId} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                          <td style={{ padding: "var(--space-2)", fontSize: "var(--text-sm)", fontWeight: 700, color: linha.posicao <= 3 ? "var(--color-brand-primary)" : "var(--color-text-muted)" }}>{linha.posicao}</td>
+                          <td style={{ padding: "var(--space-2)" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+                              <Avatar name={linha.nomeTime} src={linha.logoUrl || undefined} size="sm" />
+                              <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{linha.nomeTime}</span>
+                            </div>
+                          </td>
+                          <td style={{ padding: "var(--space-2)", textAlign: "center", fontSize: "var(--text-sm)", fontWeight: 700, color: "white" }}>{linha.pontos}</td>
+                          <td style={{ padding: "var(--space-2)", textAlign: "center", fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>{linha.jogos}</td>
+                          <td style={{ padding: "var(--space-2)", textAlign: "center", fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>{linha.vitorias}</td>
+                          <td style={{ padding: "var(--space-2)", textAlign: "center", fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>{linha.saldoGols}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+
+                <Link
+                  href={`/organizador/campeonatos/${id}/${temMataMata && !temPontosCorridos ? "chaveamento" : "classificacao"}`}
+                  style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--space-1)", marginTop: "var(--space-4)", padding: "var(--space-2)", borderRadius: "var(--radius-md)", border: "1px solid rgba(255,255,255,0.08)", color: "var(--color-text-secondary)", textDecoration: "none", fontSize: "var(--text-xs)", fontWeight: 600 }}
+                >
+                  Ver {temMataMata && !temPontosCorridos ? "chaveamento" : "tabela"} completo
+                </Link>
+              </div>
+            )}
+
+            {/* ── Aba: Próximos jogos ──────────────────────────────────── */}
+            {iniciado && aba === "jogos" && (
+              <div>
+                {temPontosCorridos && erroJogos && (
+                  <div style={{ display: "flex", gap: "var(--space-2)", padding: "var(--space-3)", borderRadius: "var(--radius-md)", background: "rgba(255,193,7,0.06)", border: "1px solid rgba(255,193,7,0.2)", marginBottom: "var(--space-3)" }}>
+                    <Icon icon={AlertTriangle} size={14} style={{ color: "var(--color-feedback-warning)", flexShrink: 0, marginTop: 2 }} />
+                    <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)", lineHeight: 1.6 }}>
+                      Não foi possível carregar os jogos. Verifique se o backend está atualizado.
+                    </p>
+                  </div>
+                )}
+
+                {(carregandoJogos || carregandoChaveamento) ? (
+                  <div style={{ display: "flex", justifyContent: "center", padding: "var(--space-6)" }}>
+                    <Spinner size="md" ariaLabel="Carregando jogos" />
+                  </div>
+                ) : proximosJogos.length === 0 ? (
+                  <p style={{ textAlign: "center", color: "var(--color-text-muted)", padding: "var(--space-6)", fontSize: "var(--text-sm)", margin: 0 }}>
+                    Nenhum jogo pendente. Todos os jogos foram realizados ou ainda não foram gerados.
+                  </p>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+                    {proximosJogos.slice(0, 8).map((j) => (
+                      <button
+                        key={j.id}
+                        onClick={() => router.push(`/organizador/campeonatos/${id}/jogo/${j.id}`)}
+                        style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", padding: "var(--space-3)", borderRadius: "var(--radius-lg)", background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)", cursor: "pointer", width: "100%", textAlign: "left", transition: "all 0.15s" }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,230,118,0.06)"; e.currentTarget.style.borderColor = "rgba(0,230,118,0.25)"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.025)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; }}
+                      >
+                        <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--color-text-muted)", background: "rgba(255,255,255,0.06)", padding: "2px 8px", borderRadius: "var(--radius-full)", flexShrink: 0 }}>
+                          {j.etiqueta}
+                        </span>
+                        <span style={{ flex: 1, textAlign: "right", fontSize: "var(--text-sm)", fontWeight: 600, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{j.casa}</span>
+                        <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)", fontWeight: 700 }}>×</span>
+                        <span style={{ flex: 1, textAlign: "left", fontSize: "var(--text-sm)", fontWeight: 600, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{j.visitante}</span>
+                        <Icon icon={ChevronRight} size={15} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                <Link
+                  href={`/organizador/campeonatos/${id}/jogos`}
+                  style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--space-1)", marginTop: "var(--space-4)", padding: "var(--space-2)", borderRadius: "var(--radius-md)", border: "1px solid rgba(255,255,255,0.08)", color: "var(--color-text-secondary)", textDecoration: "none", fontSize: "var(--text-xs)", fontWeight: 600 }}
+                >
+                  Ver todos os jogos
+                </Link>
+              </div>
+            )}
           </Card>
         </motion.div>
       </div>
@@ -953,6 +1380,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.2 }}
+        style={{ marginTop: "var(--space-8)" }}
       >
         <div style={{ marginBottom: "var(--space-4)", display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
           <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 700, color: "var(--color-text-secondary)" }}>
@@ -961,24 +1389,20 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
           <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.06)" }} />
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "var(--space-3)" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "var(--space-2)" }}>
           {FEATURES.map((feat) => (
             <div
               key={feat.title}
-              style={{ padding: "var(--space-4)", borderRadius: "var(--radius-xl)", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", display: "flex", flexDirection: "column", gap: "var(--space-2)", opacity: 0.7 }}
+              title={feat.desc}
+              style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", padding: "var(--space-2) var(--space-3)", borderRadius: "var(--radius-lg)", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}
             >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <Icon icon={feat.icon} size={18} style={{ color: "var(--color-text-muted)" }} />
-                <span style={{ fontSize: "10px", background: "rgba(255,255,255,0.06)", padding: "2px 8px", borderRadius: "var(--radius-full)", color: "var(--color-text-muted)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                  Em breve
-                </span>
-              </div>
-              <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-secondary)" }}>
+              <Icon icon={feat.icon} size={15} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
+              <span style={{ flex: 1, fontSize: "var(--text-xs)", fontWeight: 600, color: "var(--color-text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {feat.title}
-              </p>
-              <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)", lineHeight: 1.5 }}>
-                {feat.desc}
-              </p>
+              </span>
+              <span style={{ fontSize: "9px", background: "rgba(255,255,255,0.06)", padding: "2px 6px", borderRadius: "var(--radius-full)", color: "var(--color-text-muted)", letterSpacing: "0.06em", textTransform: "uppercase", flexShrink: 0 }}>
+                Em breve
+              </span>
             </div>
           ))}
         </div>
@@ -992,9 +1416,11 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
 
         @media (max-width: 640px) {
           [data-camp-hero-stats] {
-            flex-shrink: 1 !important;
             width: 100%;
-            gap: var(--space-3) !important;
+            justify-content: space-around;
+            gap: var(--space-2) !important;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-top: var(--space-3);
           }
           [data-camp-stat-divider] {
             display: none !important;
@@ -1005,6 +1431,9 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
       <AnimatePresence>
         {modalConvidar && (
           <ConvidarTimeModal campeonato={campeonato} onClose={() => setModalConvidar(false)} convidadosIniciais={todosConvidadosIds} />
+        )}
+        {modalEditar && (
+          <EditarCampeonatoModal campeonato={campeonato} onClose={() => setModalEditar(false)} />
         )}
         {modalCancelar && (
           <CancelarModal

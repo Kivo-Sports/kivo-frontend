@@ -1,6 +1,7 @@
 import { baseApi } from "@/store/api/baseApi";
 import type {
   CriarCampeonatoRequest,
+  EditarCampeonatoRequest,
   CampeonatoResponse,
   ConviteRequest,
   ResponderConviteRequest,
@@ -24,6 +25,25 @@ export const campeonatoApi = baseApi.injectEndpoints({
           pontosVitoria: body.pontosVitoria,
           pontosDerrota: body.pontosDerrota,
           pontosEmpate: body.pontosEmpate,
+          formatoCampeonato: body.formatoCampeonato,
+          quantidadeTimesClassificam: body.quantidadeTimesClassificam,
+        },
+      }),
+      invalidatesTags: ["Campeonato"],
+    }),
+    editarCampeonato: builder.mutation<CampeonatoResponse, EditarCampeonatoRequest>({
+      query: ({ id, ...body }) => ({
+        url: `/api/campeonato/${id}`,
+        method: "PUT",
+        body: {
+          nome: body.nome,
+          dataInicio: body.dataInicio,
+          dataFim: body.dataFim,
+          pontosVitoria: body.pontosVitoria,
+          pontosDerrota: body.pontosDerrota,
+          pontosEmpate: body.pontosEmpate,
+          formatoCampeonato: body.formatoCampeonato,
+          quantidadeTimesClassificam: body.quantidadeTimesClassificam,
         },
       }),
       invalidatesTags: ["Campeonato"],
@@ -34,6 +54,10 @@ export const campeonatoApi = baseApi.injectEndpoints({
     }),
     abrirInscricoes: builder.mutation<void, string>({
       query: (id) => ({ url: `/api/campeonato/${id}/abrir-inscricoes`, method: "PATCH" }),
+      invalidatesTags: ["Campeonato"],
+    }),
+    iniciarCampeonato: builder.mutation<void, string>({
+      query: (id) => ({ url: `/api/campeonato/${id}/iniciar-campeonato`, method: "PATCH" }),
       invalidatesTags: ["Campeonato"],
     }),
     cancelarCampeonato: builder.mutation<void, string>({
@@ -84,8 +108,10 @@ export const campeonatoApi = baseApi.injectEndpoints({
 
 export const {
   useCriarCampeonatoMutation,
+  useEditarCampeonatoMutation,
   useListarCampeonatosQuery,
   useAbrirInscricoesMutation,
+  useIniciarCampeonatoMutation,
   useCancelarCampeonatoMutation,
   useRemoverTimeDoCampeonatoMutation,
   useConvidarTimeMutation,

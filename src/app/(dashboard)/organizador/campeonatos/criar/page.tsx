@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -17,7 +18,12 @@ import { useCriarCampeonatoMutation } from "@/store/api/campeonatoApi";
 import { useGetPerfilUsuarioQuery } from "@/store/api/userApi";
 import { useAppSelector } from "@/store/hooks";
 import { Icon } from "@/components/atoms/Icon";
-import type { CampeonatoFormValues } from "@/types/campeonato";
+import { FORMATO_CAMPEONATO, type CampeonatoFormValues, type FormatoCampeonato } from "@/types/campeonato";
+
+// Valida potência de 2 (2, 4, 8, 16…) — exigido para a fase de mata-mata
+function ehPotenciaDeDois(n: number): boolean {
+  return Number.isInteger(n) && n >= 2 && (n & (n - 1)) === 0;
+}
 
 const CHAMPIONSHIP_NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9' .-]+$/;
 
@@ -84,6 +90,10 @@ export default function CriarCampeonatoPage() {
   const { user } = useAppSelector((state) => state.auth);
   const [criarCampeonato, { isLoading }] = useCriarCampeonatoMutation();
 
+  const [formato, setFormato] = useState<FormatoCampeonato>("PontosCorridos");
+  const [classificam, setClassificam] = useState("4");
+  const [classificamError, setClassificamError] = useState<string | null>(null);
+
   const { data: perfil, isLoading: isLoadingPerfil, isError: isErrorPerfil } = useGetPerfilUsuarioQuery(
     user?.id ?? "",
     { skip: !user?.id }
@@ -117,6 +127,13 @@ export default function CriarCampeonatoPage() {
       return;
     }
 
+    const qtdClassificam = Number(classificam);
+    if (formato === "Hibrido" && !ehPotenciaDeDois(qtdClassificam)) {
+      setClassificamError("Informe uma potência de 2 (2, 4, 8, 16…).");
+      return;
+    }
+    setClassificamError(null);
+
     try {
       await criarCampeonato({
         organizadorCampeonatoId: perfil.organizadorCampeonatoId,
@@ -126,6 +143,8 @@ export default function CriarCampeonatoPage() {
         pontosVitoria: values.pontosVitoria,
         pontosDerrota: values.pontosDerrota,
         pontosEmpate:  values.pontosEmpate,
+        formatoCampeonato: FORMATO_CAMPEONATO[formato].valor,
+        quantidadeTimesClassificam: formato === "Hibrido" ? qtdClassificam : 0,
       }).unwrap();
 
       toastSuccess("Campeonato criado com sucesso!");
@@ -377,6 +396,67 @@ export default function CriarCampeonatoPage() {
                     {...register("pontosDerrota")}
                   />
                 </div>
+              </div>
+
+              {/* Formato do campeonato */}
+              <div>
+                <p style={{ margin: "0 0 var(--space-2)", fontSize: "var(--text-sm)", fontWeight: 500, color: "var(--color-text-secondary)" }}>
+                  Formato do campeonato
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+                  {(Object.keys(FORMATO_CAMPEONATO) as FormatoCampeonato[]).map((key) => {
+                    const opcao = FORMATO_CAMPEONATO[key];
+                    const ativo = formato === key;
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        onClick={() => setFormato(key)}
+                        style={{
+                          textAlign: "left",
+                          padding: "var(--space-3)",
+                          borderRadius: "var(--radius-lg)",
+                          background: ativo ? "rgba(0,230,118,0.08)" : "rgba(255,255,255,0.02)",
+                          border: `1px solid ${ativo ? "rgba(0,230,118,0.4)" : "rgba(255,255,255,0.07)"}`,
+                          cursor: "pointer",
+                          transition: "all 0.15s",
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+                          <span
+                            style={{
+                              width: "14px", height: "14px", borderRadius: "50%", flexShrink: 0,
+                              border: `2px solid ${ativo ? "var(--color-brand-primary)" : "rgba(255,255,255,0.2)"}`,
+                              background: ativo ? "var(--color-brand-primary)" : "transparent",
+                            }}
+                          />
+                          <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>
+                            {opcao.label}
+                          </span>
+                        </div>
+                        <p style={{ margin: "var(--space-1) 0 0 calc(14px + var(--space-2))", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", lineHeight: 1.5 }}>
+                          {opcao.desc}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {formato === "Hibrido" && (
+                  <div style={{ marginTop: "var(--space-3)" }}>
+                    <FormField
+                      label="Times que classificam para o mata-mata"
+                      type="number"
+                      min={2}
+                      value={classificam}
+                      onChange={(e) => setClassificam(e.target.value)}
+                      error={classificamError ?? undefined}
+                    />
+                    <p style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
+                      Deve ser uma potência de 2 (2, 4, 8, 16…) para formar o chaveamento.
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Ações */}

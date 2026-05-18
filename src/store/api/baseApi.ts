@@ -37,7 +37,7 @@ const baseQueryWithAutoLogout: BaseQueryFn<string | FetchArgs, unknown, FetchBas
 
 export const baseApi = createApi({
   reducerPath: "baseApi",
-  tagTypes: ["Time", "Campeonato"],
+  tagTypes: ["Time", "Campeonato", "Partida"],
   baseQuery: baseQueryWithAutoLogout,
   endpoints: () => ({}),
 });
