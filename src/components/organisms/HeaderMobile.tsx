@@ -102,11 +102,11 @@ export function HeaderMobile() {
           }}
         >
           <Image
-            src="/LogoKivoSportsSimplificada.png"
+            src="/LogoKivoSportsSFundoBranca.png"
             alt="Kivo Sports"
-            width={45}
-            height={18}
-            style={{ objectFit: 'contain' }}
+            width={90}
+            height={38}
+            style={{ width: 'auto', height: '38px', objectFit: 'contain' }}
             priority
           />
         </div>
@@ -418,26 +418,38 @@ export function HeaderMobile() {
           >
             Home
           </a>
-          <span
+          <a
+            href="/times"
+            onClick={() => setIsMenuOpen(false)}
             style={{
               ...getNavLinkStyle('/times'),
-              opacity: 0.4,
-              cursor: 'not-allowed',
+              color: pathname.startsWith('/times')
+                ? 'var(--color-brand-primary)'
+                : 'var(--color-text-secondary)',
+              fontWeight: pathname.startsWith('/times') ? 600 : 500,
+              background: pathname.startsWith('/times')
+                ? 'rgba(0, 230, 118, 0.1)'
+                : 'transparent',
             }}
-            title="Em breve"
           >
             Times
-          </span>
-          <span
+          </a>
+          <a
+            href="/campeonatos"
+            onClick={() => setIsMenuOpen(false)}
             style={{
               ...getNavLinkStyle('/campeonatos'),
-              opacity: 0.4,
-              cursor: 'not-allowed',
+              color: pathname.startsWith('/campeonatos')
+                ? 'var(--color-brand-primary)'
+                : 'var(--color-text-secondary)',
+              fontWeight: pathname.startsWith('/campeonatos') ? 600 : 500,
+              background: pathname.startsWith('/campeonatos')
+                ? 'rgba(0, 230, 118, 0.1)'
+                : 'transparent',
             }}
-            title="Em breve"
           >
             Campeonatos
-          </span>
+          </a>
         </div>
       )}
 

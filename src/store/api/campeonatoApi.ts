@@ -10,6 +10,40 @@ import type {
 } from "@/types/campeonato";
 import type { TimeResponse } from "@/types/time";
 
+function buildCampeonatoFormData(body: {
+  organizadorCampeonatoId?: string;
+  nome: string;
+  dataInicio: string;
+  dataFim: string;
+  pontosVitoria: number;
+  pontosDerrota: number;
+  pontosEmpate: number;
+  formatoCampeonato: number;
+  quantidadeTimesClassificam: number;
+  logo?: File;
+}): FormData {
+  const formData = new FormData();
+
+  if (body.organizadorCampeonatoId) {
+    formData.append("OrganizadorCampeonatoId", body.organizadorCampeonatoId);
+  }
+
+  formData.append("Nome", body.nome);
+  formData.append("DataInicio", body.dataInicio);
+  formData.append("DataFim", body.dataFim);
+  formData.append("PontosVitoria", String(body.pontosVitoria));
+  formData.append("PontosDerrota", String(body.pontosDerrota));
+  formData.append("PontosEmpate", String(body.pontosEmpate));
+  formData.append("FormatoCampeonato", String(body.formatoCampeonato));
+  formData.append("QuantidadeTimesClassificam", String(body.quantidadeTimesClassificam));
+
+  if (body.logo) {
+    formData.append("logo", body.logo);
+  }
+
+  return formData;
+}
+
 export const campeonatoApi = baseApi.injectEndpoints({
   overrideExisting: true,
   endpoints: (builder) => ({
@@ -17,17 +51,7 @@ export const campeonatoApi = baseApi.injectEndpoints({
       query: (body) => ({
         url: "/api/campeonato",
         method: "POST",
-        body: {
-          organizadorCampeonatoId: body.organizadorCampeonatoId,
-          nome: body.nome,
-          dataInicio: body.dataInicio,
-          dataFim: body.dataFim,
-          pontosVitoria: body.pontosVitoria,
-          pontosDerrota: body.pontosDerrota,
-          pontosEmpate: body.pontosEmpate,
-          formatoCampeonato: body.formatoCampeonato,
-          quantidadeTimesClassificam: body.quantidadeTimesClassificam,
-        },
+        body: buildCampeonatoFormData(body),
       }),
       invalidatesTags: ["Campeonato"],
     }),
@@ -35,22 +59,17 @@ export const campeonatoApi = baseApi.injectEndpoints({
       query: ({ id, ...body }) => ({
         url: `/api/campeonato/${id}`,
         method: "PUT",
-        body: {
-          nome: body.nome,
-          dataInicio: body.dataInicio,
-          dataFim: body.dataFim,
-          pontosVitoria: body.pontosVitoria,
-          pontosDerrota: body.pontosDerrota,
-          pontosEmpate: body.pontosEmpate,
-          formatoCampeonato: body.formatoCampeonato,
-          quantidadeTimesClassificam: body.quantidadeTimesClassificam,
-        },
+        body: buildCampeonatoFormData(body),
       }),
       invalidatesTags: ["Campeonato"],
     }),
     listarCampeonatos: builder.query<CampeonatoResponse[], void>({
       query: () => ({ url: "/api/campeonato", method: "GET" }),
       providesTags: ["Campeonato"],
+    }),
+    obterCampeonatoPorId: builder.query<CampeonatoResponse, string>({
+      query: (id) => ({ url: `/api/campeonato/${id}`, method: "GET" }),
+      providesTags: (_result, _error, id) => [{ type: "Campeonato", id }],
     }),
     abrirInscricoes: builder.mutation<void, string>({
       query: (id) => ({ url: `/api/campeonato/${id}/abrir-inscricoes`, method: "PATCH" }),
@@ -110,6 +129,7 @@ export const {
   useCriarCampeonatoMutation,
   useEditarCampeonatoMutation,
   useListarCampeonatosQuery,
+  useObterCampeonatoPorIdQuery,
   useAbrirInscricoesMutation,
   useIniciarCampeonatoMutation,
   useCancelarCampeonatoMutation,

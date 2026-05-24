@@ -3,7 +3,8 @@
 import { use } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowLeft, GitFork, FlaskConical } from "lucide-react";
+import { GitFork, FlaskConical } from "lucide-react";
+import { BotaoVoltar } from "@/components/molecules/BotaoVoltar";
 import { Card } from "@/components/molecules/Card";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Icon } from "@/components/atoms/Icon";
@@ -75,6 +76,7 @@ export default function ChaveamentoPage({ params }: { params: Promise<{ id: stri
         logoVisitante: visitante.logoUrl,
         golsCasa: 0,
         golsVisitante: 0,
+        dataHora: null,
         finalizado: false,
       });
     }
@@ -91,13 +93,7 @@ export default function ChaveamentoPage({ params }: { params: Promise<{ id: stri
       style={{ width: "100%", maxWidth: "1100px", margin: "0 auto", padding: "var(--space-6) var(--space-4)" }}
     >
       <div style={{ marginBottom: "var(--space-5)" }}>
-        <Link
-          href={`/organizador/campeonatos/${id}`}
-          style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-2)", color: "var(--color-text-muted)", textDecoration: "none", fontSize: "var(--text-sm)" }}
-        >
-          <Icon icon={ArrowLeft} size={14} />
-          Voltar para {campeonato.nome}
-        </Link>
+        <BotaoVoltar fallbackHref={`/organizador/campeonatos/${id}`} label={`Voltar para ${campeonato.nome}`} />
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", marginBottom: "var(--space-6)" }}>

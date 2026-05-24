@@ -3,7 +3,8 @@
 import { use, useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Calendar, MapPin, Goal, CheckCircle, AlertTriangle } from "lucide-react";
+import { Calendar, MapPin, Goal, CheckCircle, AlertTriangle } from "lucide-react";
+import { BotaoVoltar } from "@/components/molecules/BotaoVoltar";
 import { Avatar } from "@/components/atoms/Avatar";
 import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
@@ -135,13 +136,7 @@ export default function DetalheJogoPage({ params }: { params: Promise<{ id: stri
     >
       {/* Breadcrumb */}
       <div style={{ marginBottom: "var(--space-5)" }}>
-        <Link
-          href={`/organizador/campeonatos/${id}/jogos`}
-          style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-2)", color: "var(--color-text-muted)", textDecoration: "none", fontSize: "var(--text-sm)" }}
-        >
-          <Icon icon={ArrowLeft} size={14} />
-          Voltar para os jogos
-        </Link>
+        <BotaoVoltar fallbackHref={`/organizador/campeonatos/${id}/jogos`} label="Voltar para os jogos" />
       </div>
 
       {/* Card do confronto */}

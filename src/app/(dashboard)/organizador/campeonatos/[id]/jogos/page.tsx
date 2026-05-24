@@ -4,7 +4,8 @@ import { use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowLeft, Trophy, Swords, Calendar, AlertTriangle, ChevronRight } from "lucide-react";
+import { Trophy, Swords, Calendar, AlertTriangle, ChevronRight } from "lucide-react";
+import { BotaoVoltar } from "@/components/molecules/BotaoVoltar";
 import { Avatar } from "@/components/atoms/Avatar";
 import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/molecules/Card";
@@ -176,13 +177,7 @@ export default function JogosPage({ params }: { params: Promise<{ id: string }> 
     >
       {/* Breadcrumb */}
       <div style={{ marginBottom: "var(--space-5)" }}>
-        <Link
-          href={`/organizador/campeonatos/${id}`}
-          style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-2)", color: "var(--color-text-muted)", textDecoration: "none", fontSize: "var(--text-sm)" }}
-        >
-          <Icon icon={ArrowLeft} size={14} />
-          Voltar para {campeonato.nome}
-        </Link>
+        <BotaoVoltar fallbackHref={`/organizador/campeonatos/${id}`} label={`Voltar para ${campeonato.nome}`} />
       </div>
 
       {/* Header */}

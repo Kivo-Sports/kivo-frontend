@@ -1,21 +1,22 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft, Trophy, Calendar, Users,
+  Trophy, Calendar, Users,
   CheckCircle, XCircle, UserPlus, AlertTriangle,
   Search, X, Clock, Play, Lock, Bell,
-  Activity, FileText, Award, Pencil, Trash2, MapPin,
-  Swords, BarChart3, GitFork, PlayCircle, ChevronRight,
+  Activity, FileText, Award, Pencil, Trash2,
+  Swords, BarChart3, GitFork, PlayCircle, ChevronRight, ImageIcon,
   type LucideIcon,
 } from "lucide-react";
 import { Avatar } from "@/components/atoms/Avatar";
 import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/molecules/Card";
+import { BotaoVoltar } from "@/components/molecules/BotaoVoltar";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Icon } from "@/components/atoms/Icon";
 import { useToast } from "@/components/atoms/Toast";
@@ -43,6 +44,22 @@ import { FORMATO_CAMPEONATO, type CampeonatoResponse, type FormatoCampeonato } f
 function ehPotenciaDeDois(n: number): boolean {
   return Number.isInteger(n) && n >= 2 && (n & (n - 1)) === 0;
 }
+
+const MAX_LOGO_SIZE_BYTES = 5 * 1024 * 1024;
+
+function formatarTamanhoArquivo(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  const kb = bytes / 1024;
+  if (kb < 1024) return `${kb.toFixed(1)} KB`;
+  return `${(kb / 1024).toFixed(1)} MB`;
+}
+
+function validarLogo(arquivo: File): string | null {
+  const tiposPermitidos = ["image/png", "image/jpeg", "image/webp", "image/jpg"];
+  if (!tiposPermitidos.includes(arquivo.type)) return "Formato inválido. Use PNG, JPG/JPEG ou WEBP.";
+  if (arquivo.size > MAX_LOGO_SIZE_BYTES) return "Logo deve ter no máximo 5 MB.";
+  return null;
+}
 import type { TimeResponse } from "@/types/time";
 
 // ─── Status helpers ───────────────────────────────────────────────────────────
@@ -54,14 +71,6 @@ const STATUS_CONFIG: Record<string, { label: string; variant: "success" | "warni
   EmAndamento:          { label: "Em Andamento",          variant: "info"    },
   Finalizado:           { label: "Finalizado",            variant: "default" },
   Cancelado:            { label: "Cancelado",             variant: "danger"  },
-};
-
-const STATUS_LINE: Record<string, string> = {
-  Rascunho:          "rgba(200,200,200,0.4)",
-  InscricoesAbertas: "linear-gradient(90deg, rgba(0,230,118,0.9), rgba(0,230,118,0.1))",
-  EmAndamento:       "linear-gradient(90deg, rgba(96,165,250,0.9), rgba(96,165,250,0.1))",
-  Finalizado:        "rgba(180,180,180,0.3)",
-  Cancelado:         "linear-gradient(90deg, rgba(255,72,68,0.9), rgba(255,72,68,0.1))",
 };
 
 // ─── Funcionalidades futuras ──────────────────────────────────────────────────
@@ -210,101 +219,6 @@ interface ParticipacaoDisplay {
   aceito: boolean | null;
 }
 
-// ─── Modal: Detalhes do Time ──────────────────────────────────────────────────
-
-function TimeDetalhesModal({ participacao, podeRemover, onRemover, onClose }: {
-  participacao: ParticipacaoDisplay;
-  podeRemover: boolean;
-  onRemover: () => void;
-  onClose: () => void;
-}) {
-  const statusLabel = participacao.aceito === true ? "Confirmado" : participacao.aceito === false ? "Recusado" : "Pendente";
-  const statusColor = participacao.aceito === true ? "var(--color-feedback-success)" : participacao.aceito === false ? "var(--color-feedback-danger)" : "rgba(255,193,7,0.9)";
-  const statusBg    = participacao.aceito === true ? "rgba(0,230,118,0.08)"         : participacao.aceito === false ? "rgba(255,72,68,0.08)"          : "rgba(255,193,7,0.08)";
-
-  return (
-    <div
-      style={{ position: "fixed", inset: 0, zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center", padding: "var(--space-4)", background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)" }}
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 12 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 12 }}
-        transition={{ duration: 0.2 }}
-        onClick={(e) => e.stopPropagation()}
-        style={{ width: "100%", maxWidth: "360px", background: "rgba(18,18,18,0.99)", border: "1px solid rgba(0,230,118,0.2)", borderRadius: "var(--radius-2xl)", overflow: "hidden", boxShadow: "0 24px 80px rgba(0,0,0,0.6)" }}
-      >
-        {/* Header */}
-        <div style={{ padding: "var(--space-4) var(--space-5)", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <p style={{ margin: 0, fontSize: "var(--text-xs)", letterSpacing: "0.25em", textTransform: "uppercase", color: "var(--color-brand-primary)" }}>
-            Detalhes do time
-          </p>
-          <button
-            onClick={onClose}
-            style={{ width: "28px", height: "28px", borderRadius: "50%", border: "1px solid rgba(255,255,255,0.1)", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--color-text-muted)" }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "white"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--color-text-muted)"; }}
-          >
-            <Icon icon={X} size={14} />
-          </button>
-        </div>
-
-        {/* Body */}
-        <div style={{ padding: "var(--space-5)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)", marginBottom: "var(--space-4)" }}>
-            <Avatar name={participacao.nomeTime} src={participacao.logoUrl || undefined} size="lg" />
-            <div>
-              <h2 style={{ margin: "0 0 var(--space-1)", fontSize: "var(--text-lg)", fontWeight: 700, color: "white" }}>
-                {participacao.nomeTime}
-              </h2>
-              {(participacao.cidade || participacao.estado) && (
-                <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                  <Icon icon={MapPin} size={12} style={{ color: "var(--color-text-muted)" }} />
-                  <p style={{ margin: 0, fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
-                    {[participacao.cidade, participacao.estado].filter(Boolean).join(" · ")}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)", padding: "var(--space-3)", borderRadius: "var(--radius-lg)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>Status</span>
-              <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, color: statusColor, background: statusBg, padding: "2px 10px", borderRadius: "var(--radius-full)", border: `1px solid ${statusColor}33` }}>
-                {statusLabel}
-              </span>
-            </div>
-            <div style={{ height: 1, background: "rgba(255,255,255,0.05)" }} />
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>Convidado em</span>
-              <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
-                {new Date(participacao.convidadoEm).toLocaleDateString("pt-BR")}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        {podeRemover && (
-          <div style={{ padding: "0 var(--space-5) var(--space-5)" }}>
-            <Button
-              variant="danger"
-              fullWidth
-              onClick={onRemover}
-              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--space-2)" }}
-            >
-              <Icon icon={Trash2} size={14} />
-              Remover do campeonato
-            </Button>
-          </div>
-        )}
-      </motion.div>
-    </div>
-  );
-}
-
 // ─── Modal: Remover Time ──────────────────────────────────────────────────────
 
 function RemoverTimeModal({ nomeTime, onConfirm, onClose, isLoading }: {
@@ -403,6 +317,26 @@ function EditarCampeonatoModal({ campeonato, onClose }: { campeonato: Campeonato
     String(campeonato.quantidadeTimesClassificam > 0 ? campeonato.quantidadeTimesClassificam : 4),
   );
 
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoError, setLogoError] = useState<string | null>(null);
+  const [isDragOverLogo, setIsDragOverLogo] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Pontuação só se aplica a formatos com fase de pontos corridos
+  const usaPontuacao = formato === "PontosCorridos" || formato === "Hibrido";
+
+  const selecionarLogo = (arquivo: File | null): void => {
+    if (!arquivo) return;
+    const erro = validarLogo(arquivo);
+    if (erro) {
+      setLogoFile(null);
+      setLogoError(erro);
+      return;
+    }
+    setLogoFile(arquivo);
+    setLogoError(null);
+  };
+
   const labelStyle = { margin: "0 0 4px", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", display: "block" } as const;
   const inputStyle = {
     width: "100%",
@@ -437,11 +371,12 @@ function EditarCampeonatoModal({ campeonato, onClose }: { campeonato: Campeonato
         nome: nome.trim(),
         dataInicio: new Date(dataInicio).toISOString(),
         dataFim: new Date(dataFim).toISOString(),
-        pontosVitoria: Number(pVitoria) || 0,
-        pontosEmpate: Number(pEmpate) || 0,
-        pontosDerrota: Number(pDerrota) || 0,
+        pontosVitoria: usaPontuacao ? Number(pVitoria) || 0 : 0,
+        pontosEmpate: usaPontuacao ? Number(pEmpate) || 0 : 0,
+        pontosDerrota: usaPontuacao ? Number(pDerrota) || 0 : 0,
         formatoCampeonato: FORMATO_CAMPEONATO[formato].valor,
         quantidadeTimesClassificam: formato === "Hibrido" ? qtd : 0,
+        logo: logoFile ?? undefined,
       }).unwrap();
       toastSuccess("Campeonato atualizado com sucesso!");
       onClose();
@@ -496,21 +431,6 @@ function EditarCampeonatoModal({ campeonato, onClose }: { campeonato: Campeonato
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "var(--space-3)" }}>
-            <div>
-              <label style={labelStyle}>Vitória</label>
-              <input type="number" min={0} style={inputStyle} value={pVitoria} onChange={(e) => setPVitoria(e.target.value)} />
-            </div>
-            <div>
-              <label style={labelStyle}>Empate</label>
-              <input type="number" min={0} style={inputStyle} value={pEmpate} onChange={(e) => setPEmpate(e.target.value)} />
-            </div>
-            <div>
-              <label style={labelStyle}>Derrota</label>
-              <input type="number" min={0} style={inputStyle} value={pDerrota} onChange={(e) => setPDerrota(e.target.value)} />
-            </div>
-          </div>
-
           <div>
             <label style={labelStyle}>Formato</label>
             <select
@@ -538,6 +458,94 @@ function EditarCampeonatoModal({ campeonato, onClose }: { campeonato: Campeonato
               </p>
             </div>
           )}
+
+          {/* Pontuação — apenas para formatos com fase de pontos corridos */}
+          {usaPontuacao && (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "var(--space-3)" }}>
+              <div>
+                <label style={labelStyle}>Vitória</label>
+                <input type="number" min={0} style={inputStyle} value={pVitoria} onChange={(e) => setPVitoria(e.target.value)} />
+              </div>
+              <div>
+                <label style={labelStyle}>Empate</label>
+                <input type="number" min={0} style={inputStyle} value={pEmpate} onChange={(e) => setPEmpate(e.target.value)} />
+              </div>
+              <div>
+                <label style={labelStyle}>Derrota</label>
+                <input type="number" min={0} style={inputStyle} value={pDerrota} onChange={(e) => setPDerrota(e.target.value)} />
+              </div>
+            </div>
+          )}
+
+          {/* Upload de logo */}
+          <div>
+            <label htmlFor="editar-logo" style={{ ...labelStyle, display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <Icon icon={ImageIcon} size={12} style={{ color: "var(--color-text-muted)" }} />
+              Logo do campeonato (opcional)
+            </label>
+            {campeonato.logoUrl && !logoFile && (
+              <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "var(--space-2)" }}>
+                <Avatar name={campeonato.nome} src={campeonato.logoUrl} size="sm" />
+                <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>Logo atual</span>
+              </div>
+            )}
+            <input
+              ref={logoInputRef}
+              id="editar-logo"
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              onChange={(e) => selecionarLogo(e.target.files?.[0] ?? null)}
+              style={{ display: "none" }}
+            />
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => logoInputRef.current?.click()}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  logoInputRef.current?.click();
+                }
+              }}
+              onDragOver={(event) => { event.preventDefault(); setIsDragOverLogo(true); }}
+              onDragLeave={(event) => { event.preventDefault(); setIsDragOverLogo(false); }}
+              onDrop={(event) => {
+                event.preventDefault();
+                setIsDragOverLogo(false);
+                selecionarLogo(event.dataTransfer.files?.[0] ?? null);
+              }}
+              aria-invalid={Boolean(logoError)}
+              style={{
+                borderRadius: "var(--radius-md)",
+                border: logoError
+                  ? "1px dashed var(--color-feedback-danger)"
+                  : isDragOverLogo
+                    ? "1px dashed var(--color-brand-primary)"
+                    : "1px dashed var(--color-border-default)",
+                background: isDragOverLogo ? "rgba(0, 230, 118, 0.08)" : "rgba(255,255,255,0.03)",
+                padding: "var(--space-3)",
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                outline: "none",
+                display: "grid",
+                gap: "4px",
+              }}
+            >
+              <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>
+                {logoFile ? "Novo arquivo selecionado" : campeonato.logoUrl ? "Trocar logo" : "Clique ou arraste a logo aqui"}
+              </p>
+              <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
+                {logoFile
+                  ? `${logoFile.name} (${formatarTamanhoArquivo(logoFile.size)})`
+                  : "PNG, JPG/JPEG ou WEBP até 5 MB"}
+              </p>
+            </div>
+            {logoError && (
+              <p role="alert" style={{ margin: "var(--space-2) 0 0", fontSize: "var(--text-xs)", color: "var(--color-feedback-danger)" }}>
+                {logoError}
+              </p>
+            )}
+          </div>
         </div>
 
         <div style={{ padding: "var(--space-4) var(--space-5)", borderTop: "1px solid rgba(255,255,255,0.06)", display: "flex", gap: "var(--space-3)", flexShrink: 0 }}>
@@ -563,8 +571,8 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
   const [modalConvidar, setModalConvidar] = useState(false);
   const [modalCancelar, setModalCancelar] = useState(false);
   const [modalEditar, setModalEditar]     = useState(false);
+  const [logoAmpliada, setLogoAmpliada]   = useState(false);
   const [teamSearch, setTeamSearch]       = useState("");
-  const [timeDetalhes,   setTimeDetalhes]   = useState<ParticipacaoDisplay | null>(null);
   const [timeParaRemover, setTimeParaRemover] = useState<ParticipacaoDisplay | null>(null);
   const [aba, setAba]                     = useState<"times" | "tabela" | "jogos">("times");
 
@@ -647,7 +655,6 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
       await removerTime({ campeonatoId: campeonato.id, timeId: timeParaRemover.timeId }).unwrap();
       toastSuccess(`${timeParaRemover.nomeTime} foi removido do campeonato.`);
       setTimeParaRemover(null);
-      setTimeDetalhes(null);
     } catch {
       toastError("Não foi possível remover o time. Tente novamente.", "Erro");
     }
@@ -783,13 +790,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
         transition={{ duration: 0.3 }}
         style={{ marginBottom: "var(--space-5)" }}
       >
-        <Link
-          href="/organizador/campeonatos"
-          style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-2)", color: "var(--color-text-muted)", textDecoration: "none", fontSize: "var(--text-sm)", transition: "color 0.15s" }}
-        >
-          <Icon icon={ArrowLeft} size={14} />
-          Voltar para campeonatos
-        </Link>
+        <BotaoVoltar fallbackHref="/organizador/campeonatos" label="Voltar para campeonatos" />
       </motion.div>
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
@@ -801,87 +802,136 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
       >
         <Card
           padding="lg"
+          className="camp-hero-card"
           style={{
-            background: "linear-gradient(145deg, rgba(0,230,118,0.12) 0%, rgba(0,0,0,0.65) 70%)",
-            border: "1px solid rgba(0,230,118,0.2)",
+            background: "linear-gradient(160deg, rgba(18,18,18,0.98), rgba(10,10,10,0.99))",
+            border: "1px solid rgba(255,255,255,0.07)",
             borderRadius: "var(--radius-2xl)",
-            boxShadow: "0 8px 40px rgba(0,0,0,0.45)",
+            boxShadow: "0 16px 48px rgba(0,0,0,0.4)",
             position: "relative",
             overflow: "hidden",
           }}
         >
-          <span
-            aria-hidden="true"
-            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "3px", background: STATUS_LINE[campeonato.status] ?? "rgba(255,255,255,0.2)" }}
-          />
-
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-5)", alignItems: "flex-start" }}>
-            {/* Ícone + título */}
-            <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)", flex: 1, minWidth: "240px" }}>
-              <div style={{ width: "3.5rem", height: "3.5rem", borderRadius: "var(--radius-lg)", background: "rgba(0,230,118,0.1)", border: "1px solid rgba(0,230,118,0.25)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <Icon icon={Trophy} size={24} style={{ color: "var(--color-brand-primary)" }} />
+          <div data-camp-hero style={{ position: "relative", display: "flex", flexWrap: "wrap", gap: "var(--space-6)", alignItems: "center", justifyContent: "space-between" }}>
+            {/* Identidade: logo + título */}
+            <div data-camp-hero-id style={{ display: "flex", alignItems: "center", gap: "var(--space-4)", flex: "1 1 320px", minWidth: 0 }}>
+              <div
+                {...(campeonato.logoUrl
+                  ? {
+                      role: "button" as const,
+                      tabIndex: 0,
+                      onClick: () => setLogoAmpliada(true),
+                      onKeyDown: (event: React.KeyboardEvent<HTMLDivElement>) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          setLogoAmpliada(true);
+                        }
+                      },
+                      title: "Ampliar logo",
+                    }
+                  : {})}
+                data-camp-logo
+                style={{
+                  width: "4.75rem", height: "4.75rem", borderRadius: "var(--radius-xl)",
+                  background: campeonato.logoUrl
+                    ? `center / cover no-repeat url("${campeonato.logoUrl}")`
+                    : "linear-gradient(150deg, rgba(0,230,118,0.22), rgba(0,230,118,0.04))",
+                  border: "1px solid rgba(0,230,118,0.35)",
+                  display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                  overflow: "hidden",
+                  cursor: campeonato.logoUrl ? "zoom-in" : "default",
+                  outline: "none",
+                  boxShadow: "0 0 0 4px rgba(0,230,118,0.08), 0 10px 28px rgba(0,230,118,0.2)",
+                }}
+              >
+                {!campeonato.logoUrl && <Icon icon={Trophy} size={30} style={{ color: "var(--color-brand-primary)" }} />}
               </div>
-              <div>
-                <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", flexWrap: "wrap", marginBottom: "var(--space-2)" }}>
-                  <h1 style={{ margin: 0, fontSize: "clamp(1.3rem, 3vw, 2rem)", fontWeight: 700, color: "white", lineHeight: 1.2 }}>
-                    {campeonato.nome}
-                  </h1>
+
+              <div style={{ minWidth: 0 }}>
+                <h1 style={{ margin: 0, fontSize: "clamp(1.4rem, 3vw, 2.1rem)", fontWeight: 700, color: "white", lineHeight: 1.15, overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {campeonato.nome}
+                </h1>
+
+                {/* Status + Formato (destaque) */}
+                <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", flexWrap: "wrap", marginTop: "var(--space-3)" }}>
                   <Badge variant={statusCfg.variant}>{statusCfg.label}</Badge>
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "3px 10px", borderRadius: "var(--radius-full)", fontSize: "var(--text-xs)", fontWeight: 600, color: "var(--color-brand-primary)", background: "rgba(0,230,118,0.1)", border: "1px solid rgba(0,230,118,0.25)" }}>
-                    <Icon icon={GitFork} size={11} />
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "5px 12px", borderRadius: "var(--radius-full)", fontSize: "var(--text-sm)", fontWeight: 700, color: "var(--color-brand-primary)", background: "rgba(0,230,118,0.14)", border: "1px solid rgba(0,230,118,0.35)", boxShadow: "0 2px 10px rgba(0,230,118,0.1)" }}>
+                    <Icon icon={GitFork} size={13} />
                     {FORMATO_CAMPEONATO[campeonato.formatoCampeonato as FormatoCampeonato]?.label ?? campeonato.formatoCampeonato}
                   </span>
                 </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-4)" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "var(--space-1)" }}>
-                    <Icon icon={Calendar} size={13} style={{ color: "var(--color-text-muted)" }} />
-                    <p style={{ margin: 0, fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>
-                      {dataInicio.toLocaleDateString("pt-BR")} → {dataFim.toLocaleDateString("pt-BR")}
-                    </p>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "var(--space-1)" }}>
-                    <Icon icon={Clock} size={13} style={{ color: "var(--color-text-muted)" }} />
-                    <p style={{ margin: 0, fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
-                      Criado em {new Date(campeonato.criadoEm).toLocaleDateString("pt-BR")}
-                    </p>
-                  </div>
+
+                {/* Datas */}
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-2)", marginTop: "var(--space-3)" }}>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "var(--radius-md)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
+                    <Icon icon={Calendar} size={12} style={{ color: "var(--color-text-muted)" }} />
+                    {dataInicio.toLocaleDateString("pt-BR")} → {dataFim.toLocaleDateString("pt-BR")}
+                  </span>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "var(--radius-md)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
+                    <Icon icon={Clock} size={12} style={{ color: "var(--color-text-muted)" }} />
+                    Criado em {new Date(campeonato.criadoEm).toLocaleDateString("pt-BR")}
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Quick stats */}
-            <div data-camp-hero-stats style={{ display: "flex", gap: "var(--space-5)", flexShrink: 0, flexWrap: "wrap" }}>
-              <div style={{ textAlign: "center" }}>
+            {/* Painel de stats */}
+            <div
+              data-camp-hero-stats
+              style={{
+                display: "flex",
+                alignItems: "stretch",
+                gap: "var(--space-5)",
+                flexShrink: 0,
+                padding: "var(--space-4) var(--space-5)",
+                borderRadius: "var(--radius-xl)",
+                background: "rgba(255,255,255,0.045)",
+                border: "1px solid rgba(255,255,255,0.09)",
+                backdropFilter: "blur(8px)",
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)",
+              }}
+            >
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
+                <Icon icon={Users} size={15} style={{ color: "rgba(0,230,118,0.6)" }} />
                 <p style={{ margin: 0, fontSize: "var(--text-3xl)", fontWeight: 700, color: "var(--color-brand-primary)", lineHeight: 1 }}>
                   {campeonato.totalTimes}
                 </p>
-                <p style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.12em" }}>
+                <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.12em" }}>
                   Times
                 </p>
               </div>
-              <div data-camp-stat-divider style={{ width: 1, background: "rgba(255,255,255,0.08)", alignSelf: "stretch" }} />
-              <div style={{ textAlign: "center" }}>
+
+              <div data-camp-stat-divider style={{ width: 1, background: "rgba(255,255,255,0.1)", alignSelf: "stretch" }} />
+
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
+                <Icon icon={Clock} size={15} style={{ color: "rgba(255,255,255,0.4)" }} />
                 <p style={{ margin: 0, fontSize: "var(--text-3xl)", fontWeight: 700, color: contagem.valor != null ? "white" : "var(--color-text-muted)", lineHeight: 1 }}>
                   {contagem.valor ?? "—"}
                 </p>
-                <p style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.12em" }}>
+                <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.12em" }}>
                   {contagem.label}
                 </p>
               </div>
-              <div data-camp-stat-divider style={{ width: 1, background: "rgba(255,255,255,0.08)", alignSelf: "stretch" }} />
-              {/* Pontuação compacta */}
-              <div style={{ textAlign: "center" }}>
-                <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center" }}>
-                  <span style={{ fontSize: "var(--text-sm)", fontWeight: 700, color: "var(--color-feedback-success)" }}>V {campeonato.pontosVitoria}</span>
-                  <span style={{ color: "rgba(255,255,255,0.15)" }}>·</span>
-                  <span style={{ fontSize: "var(--text-sm)", fontWeight: 700, color: "var(--color-feedback-warning)" }}>E {campeonato.pontosEmpate}</span>
-                  <span style={{ color: "rgba(255,255,255,0.15)" }}>·</span>
-                  <span style={{ fontSize: "var(--text-sm)", fontWeight: 700, color: "var(--color-text-muted)" }}>D {campeonato.pontosDerrota}</span>
-                </div>
-                <p style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.12em" }}>
-                  Pontuação
-                </p>
-              </div>
+
+              {/* Pontuação — só para formatos com fase de pontos corridos */}
+              {mostraClassificacao && (
+                <>
+                  <div data-camp-stat-divider style={{ width: 1, background: "rgba(255,255,255,0.1)", alignSelf: "stretch" }} />
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+                    <Icon icon={Award} size={15} style={{ color: "rgba(255,255,255,0.4)" }} />
+                    <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center", justifyContent: "center" }}>
+                      <span style={{ fontSize: "var(--text-base)", fontWeight: 700, color: "var(--color-feedback-success)" }}>V {campeonato.pontosVitoria}</span>
+                      <span style={{ color: "rgba(255,255,255,0.15)" }}>·</span>
+                      <span style={{ fontSize: "var(--text-base)", fontWeight: 700, color: "var(--color-feedback-warning)" }}>E {campeonato.pontosEmpate}</span>
+                      <span style={{ color: "rgba(255,255,255,0.15)" }}>·</span>
+                      <span style={{ fontSize: "var(--text-base)", fontWeight: 700, color: "var(--color-text-muted)" }}>D {campeonato.pontosDerrota}</span>
+                    </div>
+                    <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.12em" }}>
+                      Pontuação
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </Card>
@@ -1207,7 +1257,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                         <motion.div
                           key={p.participacaoId}
                           variants={itemVariants}
-                          onClick={() => setTimeDetalhes(p)}
+                          onClick={() => router.push(`/times/${p.timeId}`)}
                           style={{
                             display: "flex",
                             alignItems: "center",
@@ -1411,19 +1461,34 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
       {/* ── Modais ───────────────────────────────────────────────────────── */}
       <style>{`
         @media (max-width: 900px) {
-          [data-camp-grid] { grid-template-columns: 1fr !important; }
+          [data-camp-grid] { grid-template-columns: minmax(0, 1fr) !important; }
         }
 
         @media (max-width: 640px) {
+          .camp-hero-card { padding: var(--space-4) !important; }
+          [data-camp-hero] {
+            flex-direction: column;
+            align-items: stretch;
+            gap: var(--space-4) !important;
+          }
+          [data-camp-hero-id] {
+            flex: 1 1 100% !important;
+          }
           [data-camp-hero-stats] {
             width: 100%;
             justify-content: space-around;
+            padding: var(--space-3) var(--space-4) !important;
             gap: var(--space-2) !important;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            padding-top: var(--space-3);
           }
           [data-camp-stat-divider] {
             display: none !important;
+          }
+        }
+
+        @media (max-width: 400px) {
+          [data-camp-logo] {
+            width: 3.75rem !important;
+            height: 3.75rem !important;
           }
         }
       `}</style>
@@ -1443,14 +1508,6 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
             isLoading={isCancelando}
           />
         )}
-        {timeDetalhes && !timeParaRemover && (
-          <TimeDetalhesModal
-            participacao={timeDetalhes}
-            podeRemover={podeConvidar}
-            onRemover={() => setTimeParaRemover(timeDetalhes)}
-            onClose={() => setTimeDetalhes(null)}
-          />
-        )}
         {timeParaRemover && (
           <RemoverTimeModal
             nomeTime={timeParaRemover.nomeTime}
@@ -1458,6 +1515,35 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
             onClose={() => setTimeParaRemover(null)}
             isLoading={isRemovendoTime}
           />
+        )}
+        {logoAmpliada && campeonato.logoUrl && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setLogoAmpliada(false)}
+            style={{ position: "fixed", inset: 0, zIndex: 2100, display: "flex", alignItems: "center", justifyContent: "center", padding: "var(--space-6)", background: "rgba(0,0,0,0.85)", backdropFilter: "blur(6px)", cursor: "zoom-out" }}
+          >
+            <button
+              type="button"
+              onClick={() => setLogoAmpliada(false)}
+              aria-label="Fechar"
+              style={{ position: "absolute", top: "var(--space-5)", right: "var(--space-5)", width: "40px", height: "40px", borderRadius: "50%", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(0,0,0,0.4)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "white" }}
+            >
+              <Icon icon={X} size={18} />
+            </button>
+            <motion.img
+              src={campeonato.logoUrl}
+              alt={`Logo de ${campeonato.nome}`}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{ maxWidth: "min(90vw, 640px)", maxHeight: "85vh", objectFit: "contain", borderRadius: "var(--radius-lg)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)", cursor: "default" }}
+            />
+          </motion.div>
         )}
       </AnimatePresence>
     </motion.main>

@@ -26,7 +26,7 @@ const CONN_W = 40;
 const CELL_MIN = 132;
 const LABEL_H = 28;
 const ESCALA_MIN = 0.5;
-const LIMIAR_LISTA = 620; // abaixo disso, usa lista vertical (celular / cards estreitos)
+const LIMIAR_LISTA = 500; // abaixo disso, usa lista vertical (celular)
 
 interface Slot {
   fase: string;

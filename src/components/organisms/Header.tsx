@@ -152,26 +152,56 @@ export function Header() {
             >
               Home
             </a>
-            <span
+            <a
+              href="/times"
               style={{
                 ...getNavLinkStyle('/times'),
-                opacity: 0.4,
-                cursor: 'not-allowed',
+                color: pathname.startsWith('/times')
+                  ? 'var(--color-brand-primary)'
+                  : 'var(--color-text-secondary)',
+                fontWeight: pathname.startsWith('/times') ? 600 : 500,
+                borderBottom: pathname.startsWith('/times')
+                  ? '2px solid var(--color-brand-primary)'
+                  : 'none',
               }}
-              title="Em breve"
+              onMouseEnter={(e) => {
+                if (!pathname.startsWith('/times')) {
+                  e.currentTarget.style.color = 'var(--color-brand-primary)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!pathname.startsWith('/times')) {
+                  e.currentTarget.style.color = 'var(--color-text-secondary)';
+                }
+              }}
             >
               Times
-            </span>
-            <span
+            </a>
+            <a
+              href="/campeonatos"
               style={{
                 ...getNavLinkStyle('/campeonatos'),
-                opacity: 0.4,
-                cursor: 'not-allowed',
+                color: pathname.startsWith('/campeonatos')
+                  ? 'var(--color-brand-primary)'
+                  : 'var(--color-text-secondary)',
+                fontWeight: pathname.startsWith('/campeonatos') ? 600 : 500,
+                borderBottom: pathname.startsWith('/campeonatos')
+                  ? '2px solid var(--color-brand-primary)'
+                  : 'none',
               }}
-              title="Em breve"
+              onMouseEnter={(e) => {
+                if (!pathname.startsWith('/campeonatos')) {
+                  e.currentTarget.style.color = 'var(--color-brand-primary)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!pathname.startsWith('/campeonatos')) {
+                  e.currentTarget.style.color = 'var(--color-text-secondary)';
+                }
+              }}
             >
               Campeonatos
-            </span>
+            </a>
           </nav>
         )}
 

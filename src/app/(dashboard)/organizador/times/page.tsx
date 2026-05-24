@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { Trophy, Bell, CheckCircle, XCircle, Calendar, Star, Shield, MapPin, ArrowUpRight, Search, Users, Plus } from "lucide-react";
+import { Bell, CheckCircle, XCircle, Calendar, Star, Shield, MapPin, ArrowUpRight, Search, Users, Plus, GitFork, UserCog, type LucideIcon } from "lucide-react";
 import { Avatar } from "@/components/atoms/Avatar";
 import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
@@ -15,12 +16,14 @@ import { useListarTimesOrganizadorQuery } from "@/store/api/timeApi";
 import {
   useListarConvitesPendentesQuery,
   useResponderConviteMutation,
+  useListarCampeonatosQuery,
 } from "@/store/api/campeonatoApi";
 import { useGetPerfilUsuarioQuery } from "@/store/api/userApi";
 import { useAppSelector } from "@/store/hooks";
 import { useToast } from "@/components/atoms/Toast";
 import { Icon } from "@/components/atoms/Icon";
-import type { ConvitePendenteResponse } from "@/types/campeonato";
+import { FORMATO_CAMPEONATO } from "@/types/campeonato";
+import type { ConvitePendenteResponse, FormatoCampeonato, CampeonatoResponse } from "@/types/campeonato";
 
 // ─── Painel de Convites ──────────────────────────────────────────────────────
 
@@ -36,11 +39,139 @@ const STATUS_CAMPEONATO_LABEL: Record<string, string> = {
   Cancelado: "Cancelado",
 };
 
+// Linha de detalhe (ícone + rótulo + valor)
+function DetalheLinha({ icon, label, children }: { icon: LucideIcon; label: string; children: ReactNode }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+      <Icon icon={icon} size={11} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
+      <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
+        <span style={{ color: "var(--color-text-muted)" }}>{label}: </span>
+        {children}
+      </p>
+    </div>
+  );
+}
+
+// Card de um convite (campeonato)
+function ConviteCard({
+  convite,
+  camp,
+  isLoading,
+  onResponder,
+}: {
+  convite: ConvitePendenteResponse;
+  camp: CampeonatoResponse | undefined;
+  isLoading: boolean;
+  onResponder: (convite: ConvitePendenteResponse, aceito: boolean) => void;
+}) {
+  const statusLabel = STATUS_CAMPEONATO_LABEL[convite.statusCampeonato] ?? convite.statusCampeonato;
+  const formatoLabel = camp
+    ? (FORMATO_CAMPEONATO[camp.formatoCampeonato as FormatoCampeonato]?.label ?? camp.formatoCampeonato)
+    : null;
+  const href = `/campeonatos/${convite.campeonatoId}`;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      style={{
+        borderRadius: "var(--radius-xl)",
+        background: "linear-gradient(150deg, rgba(20,20,20,0.95), rgba(10,10,10,0.8))",
+        border: "1px solid rgba(255,255,255,0.06)",
+        overflow: "hidden",
+        position: "relative",
+        boxShadow: "0 10px 28px rgba(0,0,0,0.35)",
+      }}
+    >
+      {/* Cabeçalho: logo + nome (clicáveis) + status */}
+      <div style={{ padding: "var(--space-3)", borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
+        <Link href={href} title="Ver campeonato" style={{ flexShrink: 0, borderRadius: "var(--radius-lg)", outline: "none" }}>
+          <Avatar name={convite.nomeCampeonato} src={camp?.logoUrl || undefined} size="md" />
+        </Link>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <Link
+            href={href}
+            style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "4px", color: "white", maxWidth: "100%" }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-brand-primary)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = "white"; }}
+          >
+            <span style={{ fontWeight: 700, fontSize: "var(--text-sm)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {convite.nomeCampeonato}
+            </span>
+            <Icon icon={ArrowUpRight} size={13} style={{ flexShrink: 0 }} />
+          </Link>
+          <p style={{ margin: "2px 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
+            Recebido em {new Date(convite.convidadoEm).toLocaleDateString("pt-BR")}
+          </p>
+        </div>
+        <span style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", padding: "2px 8px", borderRadius: "var(--radius-full)", fontSize: "var(--text-xs)", fontWeight: 600, background: "rgba(0,230,118,0.1)", color: "var(--color-brand-primary)", border: "1px solid rgba(0,230,118,0.2)" }}>
+          {statusLabel}
+        </span>
+      </div>
+
+      {/* Detalhes do campeonato */}
+      <div style={{ padding: "var(--space-3)", display: "grid", gap: "var(--space-2)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+        {formatoLabel && <DetalheLinha icon={GitFork} label="Formato">{formatoLabel}</DetalheLinha>}
+        {camp?.organizadorNome && <DetalheLinha icon={UserCog} label="Organização">{camp.organizadorNome}</DetalheLinha>}
+        <DetalheLinha icon={Calendar} label="Período">
+          {new Date(convite.dataInicio).toLocaleDateString("pt-BR")} → {new Date(convite.dataFim).toLocaleDateString("pt-BR")}
+        </DetalheLinha>
+        <DetalheLinha icon={Star} label="Pontuação">
+          <span style={{ color: "var(--color-feedback-success)", fontWeight: 600 }}>V {convite.pontosVitoria}</span>
+          {" · "}
+          <span style={{ color: "var(--color-feedback-warning)", fontWeight: 600 }}>E {convite.pontosEmpate}</span>
+          {" · "}
+          <span style={{ color: "var(--color-text-muted)", fontWeight: 600 }}>D {convite.pontosDerrota}</span>
+        </DetalheLinha>
+      </div>
+
+      {/* Ações */}
+      <div style={{ padding: "var(--space-3)", display: "flex", gap: "var(--space-2)" }}>
+        <Button
+          variant="primary"
+          size="sm"
+          loading={isLoading}
+          disabled={isLoading}
+          onClick={() => onResponder(convite, true)}
+          style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--space-1)" }}
+        >
+          <Icon icon={CheckCircle} size={13} />
+          Aceitar
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          loading={isLoading}
+          disabled={isLoading}
+          onClick={() => onResponder(convite, false)}
+          style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--space-1)", color: "var(--color-feedback-danger)", border: "1px solid rgba(255,72,68,0.3)" }}
+        >
+          <Icon icon={XCircle} size={13} />
+          Recusar
+        </Button>
+      </div>
+    </motion.div>
+  );
+}
+
 function ConvitesPainel({ organizadorTimeId }: ConvitesPainelProps) {
   const { success: toastSuccess, error: toastError } = useToast();
   const { data: convites = [], isLoading } = useListarConvitesPendentesQuery(organizadorTimeId);
+  const { data: campeonatos = [] } = useListarCampeonatosQuery();
+  const { data: times = [] } = useListarTimesOrganizadorQuery();
   const [responderConvite, { isLoading: isRespondendo }] = useResponderConviteMutation();
   const [respondendoId, setRespondendoId] = useState<string | null>(null);
+
+  const campeonatosPorId = new Map(campeonatos.map((c) => [c.id, c]));
+  const timesPorNome = new Map(times.map((t) => [t.nome, t]));
+
+  // Agrupa os convites por time
+  const gruposPorTime = new Map<string, ConvitePendenteResponse[]>();
+  for (const convite of convites) {
+    const lista = gruposPorTime.get(convite.nomeTime) ?? [];
+    lista.push(convite);
+    gruposPorTime.set(convite.nomeTime, lista);
+  }
 
   const handleResponder = async (convite: ConvitePendenteResponse, aceito: boolean) => {
     setRespondendoId(convite.participacaoId);
@@ -98,135 +229,46 @@ function ConvitesPainel({ organizadorTimeId }: ConvitesPainelProps) {
       </div>
 
       {convites.length === 0 ? (
-        <p style={{ margin: 0, fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
-          Nenhum convite no momento.
-        </p>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "var(--space-2)", padding: "var(--space-6) var(--space-3)", textAlign: "center" }}>
+          <div style={{ width: "44px", height: "44px", borderRadius: "50%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Icon icon={Bell} size={20} style={{ color: "var(--color-text-muted)" }} />
+          </div>
+          <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>Nenhum convite no momento</p>
+          <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
+            Quando um organizador convidar seu time, o convite aparece aqui.
+          </p>
+        </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-          {convites.map((convite) => {
-            const isThisLoading = respondendoId === convite.participacaoId && isRespondendo;
-            const statusLabel = STATUS_CAMPEONATO_LABEL[convite.statusCampeonato] ?? convite.statusCampeonato;
-
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
+          {Array.from(gruposPorTime.entries()).map(([nomeTime, lista]) => {
+            const time = timesPorNome.get(nomeTime);
             return (
-              <motion.div
-                key={convite.participacaoId}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                style={{
-                  borderRadius: "var(--radius-lg)",
-                  background: "rgba(0, 230, 118, 0.04)",
-                  border: "1px solid rgba(0, 230, 118, 0.15)",
-                  overflow: "hidden",
-                }}
-              >
-                {/* Cabeçalho */}
-                <div
-                  style={{
-                    padding: "var(--space-3) var(--space-3) var(--space-2)",
-                    borderBottom: "1px solid rgba(255,255,255,0.05)",
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: "var(--space-2)",
-                  }}
-                >
-                  <Icon icon={Trophy} size={13} style={{ color: "var(--color-brand-primary)", flexShrink: 0, marginTop: 2 }} />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ margin: 0, fontWeight: 600, color: "white", fontSize: "var(--text-sm)" }}>
-                      {convite.nomeCampeonato}
-                    </p>
-                    <p style={{ margin: "2px 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
-                      Time: <span style={{ color: "var(--color-text-secondary)" }}>{convite.nomeTime}</span>
-                      {" · "}
-                      Convite em {new Date(convite.convidadoEm).toLocaleDateString("pt-BR")}
-                    </p>
-                  </div>
-                  <span
-                    style={{
-                      flexShrink: 0,
-                      display: "inline-flex",
-                      alignItems: "center",
-                      padding: "2px 8px",
-                      borderRadius: "var(--radius-full)",
-                      fontSize: "var(--text-xs)",
-                      fontWeight: 600,
-                      background: "rgba(0, 230, 118, 0.1)",
-                      color: "var(--color-brand-primary)",
-                      border: "1px solid rgba(0, 230, 118, 0.2)",
-                    }}
-                  >
-                    {statusLabel}
+              <div key={nomeTime}>
+                {/* Cabeçalho do time — nome + linha divisória */}
+                <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "var(--space-3)" }}>
+                  <Avatar name={nomeTime} src={time?.logoUrl || undefined} size="sm" />
+                  <span style={{ fontWeight: 700, fontSize: "var(--text-sm)", color: "white", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "55%" }}>
+                    {nomeTime}
                   </span>
+                  <span style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: "18px", height: "18px", padding: "0 5px", borderRadius: "var(--radius-full)", background: "rgba(0,230,118,0.12)", color: "var(--color-brand-primary)", fontSize: "10px", fontWeight: 700 }}>
+                    {lista.length}
+                  </span>
+                  <div style={{ flex: 1, height: "1px", background: "linear-gradient(90deg, rgba(0,230,118,0.3), rgba(255,255,255,0.04))" }} />
                 </div>
 
-                {/* Detalhes do campeonato */}
-                <div
-                  style={{
-                    padding: "var(--space-2) var(--space-3)",
-                    display: "grid",
-                    gap: "var(--space-2)",
-                    borderBottom: "1px solid rgba(255,255,255,0.05)",
-                  }}
-                >
-                  {/* Período */}
-                  <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
-                    <Icon icon={Calendar} size={11} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
-                    <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
-                      <span style={{ color: "var(--color-text-muted)" }}>Período: </span>
-                      {new Date(convite.dataInicio).toLocaleDateString("pt-BR")}
-                      {" → "}
-                      {new Date(convite.dataFim).toLocaleDateString("pt-BR")}
-                    </p>
-                  </div>
-
-                  {/* Pontuação */}
-                  <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
-                    <Icon icon={Star} size={11} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
-                    <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
-                      <span style={{ color: "var(--color-text-muted)" }}>Pontuação: </span>
-                      <span style={{ color: "var(--color-feedback-success)", fontWeight: 600 }}>V {convite.pontosVitoria}</span>
-                      {" · "}
-                      <span style={{ color: "var(--color-feedback-warning)", fontWeight: 600 }}>E {convite.pontosEmpate}</span>
-                      {" · "}
-                      <span style={{ color: "var(--color-text-muted)", fontWeight: 600 }}>D {convite.pontosDerrota}</span>
-                    </p>
-                  </div>
+                {/* Convites do time */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+                  {lista.map((convite) => (
+                    <ConviteCard
+                      key={convite.participacaoId}
+                      convite={convite}
+                      camp={campeonatosPorId.get(convite.campeonatoId)}
+                      isLoading={respondendoId === convite.participacaoId && isRespondendo}
+                      onResponder={handleResponder}
+                    />
+                  ))}
                 </div>
-
-                {/* Ações */}
-                <div style={{ padding: "var(--space-2) var(--space-3)", display: "flex", gap: "var(--space-2)" }}>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    loading={isThisLoading}
-                    disabled={isThisLoading}
-                    onClick={() => handleResponder(convite, true)}
-                    style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--space-1)" }}
-                  >
-                    <Icon icon={CheckCircle} size={13} />
-                    Aceitar
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    loading={isThisLoading}
-                    disabled={isThisLoading}
-                    onClick={() => handleResponder(convite, false)}
-                    style={{
-                      flex: 1,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "var(--space-1)",
-                      color: "var(--color-feedback-danger)",
-                      border: "1px solid rgba(255, 72, 68, 0.3)",
-                    }}
-                  >
-                    <Icon icon={XCircle} size={13} />
-                    Recusar
-                  </Button>
-                </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>
@@ -428,172 +470,63 @@ export default function OrganizadorTimePage() {
                       ? "Criado ontem"
                       : `Criado há ${diasDesdeCriacao} dias`;
 
-                const visual = time.ativo
-                  ? {
-                      background: "linear-gradient(90deg, rgba(14, 40, 34, 0.98), rgba(18, 54, 43, 0.98))",
-                      border: "1px solid rgba(72, 125, 103, 0.28)",
-                      texture: "none",
-                      chipBg: "rgba(180, 221, 202, 0.08)",
-                      chipBorder: "1px solid rgba(152, 201, 178, 0.2)",
-                      buttonBg: "rgba(180, 221, 202, 0.1)",
-                      buttonBorder: "1px solid rgba(152, 201, 178, 0.24)",
-                    }
-                  : {
-                      background: "linear-gradient(90deg, rgba(46, 16, 16, 0.98), rgba(64, 22, 22, 0.98))",
-                      border: "1px solid rgba(184, 86, 86, 0.3)",
-                      texture: "none",
-                      chipBg: "rgba(255, 172, 172, 0.08)",
-                      chipBorder: "1px solid rgba(255, 139, 139, 0.22)",
-                      buttonBg: "rgba(255, 172, 172, 0.1)",
-                      buttonBorder: "1px solid rgba(255, 139, 139, 0.28)",
-                    };
-
                 return (
-                <motion.div
-                  key={time.id}
-                  variants={itemVariants}
-                  whileHover={{ y: -4, scale: 1.01 }}
-                  transition={{ duration: 0.2, ease: "easeOut" }}
-                >
+                <motion.div key={time.id} variants={itemVariants}>
                   <Card
                     padding="md"
                     hoverable
                     style={{
                       borderRadius: "var(--radius-xl)",
-                      minHeight: "260px",
-                      display: "flex", flexDirection: "column", justifyContent: "space-between",
-                      background: visual.background,
-                      border: visual.border,
-                      boxShadow: "0 14px 34px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,255,255,0.03)",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "var(--space-3)",
+                      background: "linear-gradient(150deg, rgba(20,20,20,0.95), rgba(10,10,10,0.8))",
+                      border: "1px solid rgba(255,255,255,0.06)",
                       position: "relative",
                       overflow: "hidden",
                     }}
                   >
-                    <span
-                      aria-hidden="true"
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        background: visual.texture,
-                        pointerEvents: "none",
-                      }}
-                    />
-
-                    <span
-                      aria-hidden="true"
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "2px",
-                        background: time.ativo
-                          ? "linear-gradient(90deg, rgba(0,230,118,0.9), rgba(0,230,118,0.1))"
-                          : "linear-gradient(90deg, rgba(255,72,68,0.9), rgba(255,72,68,0.1))",
-                      }}
-                    />
-
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "var(--space-3)" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", minWidth: 0 }}>
-                        <div
-                          style={{
-                            borderRadius: "999px",
-                            padding: "2px",
-                            border: `1px solid ${time.ativo ? "rgba(0,230,118,0.4)" : "rgba(255,72,68,0.35)"}`,
-                            flexShrink: 0,
-                          }}
-                        >
-                          <Avatar name={time.nome} src={time.logoUrl || undefined} size="lg" />
-                        </div>
+                    {/* Cabeçalho */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "var(--space-2)" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", flex: 1, minWidth: 0 }}>
+                        <Avatar name={time.nome} src={time.logoUrl || undefined} size="md" />
                         <div style={{ minWidth: 0 }}>
-                          <h3
-                            style={{
-                              margin: 0,
-                              fontSize: "var(--text-lg)",
-                              color: "white",
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              maxWidth: "180px",
-                            }}
-                          >
+                          <h3 style={{ margin: 0, fontSize: "var(--text-base)", fontWeight: 600, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {time.nome}
                           </h3>
-                          <p className="text-secondary" style={{ margin: 0, fontSize: "var(--text-sm)" }}>
-                            {time.cidade} · {time.estado}
+                          <p style={{ margin: "2px 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
+                            {tempoDeCriacao}
                           </p>
                         </div>
                       </div>
-                      <Badge
-                        variant={time.ativo ? "success" : "danger"}
-                        size="sm"
-                        style={{ letterSpacing: "0.04em", fontWeight: 700 }}
-                      >
+                      <Badge variant={time.ativo ? "success" : "danger"} size="sm" style={{ flexShrink: 0 }}>
                         {time.ativo ? "Ativo" : "Inativo"}
                       </Badge>
                     </div>
 
-                    <div
-                      style={{
-                        marginTop: "var(--space-3)",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "var(--space-2)",
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "var(--space-2)",
-                          width: "fit-content",
-                          whiteSpace: "nowrap",
-                          padding: "6px 10px",
-                          borderRadius: "var(--radius-full)",
-                          border: visual.chipBorder,
-                          background: visual.chipBg,
-                        }}
-                      >
-                        <Icon icon={MapPin} size={12} style={{ color: "var(--color-text-muted)" }} />
-                        <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)", fontWeight: 600 }}>
-                          {time.cidade} · {time.estado}
-                        </span>
-                      </div>
-
-                      <div
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "var(--space-2)",
-                          width: "fit-content",
-                          whiteSpace: "nowrap",
-                          padding: "6px 10px",
-                          borderRadius: "var(--radius-full)",
-                          border: visual.chipBorder,
-                          background: visual.chipBg,
-                        }}
-                      >
-                        <Icon icon={Calendar} size={12} style={{ color: "var(--color-text-muted)" }} />
-                        <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)", fontWeight: 600 }}>
-                          {tempoDeCriacao}
-                        </span>
-                      </div>
+                    {/* Localização */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "var(--space-1)" }}>
+                      <Icon icon={MapPin} size={12} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
+                      <span className="text-secondary" style={{ fontSize: "var(--text-xs)" }}>
+                        {time.cidade} · {time.estado}
+                      </span>
                     </div>
 
+                    {/* Footer */}
                     <Button
                       variant="ghost"
                       style={{
-                        marginTop: "var(--space-3)",
+                        marginTop: "var(--space-1)",
                         width: "100%",
                         justifyContent: "space-between",
-                        border: visual.buttonBorder,
-                        background: visual.buttonBg,
+                        border: "1px solid rgba(255,255,255,0.08)",
+                        background: "rgba(255,255,255,0.03)",
                         color: "white",
-                        fontWeight: 700,
+                        fontWeight: 600,
                       }}
                       onClick={() => router.push(`/organizador/times/${time.id}`)}
                     >
-                      Ver detalhes do time
+                      Gerenciar time
                       <Icon icon={ArrowUpRight} size={14} style={{ color: "var(--color-brand-primary)" }} />
                     </Button>
                   </Card>

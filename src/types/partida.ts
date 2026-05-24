@@ -28,6 +28,7 @@ export interface PartidaMataMataResponse {
   logoVisitante: string | null;
   golsCasa: number;
   golsVisitante: number;
+  dataHora: string | null;
   finalizado: boolean;
 }
 
@@ -47,6 +48,7 @@ export interface JogoResponse {
   logoTimeVisitante: string | null;
   golsTimeCasa: number;
   golsTimeVisitante: number;
+  dataHora: string | null;
   finalizado: boolean;
 }
 

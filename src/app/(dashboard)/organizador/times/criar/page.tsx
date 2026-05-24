@@ -8,7 +8,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type Resolver } from "react-hook-form";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { Users, MapPin, ImageIcon, CheckCircle, ArrowLeft, Loader2 } from "lucide-react";
+import { Users, MapPin, ImageIcon, CheckCircle, Loader2 } from "lucide-react";
+import { BotaoVoltar } from "@/components/molecules/BotaoVoltar";
 import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/molecules/Card";
 import { FormField } from "@/components/molecules/FormField";
@@ -209,21 +210,7 @@ export default function CriarTimePage() {
         transition={{ duration: 0.3 }}
         style={{ marginBottom: "var(--space-5)" }}
       >
-        <Link
-          href="/organizador/times"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "var(--space-2)",
-            color: "var(--color-text-muted)",
-            textDecoration: "none",
-            fontSize: "var(--text-sm)",
-            transition: "color 0.15s",
-          }}
-        >
-          <Icon icon={ArrowLeft} size={14} />
-          Voltar para times
-        </Link>
+        <BotaoVoltar fallbackHref="/organizador/times" label="Voltar para times" />
       </motion.div>
 
       <div data-criar-grid style={{ display: "grid", gridTemplateColumns: "minmax(0, 5fr) minmax(0, 7fr)", gap: "var(--space-6)", alignItems: "start" }}>

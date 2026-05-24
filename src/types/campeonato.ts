@@ -32,6 +32,7 @@ export interface CriarCampeonatoRequest {
   pontosEmpate: number;
   formatoCampeonato: number;
   quantidadeTimesClassificam: number;
+  logo?: File;
 }
 
 export interface EditarCampeonatoRequest {
@@ -44,14 +45,17 @@ export interface EditarCampeonatoRequest {
   pontosEmpate: number;
   formatoCampeonato: number;
   quantidadeTimesClassificam: number;
+  logo?: File;
 }
 
 export interface CampeonatoResponse {
   id: string;
   organizadorCampeonatoId: string;
+  organizadorNome?: string | null;
   nome: string;
   dataInicio: string;
   dataFim: string;
+  logoUrl: string | null;
   status: string;
   totalTimes: number;
   criadoEm: string;

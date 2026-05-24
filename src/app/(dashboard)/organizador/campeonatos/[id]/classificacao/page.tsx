@@ -3,7 +3,8 @@
 import { use } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowLeft, BarChart3 } from "lucide-react";
+import { BarChart3 } from "lucide-react";
+import { BotaoVoltar } from "@/components/molecules/BotaoVoltar";
 import { Avatar } from "@/components/atoms/Avatar";
 import { Card } from "@/components/molecules/Card";
 import { Spinner } from "@/components/atoms/Spinner";
@@ -62,13 +63,7 @@ export default function ClassificacaoPage({ params }: { params: Promise<{ id: st
       style={{ width: "100%", maxWidth: "880px", margin: "0 auto", padding: "var(--space-6) var(--space-4)" }}
     >
       <div style={{ marginBottom: "var(--space-5)" }}>
-        <Link
-          href={`/organizador/campeonatos/${id}`}
-          style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-2)", color: "var(--color-text-muted)", textDecoration: "none", fontSize: "var(--text-sm)" }}
-        >
-          <Icon icon={ArrowLeft} size={14} />
-          Voltar para {campeonato.nome}
-        </Link>
+        <BotaoVoltar fallbackHref={`/organizador/campeonatos/${id}`} label={`Voltar para ${campeonato.nome}`} />
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", marginBottom: "var(--space-6)" }}>
