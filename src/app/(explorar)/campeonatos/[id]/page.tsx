@@ -10,13 +10,14 @@ import {
 import { Avatar } from "@/components/atoms/Avatar";
 import { Badge } from "@/components/atoms/Badge";
 import { Card } from "@/components/molecules/Card";
+import { CampeaoBanner } from "@/components/molecules/CampeaoBanner";
 import { BotaoVoltar } from "@/components/molecules/BotaoVoltar";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Icon } from "@/components/atoms/Icon";
 import { Chaveamento } from "@/components/organisms/Chaveamento";
 import { TabelaClassificacao } from "@/components/organisms/TabelaClassificacao";
 import { fadeInUp, getFadeTransition, containerVariants, itemVariants } from "@/lib/motion";
-import { obterStatusCampeonato, formatarDataJogo } from "@/lib/campeonato.ui";
+import { obterStatusCampeonato, formatarDataJogo, obterCampeao } from "@/lib/campeonato.ui";
 import { useObterCampeonatoPorIdQuery, useListarTodosOsTimesQuery } from "@/store/api/campeonatoApi";
 import {
   useObterClassificacaoQuery,
@@ -188,6 +189,9 @@ export default function ExplorarCampeonatoDetalhePage({ params }: { params: Prom
   }
 
   const statusCfg = obterStatusCampeonato(campeonato.status);
+  const campeao = campeonato.status === "Finalizado"
+    ? obterCampeao(campeonato.formatoCampeonato, classificacao, chaveamento)
+    : null;
   const dataInicio = new Date(campeonato.dataInicio);
   const dataFim = new Date(campeonato.dataFim);
   const mostrarDataInicio = !["EmAndamento", "Finalizado"].includes(campeonato.status);
@@ -287,6 +291,9 @@ export default function ExplorarCampeonatoDetalhePage({ params }: { params: Prom
           </div>
         </div>
       </Card>
+
+      {/* Campeão (campeonato finalizado) */}
+      {campeao && <CampeaoBanner nome={campeao.nome} logoUrl={campeao.logoUrl} />}
 
       {/* Abas */}
       <div style={{ display: "flex", gap: "4px", marginBottom: "var(--space-5)", padding: "4px", background: "rgba(255,255,255,0.03)", borderRadius: "var(--radius-lg)", border: "1px solid rgba(255,255,255,0.06)", overflowX: "auto" }}>

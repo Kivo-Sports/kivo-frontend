@@ -1,4 +1,5 @@
 import type { BadgeVariant } from "@/components/atoms/Badge";
+import type { TabelaClassificacaoResponse, ChaveamentoResponse } from "@/types/partida";
 
 /** Configuração visual compartilhada para os status de campeonato. */
 export const CAMPEONATO_STATUS: Record<
@@ -58,6 +59,45 @@ export function formatarPeriodo(dataInicio: string, dataFim: string): string {
   const inicio = new Date(dataInicio).toLocaleDateString("pt-BR");
   const fim = new Date(dataFim).toLocaleDateString("pt-BR");
   return `${inicio} → ${fim}`;
+}
+
+export interface CampeaoInfo {
+  nome: string;
+  logoUrl: string | null;
+}
+
+/**
+ * Determina o campeão de um campeonato finalizado.
+ * - Pontos Corridos: líder da tabela de classificação.
+ * - Mata-Mata / Híbrido: vencedor da partida da Final.
+ * Retorna null quando ainda não é possível determinar (ex.: final empatada ou sem dados).
+ */
+export function obterCampeao(
+  formato: string,
+  classificacao: TabelaClassificacaoResponse[],
+  chaveamento: ChaveamentoResponse[],
+): CampeaoInfo | null {
+  const temMataMata = formato === "MataMata" || formato === "Hibrido";
+
+  if (temMataMata) {
+    const faseFinal = chaveamento.find((f) => f.fase === "Final");
+    const final = faseFinal?.partidas?.[0];
+    if (final && final.finalizado && final.golsCasa !== final.golsVisitante) {
+      const casaVence = final.golsCasa > final.golsVisitante;
+      return {
+        nome: casaVence ? final.timeCasa : final.timeVisitante,
+        logoUrl: casaVence ? final.logoCasa : final.logoVisitante,
+      };
+    }
+    return null;
+  }
+
+  if (formato === "PontosCorridos") {
+    const lider = [...classificacao].sort((a, b) => a.posicao - b.posicao)[0];
+    if (lider) return { nome: lider.nomeTime, logoUrl: lider.logoUrl };
+  }
+
+  return null;
 }
 
 /** Formata data (e hora, se houver) de uma partida. Retorna null se inválida. */

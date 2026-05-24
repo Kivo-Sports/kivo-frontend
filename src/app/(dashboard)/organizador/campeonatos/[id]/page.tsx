@@ -16,6 +16,7 @@ import { Avatar } from "@/components/atoms/Avatar";
 import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/molecules/Card";
+import { CampeaoBanner } from "@/components/molecules/CampeaoBanner";
 import { BotaoVoltar } from "@/components/molecules/BotaoVoltar";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Icon } from "@/components/atoms/Icon";
@@ -38,6 +39,7 @@ import {
   useListarJogosQuery,
 } from "@/store/api/partidaApi";
 import { Chaveamento } from "@/components/organisms/Chaveamento";
+import { obterCampeao } from "@/lib/campeonato.ui";
 import { FORMATO_CAMPEONATO, type CampeonatoResponse, type FormatoCampeonato } from "@/types/campeonato";
 
 // Valida potência de 2 (2, 4, 8, 16…) — exigido para a fase de mata-mata
@@ -731,6 +733,10 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
   const mostraClassificacao = formato === "PontosCorridos" || formato === "Hibrido";
   const mostraChaveamento   = formato === "MataMata" || formato === "Hibrido";
 
+  const campeao = campeonato.status === "Finalizado"
+    ? obterCampeao(formato, classificacaoData, chaveamentoData)
+    : null;
+
   const NAV_GESTAO: { href: string; icon: LucideIcon; title: string; desc: string }[] = [
     { href: `/organizador/campeonatos/${id}/jogos`, icon: Swords, title: "Jogos & Placares", desc: "Gere a tabela de jogos e registre os placares das partidas." },
     ...(mostraClassificacao ? [{ href: `/organizador/campeonatos/${id}/classificacao`, icon: BarChart3, title: "Classificação", desc: "Acompanhe a pontuação e a posição de cada time." }] : []),
@@ -936,6 +942,9 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
           </div>
         </Card>
       </motion.div>
+
+      {/* Campeão (campeonato finalizado) */}
+      {campeao && <CampeaoBanner nome={campeao.nome} logoUrl={campeao.logoUrl} />}
 
       {/* ── Main grid ────────────────────────────────────────────────────── */}
       <div
