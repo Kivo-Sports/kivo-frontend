@@ -12,6 +12,7 @@ import type { TimeResponse } from "@/types/time";
 
 function buildCampeonatoFormData(body: {
   organizadorCampeonatoId?: string;
+  esporteId?: string;
   nome: string;
   dataInicio: string;
   dataFim: string;
@@ -26,6 +27,10 @@ function buildCampeonatoFormData(body: {
 
   if (body.organizadorCampeonatoId) {
     formData.append("OrganizadorCampeonatoId", body.organizadorCampeonatoId);
+  }
+
+  if (body.esporteId) {
+    formData.append("EsporteId", body.esporteId);
   }
 
   formData.append("Nome", body.nome);

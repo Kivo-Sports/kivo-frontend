@@ -24,6 +24,7 @@ export const FORMATO_CAMPEONATO: Record<
 
 export interface CriarCampeonatoRequest {
   organizadorCampeonatoId: string;
+  esporteId: string;
   nome: string;
   dataInicio: string;
   dataFim: string;
@@ -37,6 +38,7 @@ export interface CriarCampeonatoRequest {
 
 export interface EditarCampeonatoRequest {
   id: string;
+  esporteId: string;
   nome: string;
   dataInicio: string;
   dataFim: string;
@@ -52,6 +54,9 @@ export interface CampeonatoResponse {
   id: string;
   organizadorCampeonatoId: string;
   organizadorNome?: string | null;
+  esporteId: string;
+  esporteNome?: string | null;
+  esporteIcone?: string | null;
   nome: string;
   dataInicio: string;
   dataFim: string;
@@ -77,6 +82,7 @@ export interface CampeonatoFormValues {
   pontosVitoria: number;
   pontosDerrota: number;
   pontosEmpate: number;
+  esporteId: string;
 }
 
 export interface ConviteRequest {

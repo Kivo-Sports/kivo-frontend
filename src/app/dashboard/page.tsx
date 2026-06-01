@@ -9,6 +9,7 @@ import { FadeIn } from "@/components/atoms/FadeIn";
 import { Spinner } from "@/components/atoms/Spinner";
 import { isOrganizadorTime, normalizeCargo, getRedirectPathAfterLogin } from "@/lib/auth.utils";
 import { Icon } from "@/components/atoms/Icon";
+import { AdminDashboard } from "@/components/organisms/AdminDashboard";
 import { Shield, Trophy, BarChart3, MessageCircle } from "lucide-react";
 
 function DashboardLoading() {
@@ -88,6 +89,16 @@ export default function DashboardPage() {
     const normalizedCargo = normalizeCargo(cargo);
     return types[normalizedCargo] || "Usuário";
   };
+
+  const isAdmin = normalizeCargo(user?.cargo) === "administrador";
+
+  if (isAdmin) {
+    return (
+      <AppLayout>
+        <AdminDashboard userName={user.name} />
+      </AppLayout>
+    );
+  }
 
   const quickAccessItems = [
     {

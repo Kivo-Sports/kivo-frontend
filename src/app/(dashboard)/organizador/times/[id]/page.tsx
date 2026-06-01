@@ -17,8 +17,10 @@ import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/molecules/Card";
 import { BotaoVoltar } from "@/components/molecules/BotaoVoltar";
 import { FormField } from "@/components/molecules/FormField";
+import { EsporteSelect } from "@/components/molecules/EsporteSelect";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Icon } from "@/components/atoms/Icon";
+import { Icon as IconifyIcon } from "@iconify/react";
 import { useToast } from "@/components/atoms/Toast";
 import { fadeInUp, getFadeTransition, containerVariants, itemVariants } from "@/lib/motion";
 import {
@@ -77,6 +79,7 @@ const editarTimeSchema = z.object({
     .trim()
     .length(2, "Selecione um estado")
     .refine((value) => BR_STATE_CODES.includes(value), "Estado inválido"),
+  esporteId: z.string().uuid("Selecione um esporte"),
 });
 
 function extrairMensagemErroApi(error: unknown, fallback: string): string {
@@ -440,10 +443,12 @@ function EditarTimeModal({ time, onClose }: { time: TimeResponse; onClose: () =>
   const [isDragOverLogo, setIsDragOverLogo] = useState(false);
   const logoInputRef = useRef<HTMLInputElement | null>(null);
 
-  const { register, handleSubmit, formState: { errors, isDirty } } = useForm<TimeFormValues>({
+  const { register, handleSubmit, watch, setValue, formState: { errors, isDirty } } = useForm<TimeFormValues>({
     resolver: zodResolver(editarTimeSchema),
-    defaultValues: { nome: time.nome, cidade: time.cidade, estado: time.estado },
+    defaultValues: { nome: time.nome, cidade: time.cidade, estado: time.estado, esporteId: time.esporteId },
   });
+
+  const esporteValue = watch("esporteId");
 
   const selectStyles = [
     "h-12", "w-full", "rounded-[var(--radius-md)]", "border",
@@ -534,6 +539,12 @@ function EditarTimeModal({ time, onClose }: { time: TimeResponse; onClose: () =>
                 </p>
               )}
             </div>
+
+            <EsporteSelect
+              value={esporteValue}
+              onChange={(id) => setValue("esporteId", id, { shouldValidate: true, shouldDirty: true })}
+              error={errors.esporteId?.message}
+            />
 
             <div>
               <label htmlFor="logo-editar" className="mb-2 inline-block text-sm font-semibold text-(--color-text-primary)">
@@ -753,6 +764,12 @@ export default function DetalheTimePage({ params }: { params: Promise<{ id: stri
                   <Icon icon={MapPin} size={12} style={{ color: "var(--color-text-muted)" }} />
                   {time.cidade} · {time.estado}
                 </span>
+                {time.esporteNome && (
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "var(--radius-md)", background: "rgba(0,230,118,0.06)", border: "1px solid rgba(0,230,118,0.2)", fontSize: "var(--text-xs)", color: "var(--color-brand-primary)" }}>
+                    {time.esporteIcone && <IconifyIcon icon={time.esporteIcone} width={13} height={13} />}
+                    {time.esporteNome}
+                  </span>
+                )}
                 <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "var(--radius-md)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
                   <Icon icon={Clock} size={12} style={{ color: "var(--color-text-muted)" }} />
                   Desde {new Date(time.criadoEm).toLocaleDateString("pt-BR")}

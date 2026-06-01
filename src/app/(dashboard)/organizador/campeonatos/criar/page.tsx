@@ -13,6 +13,7 @@ import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/molecules/Card";
 import { FormField } from "@/components/molecules/FormField";
+import { EsporteSelect } from "@/components/molecules/EsporteSelect";
 import { useToast } from "@/components/atoms/Toast";
 import { fadeInUp, getFadeTransition } from "@/lib/motion";
 import { useCriarCampeonatoMutation } from "@/store/api/campeonatoApi";
@@ -72,6 +73,7 @@ const criarCampeonatoSchema = z
     pontosVitoria: pontuacaoSchema,
     pontosDerrota: pontuacaoSchema,
     pontosEmpate:  pontuacaoSchema,
+    esporteId: z.string().uuid("Selecione um esporte"),
   })
   .refine((d) => parseLocalDate(d.dataFim) > parseLocalDate(d.dataInicio), {
     message: "A data de fim deve ser posterior à de início",
@@ -122,11 +124,13 @@ export default function CriarCampeonatoPage() {
       pontosVitoria: 3,
       pontosDerrota: 0,
       pontosEmpate:  1,
+      esporteId:     "",
     },
     mode: "onChange",
   });
 
   const nomeValue = watch("nome");
+  const esporteValue = watch("esporteId");
   const dataInicioValue = watch("dataInicio");
   const dataFimValue = watch("dataFim");
 
@@ -195,6 +199,7 @@ export default function CriarCampeonatoPage() {
     try {
       await criarCampeonato({
         organizadorCampeonatoId: perfil.organizadorCampeonatoId,
+        esporteId:     values.esporteId,
         nome:          values.nome,
         dataInicio:    new Date(values.dataInicio).toISOString(),
         dataFim:       new Date(values.dataFim).toISOString(),
@@ -386,6 +391,12 @@ export default function CriarCampeonatoPage() {
                 placeholder="ex: Copa Regional 2026"
                 error={errors.nome?.message}
                 {...register("nome")}
+              />
+
+              <EsporteSelect
+                value={esporteValue}
+                onChange={(id) => setValue("esporteId", id, { shouldValidate: true })}
+                error={errors.esporteId?.message}
               />
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>

@@ -11,6 +11,7 @@ import { Spinner } from "@/components/atoms/Spinner";
 import { Card } from "@/components/molecules/Card";
 import { PageHeader } from "@/components/molecules/PageHeader";
 import { Icon } from "@/components/atoms/Icon";
+import { Icon as IconifyIcon } from "@iconify/react";
 import { containerVariants, fadeIn, fadeInUp, itemVariants } from "@/lib/motion";
 import { useListarCampeonatosQuery } from "@/store/api/campeonatoApi";
 import { useGetPerfilUsuarioQuery } from "@/store/api/userApi";
@@ -499,22 +500,6 @@ export default function OrganizadorCampeonatoPage() {
               const statusCfg      = STATUS_CONFIG[campeonato.status] ?? { label: campeonato.status, variant: "default" as const };
               const dataInicio     = new Date(campeonato.dataInicio);
               const dataFim        = new Date(campeonato.dataFim);
-              const agora          = Date.now();
-              const diasParaInicio = Math.ceil((dataInicio.getTime() - agora) / (1000 * 60 * 60 * 24));
-              const diasParaFim    = Math.ceil((dataFim.getTime() - agora) / (1000 * 60 * 60 * 24));
-              const contagem = (() => {
-                switch (campeonato.status) {
-                  case "Rascunho":
-                  case "InscricoesAbertas":
-                  case "InscricoesEncerradas":
-                    return diasParaInicio > 0 ? `${diasParaInicio} dias p/ início` : "Iniciando";
-                  case "EmAndamento":
-                    return diasParaFim > 0 ? `${diasParaFim} dias p/ fim` : "Encerrando";
-                  case "Finalizado": return "Finalizado";
-                  case "Cancelado":  return "Cancelado";
-                  default:           return "—";
-                }
-              })();
 
               return (
                 <motion.div key={campeonato.id} variants={itemVariants}>
@@ -563,12 +548,16 @@ export default function OrganizadorCampeonatoPage() {
                           {campeonato.totalTimes} {campeonato.totalTimes === 1 ? "time" : "times"}
                         </span>
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-1)" }}>
-                        <Icon icon={Calendar} size={11} style={{ color: "var(--color-text-muted)" }} />
-                        <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
-                          {contagem}
-                        </span>
-                      </div>
+                      {campeonato.esporteNome && (
+                        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-1)" }}>
+                          {campeonato.esporteIcone && (
+                            <IconifyIcon icon={campeonato.esporteIcone} width={13} height={13} style={{ color: "var(--color-text-muted)" }} />
+                          )}
+                          <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
+                            {campeonato.esporteNome}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     <Button

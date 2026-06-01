@@ -3,6 +3,7 @@ import type { CriarTimeRequest, AtualizarTimeRequest, TimeResponse } from "@/typ
 
 function buildTimeFormData(body: {
   organizadorTimeId?: string;
+  esporteId?: string;
   nome: string;
   cidade: string;
   estado: string;
@@ -12,6 +13,10 @@ function buildTimeFormData(body: {
 
   if (body.organizadorTimeId) {
     formData.append("OrganizadorTimeId", body.organizadorTimeId);
+  }
+
+  if (body.esporteId) {
+    formData.append("EsporteId", body.esporteId);
   }
 
   formData.append("Nome", body.nome);

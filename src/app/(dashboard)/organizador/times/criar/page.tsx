@@ -13,6 +13,7 @@ import { BotaoVoltar } from "@/components/molecules/BotaoVoltar";
 import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/molecules/Card";
 import { FormField } from "@/components/molecules/FormField";
+import { EsporteSelect } from "@/components/molecules/EsporteSelect";
 import { Icon } from "@/components/atoms/Icon";
 import { useToast } from "@/components/atoms/Toast";
 import { fadeInUp, getFadeTransition } from "@/lib/motion";
@@ -45,6 +46,7 @@ const criarTimeSchema = z.object({
     .trim()
     .length(2, "Selecione um estado")
     .refine((value) => BR_STATE_CODES.includes(value), "Estado inválido"),
+  esporteId: z.string().uuid("Selecione um esporte"),
 });
 
 const estadosBrasileiros: ReadonlyArray<{ sigla: string; nome: string }> = [
@@ -110,16 +112,18 @@ export default function CriarTimePage() {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isValid },
   } = useForm<TimeFormValues>({
     resolver: zodResolver(criarTimeSchema) as Resolver<TimeFormValues>,
-    defaultValues: { nome: "", cidade: "", estado: "" },
+    defaultValues: { nome: "", cidade: "", estado: "", esporteId: "" },
     mode: "onChange",
   });
 
-  const nomeValue   = watch("nome");
-  const cidadeValue = watch("cidade");
-  const estadoValue = watch("estado");
+  const nomeValue    = watch("nome");
+  const cidadeValue  = watch("cidade");
+  const estadoValue  = watch("estado");
+  const esporteValue = watch("esporteId");
 
   const onSubmit = async (values: TimeFormValues): Promise<void> => {
     if (!perfil?.organizadorTimeId) {
@@ -403,6 +407,12 @@ export default function CriarTimePage() {
                   </p>
                 )}
               </div>
+
+              <EsporteSelect
+                value={esporteValue}
+                onChange={(id) => setValue("esporteId", id, { shouldValidate: true })}
+                error={errors.esporteId?.message}
+              />
 
               {/* Upload de logo */}
               <div>

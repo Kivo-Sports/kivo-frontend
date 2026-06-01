@@ -19,9 +19,11 @@ import {
   useListarCampeonatosQuery,
 } from "@/store/api/campeonatoApi";
 import { useGetPerfilUsuarioQuery } from "@/store/api/userApi";
+import { EsporteFilterSelect } from "@/components/molecules/EsporteFilterSelect";
 import { useAppSelector } from "@/store/hooks";
 import { useToast } from "@/components/atoms/Toast";
 import { Icon } from "@/components/atoms/Icon";
+import { Icon as IconifyIcon } from "@iconify/react";
 import { FORMATO_CAMPEONATO } from "@/types/campeonato";
 import type { ConvitePendenteResponse, FormatoCampeonato, CampeonatoResponse } from "@/types/campeonato";
 
@@ -287,6 +289,7 @@ export default function OrganizadorTimePage() {
 
   const [search, setSearch]             = useState("");
   const [statusFilter, setStatusFilter] = useState<"todos" | "ativo" | "inativo">("todos");
+  const [esporteFilter, setEsporteFilter] = useState<string>("todos");
 
   const activeTeams = times.filter((time) => time.ativo);
   const heroStats   = [
@@ -296,9 +299,10 @@ export default function OrganizadorTimePage() {
   const userName = user?.name?.split(" ")[0] ?? "Organizador";
 
   const timesFiltrados = times.filter((t) => {
-    const matchNome   = t.nome.toLowerCase().includes(search.toLowerCase());
-    const matchStatus = statusFilter === "todos" ? true : t.ativo === (statusFilter === "ativo");
-    return matchNome && matchStatus;
+    const matchNome    = t.nome.toLowerCase().includes(search.toLowerCase());
+    const matchStatus  = statusFilter === "todos" ? true : t.ativo === (statusFilter === "ativo");
+    const matchEsporte = esporteFilter === "todos" ? true : t.esporteId === esporteFilter;
+    return matchNome && matchStatus && matchEsporte;
   });
 
   if (isLoading || isFetching) {
@@ -504,12 +508,24 @@ export default function OrganizadorTimePage() {
                       </Badge>
                     </div>
 
-                    {/* Localização */}
-                    <div style={{ display: "flex", alignItems: "center", gap: "var(--space-1)" }}>
-                      <Icon icon={MapPin} size={12} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
-                      <span className="text-secondary" style={{ fontSize: "var(--text-xs)" }}>
-                        {time.cidade} · {time.estado}
+                    {/* Localização + Esporte */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)", flexWrap: "wrap" }}>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-1)" }}>
+                        <Icon icon={MapPin} size={12} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
+                        <span className="text-secondary" style={{ fontSize: "var(--text-xs)" }}>
+                          {time.cidade} · {time.estado}
+                        </span>
                       </span>
+                      {time.esporteNome && (
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-1)" }}>
+                          {time.esporteIcone && (
+                            <IconifyIcon icon={time.esporteIcone} width={13} height={13} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
+                          )}
+                          <span className="text-secondary" style={{ fontSize: "var(--text-xs)" }}>
+                            {time.esporteNome}
+                          </span>
+                        </span>
+                      )}
                     </div>
 
                     {/* Footer */}
@@ -642,26 +658,8 @@ export default function OrganizadorTimePage() {
                   Meus times
                 </button>
 
-                {/* Esporte — desabilitado */}
-                <select
-                  disabled
-                  title="Em breve"
-                  style={{
-                    flex: 1,
-                    height: "28px",
-                    background: "rgba(255,255,255,0.03)",
-                    border: "1px solid rgba(255,255,255,0.06)",
-                    borderRadius: "var(--radius-md)",
-                    padding: "0 var(--space-2)",
-                    fontSize: "var(--text-xs)",
-                    color: "var(--color-text-muted)",
-                    cursor: "not-allowed",
-                    opacity: 0.5,
-                    outline: "none",
-                  }}
-                >
-                  <option>Esporte</option>
-                </select>
+                {/* Esporte — filtro */}
+                <EsporteFilterSelect value={esporteFilter} onChange={setEsporteFilter} />
               </div>
 
               {/* Filtro de status */}

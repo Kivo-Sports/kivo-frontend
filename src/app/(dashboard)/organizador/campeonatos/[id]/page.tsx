@@ -18,8 +18,10 @@ import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/molecules/Card";
 import { CampeaoBanner } from "@/components/molecules/CampeaoBanner";
 import { BotaoVoltar } from "@/components/molecules/BotaoVoltar";
+import { EsporteSelect } from "@/components/molecules/EsporteSelect";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Icon } from "@/components/atoms/Icon";
+import { Icon as IconifyIcon } from "@iconify/react";
 import { useToast } from "@/components/atoms/Toast";
 import { containerVariants, fadeInUp, getFadeTransition, itemVariants } from "@/lib/motion";
 import {
@@ -96,7 +98,10 @@ function ConvidarTimeModal({ campeonato, onClose, convidadosIniciais }: { campeo
   const [convidarTime] = useConvidarTimeMutation();
 
   const timesFiltrados = todosOsTimes.filter(
-    (t) => t.ativo && (busca === "" || t.nome.toLowerCase().includes(busca.toLowerCase()) || t.cidade.toLowerCase().includes(busca.toLowerCase()))
+    (t) =>
+      t.ativo &&
+      t.esporteId === campeonato.esporteId &&
+      (busca === "" || t.nome.toLowerCase().includes(busca.toLowerCase()) || t.cidade.toLowerCase().includes(busca.toLowerCase()))
   );
 
   const handleConvidar = async (time: TimeResponse) => {
@@ -133,6 +138,12 @@ function ConvidarTimeModal({ campeonato, onClose, convidadosIniciais }: { campeo
             <h2 style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-lg)", fontWeight: 600, color: "white" }}>
               {campeonato.nome}
             </h2>
+            {campeonato.esporteNome && (
+              <p style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", display: "flex", alignItems: "center", gap: "4px" }}>
+                {campeonato.esporteIcone && <IconifyIcon icon={campeonato.esporteIcone} width={14} height={14} />}
+                Apenas times de {campeonato.esporteNome}
+              </p>
+            )}
           </div>
           <button
             onClick={onClose}
@@ -166,7 +177,7 @@ function ConvidarTimeModal({ campeonato, onClose, convidadosIniciais }: { campeo
             </div>
           ) : timesFiltrados.length === 0 ? (
             <p style={{ textAlign: "center", color: "var(--color-text-muted)", padding: "var(--space-6)", fontSize: "var(--text-sm)" }}>
-              {busca ? "Nenhum time encontrado." : "Nenhum time ativo disponível."}
+              {busca ? "Nenhum time encontrado." : `Nenhum time ativo de ${campeonato.esporteNome ?? "este esporte"} disponível.`}
             </p>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
@@ -305,6 +316,7 @@ function EditarCampeonatoModal({ campeonato, onClose }: { campeonato: Campeonato
   const [editarCampeonato, { isLoading }] = useEditarCampeonatoMutation();
 
   const [nome, setNome] = useState(campeonato.nome);
+  const [esporteId, setEsporteId] = useState(campeonato.esporteId);
   const [dataInicio, setDataInicio] = useState(campeonato.dataInicio.slice(0, 10));
   const [dataFim, setDataFim] = useState(campeonato.dataFim.slice(0, 10));
   const [pVitoria, setPVitoria] = useState(String(campeonato.pontosVitoria));
@@ -370,6 +382,7 @@ function EditarCampeonatoModal({ campeonato, onClose }: { campeonato: Campeonato
     try {
       await editarCampeonato({
         id: campeonato.id,
+        esporteId,
         nome: nome.trim(),
         dataInicio: new Date(dataInicio).toISOString(),
         dataFim: new Date(dataFim).toISOString(),
@@ -421,6 +434,8 @@ function EditarCampeonatoModal({ campeonato, onClose }: { campeonato: Campeonato
             <label style={labelStyle}>Nome</label>
             <input style={inputStyle} value={nome} onChange={(e) => setNome(e.target.value)} />
           </div>
+
+          <EsporteSelect value={esporteId} onChange={setEsporteId} />
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
             <div>
@@ -939,6 +954,12 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                     <Icon icon={GitFork} size={13} />
                     {FORMATO_CAMPEONATO[campeonato.formatoCampeonato as FormatoCampeonato]?.label ?? campeonato.formatoCampeonato}
                   </span>
+                  {campeonato.esporteNome && (
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "5px 12px", borderRadius: "var(--radius-full)", fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-secondary)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                      {campeonato.esporteIcone && <IconifyIcon icon={campeonato.esporteIcone} width={14} height={14} />}
+                      {campeonato.esporteNome}
+                    </span>
+                  )}
                 </div>
 
                 {/* Datas */}

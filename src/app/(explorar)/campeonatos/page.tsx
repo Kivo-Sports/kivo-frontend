@@ -11,6 +11,8 @@ import { Avatar } from "@/components/atoms/Avatar";
 import { Card } from "@/components/molecules/Card";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Icon } from "@/components/atoms/Icon";
+import { Icon as IconifyIcon } from "@iconify/react";
+import { EsporteCarrossel } from "@/components/molecules/EsporteCarrossel";
 import { containerVariants, fadeInUp, getFadeTransition, itemVariants } from "@/lib/motion";
 import { obterStatusCampeonato, formatarPeriodo } from "@/lib/campeonato.ui";
 import { useListarCampeonatosQuery } from "@/store/api/campeonatoApi";
@@ -208,6 +210,16 @@ function CampeonatoCard({ camp }: { camp: CampeonatoResponse }) {
               {camp.totalTimes} {camp.totalTimes === 1 ? "time" : "times"}
             </span>
           </div>
+          {camp.esporteNome && (
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              {camp.esporteIcone && (
+                <IconifyIcon icon={camp.esporteIcone} width={12} height={12} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
+              )}
+              <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
+                {camp.esporteNome}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Campeão (faixa dourada para finalizados) */}
@@ -247,6 +259,7 @@ export default function ExplorarCampeonatosPage() {
   const { data: campeonatos = [], isLoading } = useListarCampeonatosQuery();
   const [busca, setBusca] = useState("");
   const [filtro, setFiltro] = useState("todos");
+  const [esporteFiltro, setEsporteFiltro] = useState("todos");
 
   // Lista base: tudo que está público (sem Rascunho, sem Cancelado)
   const visiveis = useMemo(
@@ -259,6 +272,7 @@ export default function ExplorarCampeonatosPage() {
     const termo = busca.trim().toLowerCase();
     return visiveis
       .filter((c) => filtroAtivo.status.length === 0 || filtroAtivo.status.includes(c.status))
+      .filter((c) => esporteFiltro === "todos" || c.esporteId === esporteFiltro)
       .filter((c) => termo === "" || c.nome.toLowerCase().includes(termo))
       .slice()
       .sort((a, b) => {
@@ -269,7 +283,7 @@ export default function ExplorarCampeonatosPage() {
         if (oa !== ob) return oa - ob;
         return new Date(b.dataInicio).getTime() - new Date(a.dataInicio).getTime();
       });
-  }, [visiveis, busca, filtro]);
+  }, [visiveis, busca, filtro, esporteFiltro]);
 
   const stats = useMemo(() => {
     let andamento = 0, inscricoes = 0, finalizados = 0;
@@ -396,6 +410,9 @@ export default function ExplorarCampeonatosPage() {
           })}
         </div>
       </div>
+
+      {/* ── Carrossel de esportes (filtro) ───────────────────────────────── */}
+      <EsporteCarrossel value={esporteFiltro} onChange={setEsporteFiltro} />
 
       {/* ── Conteúdo ─────────────────────────────────────────────────────── */}
       {isLoading ? (
