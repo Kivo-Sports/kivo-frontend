@@ -67,10 +67,10 @@ export interface CampeaoInfo {
 }
 
 /**
- * Determina o campeão de um campeonato finalizado.
- * - Pontos Corridos: líder da tabela de classificação.
- * - Mata-Mata / Híbrido: vencedor da partida da Final.
- * Retorna null quando ainda não é possível determinar (ex.: final empatada ou sem dados).
+ * Fallback para descobrir o campeão a partir das partidas (quando o backend não
+ * salvou `TimeVencedorId` — ex.: campeonatos finalizados pela passagem da data).
+ * - Pontos Corridos: líder da tabela.
+ * - Mata-Mata / Híbrido: vencedor da Final.
  */
 export function obterCampeao(
   formato: string,

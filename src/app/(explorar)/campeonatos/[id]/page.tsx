@@ -189,8 +189,12 @@ export default function ExplorarCampeonatoDetalhePage({ params }: { params: Prom
   }
 
   const statusCfg = obterStatusCampeonato(campeonato.status);
+  // Usa a coluna do backend; se ainda não estiver preenchida (ex.: finalizado
+  // pela passagem da data), calcula o campeão a partir da tabela/chaveamento.
   const campeao = campeonato.status === "Finalizado"
-    ? obterCampeao(campeonato.formatoCampeonato, classificacao, chaveamento)
+    ? (campeonato.vencedorTimeNome
+        ? { nome: campeonato.vencedorTimeNome, logoUrl: campeonato.vencedorTimeLogo }
+        : obterCampeao(campeonato.formatoCampeonato, classificacao, chaveamento))
     : null;
   const dataInicio = new Date(campeonato.dataInicio);
   const dataFim = new Date(campeonato.dataFim);

@@ -3,10 +3,11 @@
 import { use } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Calendar, MapPin, Ticket, CheckCircle, Clock } from "lucide-react";
+import { Calendar, MapPin, Ticket, CheckCircle } from "lucide-react";
 import { Avatar } from "@/components/atoms/Avatar";
 import { Badge } from "@/components/atoms/Badge";
 import { Card } from "@/components/molecules/Card";
+import { ContagemRegressivaJogo } from "@/components/molecules/ContagemRegressivaJogo";
 import { BotaoVoltar } from "@/components/molecules/BotaoVoltar";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Icon } from "@/components/atoms/Icon";
@@ -97,12 +98,6 @@ export default function ExplorarJogoDetalhePage({ params }: { params: Promise<{ 
             ) : (
               <span style={{ fontSize: "clamp(1.4rem, 5vw, 2rem)", fontWeight: 800, color: "var(--color-text-muted)", lineHeight: 1 }}>VS</span>
             )}
-            <Badge variant={partida.finalizado ? "success" : "info"} size="sm">
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                <Icon icon={partida.finalizado ? CheckCircle : Clock} size={11} />
-                {partida.finalizado ? "Encerrado" : "A realizar"}
-              </span>
-            </Badge>
           </div>
 
           {/* Visitante */}
@@ -113,6 +108,20 @@ export default function ExplorarJogoDetalhePage({ params }: { params: Promise<{ 
             </span>
             <span style={{ fontSize: "10px", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>Visitante</span>
           </div>
+        </div>
+
+        {/* Status do jogo — fora do grid para não apertar no mobile */}
+        <div style={{ display: "flex", justifyContent: "center", marginTop: "var(--space-5)" }}>
+          {partida.finalizado ? (
+            <Badge variant="success" size="sm">
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                <Icon icon={CheckCircle} size={11} />
+                Encerrado
+              </span>
+            </Badge>
+          ) : (
+            <ContagemRegressivaJogo dataHora={partida.dataHora} fallback="A realizar" />
+          )}
         </div>
       </Card>
 

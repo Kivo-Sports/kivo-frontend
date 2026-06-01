@@ -1,13 +1,13 @@
 "use client";
 
-import { use, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Trophy, Calendar, Users,
   CheckCircle, XCircle, UserPlus, AlertTriangle,
-  Search, X, Clock, Play, Lock, Bell,
+  Search, X, Clock, Play, Bell,
   Activity, FileText, Award, Pencil, Trash2,
   Swords, BarChart3, GitFork, PlayCircle, ChevronRight, ImageIcon,
   type LucideIcon,
@@ -563,6 +563,76 @@ function EditarCampeonatoModal({ campeonato, onClose }: { campeonato: Campeonato
   );
 }
 
+// ─── Countdown até o fim do campeonato ───────────────────────────────────────
+
+function formatarContagem(ms: number): string {
+  if (ms <= 0) return "Encerrando...";
+  const totalMin = Math.floor(ms / 60000);
+  const dias = Math.floor(totalMin / (60 * 24));
+  const horas = Math.floor((totalMin % (60 * 24)) / 60);
+  const min = totalMin % 60;
+
+  if (dias >= 1) {
+    return horas > 0 && dias < 7
+      ? `${dias} dia${dias !== 1 ? "s" : ""} e ${horas}h`
+      : `${dias} dia${dias !== 1 ? "s" : ""}`;
+  }
+  if (horas >= 1) {
+    return min > 0 ? `${horas}h ${min}min` : `${horas}h`;
+  }
+  return `${min} min`;
+}
+
+function CountdownFimCampeonato({ dataFim }: { dataFim: Date }) {
+  const [agora, setAgora] = useState<Date>(() => new Date());
+
+  useEffect(() => {
+    const id = setInterval(() => setAgora(new Date()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
+  const restante = dataFim.getTime() - agora.getTime();
+  const passou = restante <= 0;
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "var(--space-3)",
+        padding: "var(--space-3)",
+        borderRadius: "var(--radius-md)",
+        background: passou ? "rgba(255,193,7,0.05)" : "rgba(0,230,118,0.05)",
+        border: `1px solid ${passou ? "rgba(255,193,7,0.2)" : "rgba(0,230,118,0.18)"}`,
+      }}
+    >
+      <div
+        style={{
+          width: "2.25rem", height: "2.25rem",
+          borderRadius: "var(--radius-md)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          background: passou ? "rgba(255,193,7,0.1)" : "rgba(0,230,118,0.1)",
+          border: `1px solid ${passou ? "rgba(255,193,7,0.25)" : "rgba(0,230,118,0.22)"}`,
+          flexShrink: 0,
+        }}
+      >
+        <Icon icon={Clock} size={15} style={{ color: passou ? "rgba(255,193,7,0.9)" : "var(--color-brand-primary)" }} />
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+          {passou ? "Aguardando finalização" : "Finaliza em"}
+        </p>
+        <p style={{ margin: "2px 0 0", fontSize: "var(--text-base)", fontWeight: 700, color: passou ? "rgba(255,193,7,0.95)" : "white" }}>
+          {formatarContagem(restante)}
+        </p>
+        <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
+          {dataFim.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 // ─── Página de detalhes ───────────────────────────────────────────────────────
 
 export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ id: string }> }) {
@@ -733,8 +803,12 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
   const mostraClassificacao = formato === "PontosCorridos" || formato === "Hibrido";
   const mostraChaveamento   = formato === "MataMata" || formato === "Hibrido";
 
+  // Usa a coluna do backend; se ainda não estiver preenchida (ex.: finalizado
+  // pela passagem da data), calcula o campeão a partir da tabela/chaveamento.
   const campeao = campeonato.status === "Finalizado"
-    ? obterCampeao(formato, classificacaoData, chaveamentoData)
+    ? (campeonato.vencedorTimeNome
+        ? { nome: campeonato.vencedorTimeNome, logoUrl: campeonato.vencedorTimeLogo }
+        : obterCampeao(formato, classificacaoData, chaveamentoData))
     : null;
 
   const NAV_GESTAO: { href: string; icon: LucideIcon; title: string; desc: string }[] = [
@@ -1014,27 +1088,13 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
               {/* Convidar time */}
               {podeConvidar && (
                 <Button
-                  variant="secondary"
+                  variant="primary"
                   fullWidth
                   onClick={() => setModalConvidar(true)}
                   style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "var(--space-2)" }}
                 >
                   <Icon icon={UserPlus} size={14} />
                   Convidar Time
-                </Button>
-              )}
-
-              {/* Iniciar campeonato */}
-              {podeIniciar && (
-                <Button
-                  variant="primary"
-                  fullWidth
-                  loading={isIniciando}
-                  onClick={handleIniciarCampeonato}
-                  style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "var(--space-2)" }}
-                >
-                  <Icon icon={PlayCircle} size={14} />
-                  Iniciar Campeonato
                 </Button>
               )}
 
@@ -1051,20 +1111,9 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                 </Button>
               )}
 
-              {/* Encerrar campeonato — placeholder */}
+              {/* Contagem regressiva até o fim do campeonato */}
               {campeonato.status === "EmAndamento" && (
-                <Button
-                  variant="ghost"
-                  fullWidth
-                  disabled
-                  style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "var(--space-2)", opacity: 0.45, cursor: "not-allowed" }}
-                >
-                  <Icon icon={Lock} size={14} />
-                  Encerrar Campeonato
-                  <span style={{ marginLeft: "auto", fontSize: "10px", background: "rgba(255,255,255,0.08)", padding: "2px 6px", borderRadius: "var(--radius-full)", letterSpacing: "0.05em" }}>
-                    Em breve
-                  </span>
-                </Button>
+                <CountdownFimCampeonato dataFim={dataFim} />
               )}
 
               {/* Finalizado/Cancelado — read-only notice */}
@@ -1195,7 +1244,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
               </div>
               {podeConvidar && (
                 <Button
-                  variant="secondary"
+                  variant="primary"
                   size="sm"
                   onClick={() => setModalConvidar(true)}
                   style={{ display: "flex", alignItems: "center", gap: "var(--space-1)", flexShrink: 0 }}

@@ -65,6 +65,9 @@ export interface CampeonatoResponse {
   times: string[];
   formatoCampeonato: string;
   quantidadeTimesClassificam: number;
+  vencedorTimeId: string | null;
+  vencedorTimeNome: string | null;
+  vencedorTimeLogo: string | null;
 }
 
 export interface CampeonatoFormValues {

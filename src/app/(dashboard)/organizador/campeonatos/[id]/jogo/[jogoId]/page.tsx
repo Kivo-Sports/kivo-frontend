@@ -1,14 +1,15 @@
 "use client";
 
-import { use, useState, useEffect } from "react";
+import { use, useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, MapPin, Goal, CheckCircle, AlertTriangle } from "lucide-react";
+import { Calendar, MapPin, Goal, CheckCircle, AlertTriangle, Clock } from "lucide-react";
 import { BotaoVoltar } from "@/components/molecules/BotaoVoltar";
 import { Avatar } from "@/components/atoms/Avatar";
 import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/molecules/Card";
+import { ContagemRegressivaJogo } from "@/components/molecules/ContagemRegressivaJogo";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Icon } from "@/components/atoms/Icon";
 import { useToast } from "@/components/atoms/Toast";
@@ -18,6 +19,7 @@ import {
   useAgendarPartidaMutation,
   useAtualizarPlacarMutation,
 } from "@/store/api/partidaApi";
+import { useObterCampeonatoPorIdQuery } from "@/store/api/campeonatoApi";
 
 const inputStyle = {
   width: "100%",
@@ -52,6 +54,7 @@ export default function DetalheJogoPage({ params }: { params: Promise<{ id: stri
   const { success: toastSuccess, error: toastError } = useToast();
 
   const { data: partida, isLoading, isError } = useObterPartidaQuery(jogoId);
+  const { data: campeonato } = useObterCampeonatoPorIdQuery(id);
   const [agendarPartida, { isLoading: salvandoAgenda }] = useAgendarPartidaMutation();
   const [atualizarPlacar, { isLoading: salvandoPlacar }] = useAtualizarPlacarMutation();
 
@@ -69,7 +72,47 @@ export default function DetalheJogoPage({ params }: { params: Promise<{ id: stri
     setGolsVisitante(String(partida.golsTimeVisitante));
   }, [partida]);
 
+  // ─── Gate: placar só fica liberado a partir da hora da partida ────────────
+  const [agora, setAgora] = useState<number>(() => Date.now());
+  const dataHoraTs = useMemo<number | null>(
+    () => (partida?.dataHora ? new Date(partida.dataHora).getTime() : null),
+    [partida?.dataHora],
+  );
+  useEffect(() => {
+    if (dataHoraTs == null) return;
+    const restante = dataHoraTs - Date.now();
+    if (restante <= 0) return;
+    // Agenda um único re-render exatamente quando a hora chegar.
+    const id = setTimeout(() => setAgora(Date.now()), restante + 500);
+    return () => clearTimeout(id);
+  }, [dataHoraTs]);
+  const partidaJaPodeOcorrer = dataHoraTs == null || dataHoraTs <= agora;
+
+  // ─── Validação: data do jogo não pode passar do fim do campeonato ─────────
+  const dataFimCampeonato = useMemo<Date | null>(() => {
+    if (!campeonato?.dataFim) return null;
+    const d = new Date(campeonato.dataFim);
+    if (Number.isNaN(d.getTime())) return null;
+    // Permite até o fim do dia da DataFim (no banco vem 00:00).
+    d.setHours(23, 59, 59, 999);
+    return d;
+  }, [campeonato?.dataFim]);
+
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const dataFimMaxAttr = dataFimCampeonato
+    ? `${dataFimCampeonato.getFullYear()}-${pad(dataFimCampeonato.getMonth() + 1)}-${pad(dataFimCampeonato.getDate())}T23:59`
+    : undefined;
+
+  const dataHoraSelecionada = dataHora ? new Date(dataHora) : null;
+  const dataAposFimCampeonato = Boolean(
+    dataFimCampeonato && dataHoraSelecionada && !Number.isNaN(dataHoraSelecionada.getTime()) && dataHoraSelecionada > dataFimCampeonato
+  );
+
   const handleSalvarAgenda = async () => {
+    if (dataAposFimCampeonato) {
+      toastError("A data do jogo não pode ser depois do fim do campeonato.", "Data inválida");
+      return;
+    }
     try {
       await agendarPartida({ partidaId: jogoId, dataHora: dataHora || null, local }).unwrap();
       toastSuccess("Agendamento salvo com sucesso!");
@@ -171,9 +214,11 @@ export default function DetalheJogoPage({ params }: { params: Promise<{ id: stri
           </div>
         </div>
         <div style={{ display: "flex", justifyContent: "center", marginTop: "var(--space-4)" }}>
-          <Badge variant={partida.finalizado ? "success" : "default"}>
-            {partida.finalizado ? "Encerrada" : "A jogar"}
-          </Badge>
+          {partida.finalizado ? (
+            <Badge variant="success">Encerrada</Badge>
+          ) : (
+            <ContagemRegressivaJogo dataHora={partida.dataHora} fallback="A jogar" />
+          )}
         </div>
       </Card>
 
@@ -189,10 +234,21 @@ export default function DetalheJogoPage({ params }: { params: Promise<{ id: stri
             <label style={labelStyle}>Data e hora do jogo</label>
             <input
               type="datetime-local"
-              style={inputStyle}
+              max={dataFimMaxAttr}
+              aria-invalid={dataAposFimCampeonato}
+              style={{
+                ...inputStyle,
+                border: dataAposFimCampeonato ? "1px solid var(--color-feedback-danger)" : inputStyle.border,
+              }}
               value={dataHora}
               onChange={(e) => setDataHora(e.target.value)}
             />
+            {dataAposFimCampeonato && (
+              <p role="alert" style={{ margin: "var(--space-2) 0 0", fontSize: "var(--text-xs)", color: "var(--color-feedback-danger)" }}>
+                A data do jogo não pode ser depois do fim do campeonato
+                {dataFimCampeonato && ` (${dataFimCampeonato.toLocaleDateString("pt-BR")})`}.
+              </p>
+            )}
           </div>
           <div>
             <label style={labelStyle}>Local</label>
@@ -210,7 +266,12 @@ export default function DetalheJogoPage({ params }: { params: Promise<{ id: stri
         </div>
 
         <div style={{ marginTop: "var(--space-4)" }}>
-          <Button variant="secondary" onClick={handleSalvarAgenda} loading={salvandoAgenda}>
+          <Button
+            variant="secondary"
+            onClick={handleSalvarAgenda}
+            loading={salvandoAgenda}
+            disabled={dataAposFimCampeonato}
+          >
             Salvar agendamento
           </Button>
         </div>
@@ -228,6 +289,17 @@ export default function DetalheJogoPage({ params }: { params: Promise<{ id: stri
             <Icon icon={CheckCircle} size={15} style={{ color: "var(--color-brand-primary)", flexShrink: 0 }} />
             <p style={{ margin: 0, fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>
               Partida encerrada — placar <strong style={{ color: "white" }}>{partida.golsTimeCasa} × {partida.golsTimeVisitante}</strong>. O placar não pode ser editado.
+            </p>
+          </div>
+        ) : !partidaJaPodeOcorrer ? (
+          <div style={{ display: "flex", alignItems: "flex-start", gap: "var(--space-2)", padding: "var(--space-3)", borderRadius: "var(--radius-md)", background: "rgba(255,193,7,0.06)", border: "1px solid rgba(255,193,7,0.25)" }}>
+            <Icon icon={Clock} size={15} style={{ color: "rgba(255,193,7,0.95)", flexShrink: 0, marginTop: 2 }} />
+            <p style={{ margin: 0, fontSize: "var(--text-sm)", color: "var(--color-text-secondary)", lineHeight: 1.5 }}>
+              O registro do placar será liberado{" "}
+              <strong style={{ color: "white" }}>
+                a partir de {dataHoraTs != null ? new Date(dataHoraTs).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—"}
+              </strong>
+              , no horário da partida.
             </p>
           </div>
         ) : (
