@@ -384,7 +384,10 @@ export default function ExplorarCampeonatosPage() {
             </button>
           )}
         </div>
-        <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
+        <div
+          data-camp-filtros
+          style={{ display: "flex", gap: "var(--space-2)", flexWrap: "nowrap", overflowX: "auto", flex: "1 1 240px", minWidth: 0, scrollbarWidth: "none", paddingBottom: "2px" }}
+        >
           {FILTROS.map((f) => {
             const ativo = filtro === f.key;
             return (
@@ -392,6 +395,7 @@ export default function ExplorarCampeonatosPage() {
                 key={f.key}
                 onClick={() => setFiltro(f.key)}
                 style={{
+                  flexShrink: 0,
                   padding: "var(--space-2) var(--space-3)",
                   borderRadius: "var(--radius-md)",
                   border: `1px solid ${ativo ? "rgba(0,230,118,0.4)" : "rgba(255,255,255,0.1)"}`,
@@ -409,6 +413,7 @@ export default function ExplorarCampeonatosPage() {
             );
           })}
         </div>
+        <style>{`[data-camp-filtros]::-webkit-scrollbar { display: none; }`}</style>
       </div>
 
       {/* ── Carrossel de esportes (filtro) ───────────────────────────────── */}
