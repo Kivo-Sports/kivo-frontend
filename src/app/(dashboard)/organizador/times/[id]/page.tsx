@@ -18,6 +18,7 @@ import { Card } from "@/components/molecules/Card";
 import { BotaoVoltar } from "@/components/molecules/BotaoVoltar";
 import { FormField } from "@/components/molecules/FormField";
 import { EsporteSelect } from "@/components/molecules/EsporteSelect";
+import { Select } from "@/components/atoms/Select";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Icon } from "@/components/atoms/Icon";
 import { Icon as IconifyIcon } from "@iconify/react";
@@ -449,15 +450,7 @@ function EditarTimeModal({ time, onClose }: { time: TimeResponse; onClose: () =>
   });
 
   const esporteValue = watch("esporteId");
-
-  const selectStyles = [
-    "h-12", "w-full", "rounded-[var(--radius-md)]", "border",
-    "bg-(--color-bg-input)", "px-3", "text-sm", "text-(--color-text-primary)",
-    "outline-none", "transition-all", "duration-200", "focus-visible:ring-2",
-    errors.estado?.message
-      ? "border-(--color-feedback-danger) focus-visible:border-(--color-feedback-danger) focus-visible:ring-(--color-feedback-danger-bg)"
-      : "border-(--color-border-default) focus-visible:border-(--color-border-focus) focus-visible:ring-(--color-feedback-success-bg)",
-  ].filter(Boolean).join(" ");
+  const estadoValue = watch("estado");
 
   const selecionarLogo = (arquivo: File | null): void => {
     if (!arquivo) return;
@@ -523,22 +516,14 @@ function EditarTimeModal({ time, onClose }: { time: TimeResponse; onClose: () =>
               {...register("cidade")}
             />
 
-            <div>
-              <label htmlFor="estado" className="mb-2 inline-block text-sm font-semibold text-(--color-text-primary)">
-                Estado
-              </label>
-              <select id="estado" aria-invalid={Boolean(errors.estado?.message)} className={selectStyles} {...register("estado")}>
-                <option value="" disabled>Estado</option>
-                {estadosBrasileiros.map((e) => (
-                  <option key={e.sigla} value={e.sigla}>{e.sigla} – {e.nome}</option>
-                ))}
-              </select>
-              {errors.estado?.message && (
-                <p role="alert" style={{ marginTop: "var(--space-2)", marginBottom: 0, fontSize: "var(--text-sm)", color: "var(--color-feedback-danger)" }}>
-                  {errors.estado.message}
-                </p>
-              )}
-            </div>
+            <Select
+              label="Estado"
+              value={estadoValue}
+              onChange={(v) => setValue("estado", v, { shouldValidate: true, shouldDirty: true })}
+              placeholder="Selecione o estado"
+              options={estadosBrasileiros.map((e) => ({ value: e.sigla, label: `${e.sigla} – ${e.nome}` }))}
+              error={errors.estado?.message}
+            />
 
             <EsporteSelect
               value={esporteValue}

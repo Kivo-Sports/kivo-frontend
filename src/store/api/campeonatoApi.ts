@@ -9,6 +9,7 @@ import type {
   ConviteCampeonatoResponse,
 } from "@/types/campeonato";
 import type { TimeResponse } from "@/types/time";
+import type { ReatribuirCampeonatoRequest } from "@/types/admin";
 
 function buildCampeonatoFormData(body: {
   organizadorCampeonatoId?: string;
@@ -88,6 +89,23 @@ export const campeonatoApi = baseApi.injectEndpoints({
       query: (id) => ({ url: `/api/campeonato/${id}/cancelar`, method: "PATCH" }),
       invalidatesTags: ["Campeonato"],
     }),
+    // --- Admin ---
+    descancelarCampeonato: builder.mutation<void, string>({
+      query: (id) => ({ url: `/api/campeonato/${id}/descancelar`, method: "PATCH" }),
+      invalidatesTags: ["Campeonato"],
+    }),
+    reatribuirCampeonato: builder.mutation<void, ReatribuirCampeonatoRequest>({
+      query: ({ id, novoOrganizadorCampeonatoId }) => ({
+        url: `/api/campeonato/${id}/reatribuir`,
+        method: "PATCH",
+        body: { novoOrganizadorCampeonatoId },
+      }),
+      invalidatesTags: ["Campeonato"],
+    }),
+    excluirCampeonato: builder.mutation<void, string>({
+      query: (id) => ({ url: `/api/campeonato/${id}`, method: "DELETE" }),
+      invalidatesTags: ["Campeonato"],
+    }),
     removerTimeDoCampeonato: builder.mutation<void, { campeonatoId: string; timeId: string }>({
       query: (body) => ({
         url: "/api/campeonato/remover-time",
@@ -138,6 +156,9 @@ export const {
   useAbrirInscricoesMutation,
   useIniciarCampeonatoMutation,
   useCancelarCampeonatoMutation,
+  useDescancelarCampeonatoMutation,
+  useReatribuirCampeonatoMutation,
+  useExcluirCampeonatoMutation,
   useRemoverTimeDoCampeonatoMutation,
   useConvidarTimeMutation,
   useListarTodosOsTimesQuery,

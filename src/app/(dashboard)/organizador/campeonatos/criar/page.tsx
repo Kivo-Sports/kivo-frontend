@@ -14,6 +14,7 @@ import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/molecules/Card";
 import { FormField } from "@/components/molecules/FormField";
 import { EsporteSelect } from "@/components/molecules/EsporteSelect";
+import { DateInput } from "@/components/atoms/DateInput";
 import { useToast } from "@/components/atoms/Toast";
 import { fadeInUp, getFadeTransition } from "@/lib/motion";
 import { useCriarCampeonatoMutation } from "@/store/api/campeonatoApi";
@@ -400,13 +401,13 @@ export default function CriarCampeonatoPage() {
               />
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
-                <FormField
+                <DateInput
                   label="Data de início"
                   type="date"
                   error={errors.dataInicio?.message}
                   {...register("dataInicio")}
                 />
-                <FormField
+                <DateInput
                   label="Data de fim"
                   type="date"
                   error={errors.dataFim?.message}

@@ -19,6 +19,8 @@ import { Card } from "@/components/molecules/Card";
 import { CampeaoBanner } from "@/components/molecules/CampeaoBanner";
 import { BotaoVoltar } from "@/components/molecules/BotaoVoltar";
 import { EsporteSelect } from "@/components/molecules/EsporteSelect";
+import { DateInput } from "@/components/atoms/DateInput";
+import { Select } from "@/components/atoms/Select";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Icon } from "@/components/atoms/Icon";
 import { Icon as IconifyIcon } from "@iconify/react";
@@ -438,29 +440,30 @@ function EditarCampeonatoModal({ campeonato, onClose }: { campeonato: Campeonato
           <EsporteSelect value={esporteId} onChange={setEsporteId} />
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
-            <div>
-              <label style={labelStyle}>Data de início</label>
-              <input type="date" style={inputStyle} value={dataInicio} onChange={(e) => setDataInicio(e.target.value)} />
-            </div>
-            <div>
-              <label style={labelStyle}>Data de fim</label>
-              <input type="date" style={inputStyle} value={dataFim} onChange={(e) => setDataFim(e.target.value)} />
-            </div>
+            <DateInput
+              label="Data de início"
+              type="date"
+              value={dataInicio}
+              onChange={(e) => setDataInicio(e.target.value)}
+            />
+            <DateInput
+              label="Data de fim"
+              type="date"
+              value={dataFim}
+              onChange={(e) => setDataFim(e.target.value)}
+            />
           </div>
 
           <div>
-            <label style={labelStyle}>Formato</label>
-            <select
-              style={{ ...inputStyle, cursor: "pointer" }}
+            <Select
+              label="Formato"
               value={formato}
-              onChange={(e) => setFormato(e.target.value as FormatoCampeonato)}
-            >
-              {(Object.keys(FORMATO_CAMPEONATO) as FormatoCampeonato[]).map((key) => (
-                <option key={key} value={key} style={{ background: "#121212" }}>
-                  {FORMATO_CAMPEONATO[key].label}
-                </option>
-              ))}
-            </select>
+              onChange={(v) => setFormato(v as FormatoCampeonato)}
+              options={(Object.keys(FORMATO_CAMPEONATO) as FormatoCampeonato[]).map((key) => ({
+                value: key,
+                label: FORMATO_CAMPEONATO[key].label,
+              }))}
+            />
             <p style={{ margin: "4px 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", lineHeight: 1.5 }}>
               {FORMATO_CAMPEONATO[formato].desc}
             </p>

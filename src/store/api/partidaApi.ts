@@ -7,6 +7,11 @@ import type {
   AtualizarPlacarRequest,
   AgendarPartidaRequest,
 } from "@/types/partida";
+import type {
+  CriarPartidaAdminRequest,
+  EditarPartidaAdminRequest,
+  AtualizarPlacarAdminRequest,
+} from "@/types/admin";
 
 export const partidaApi = baseApi.injectEndpoints({
   overrideExisting: true,
@@ -51,6 +56,27 @@ export const partidaApi = baseApi.injectEndpoints({
       query: (campeonatoId) => ({ url: `/api/partida/jogos/${campeonatoId}`, method: "GET" }),
       providesTags: ["Partida"],
     }),
+    // --- Admin ---
+    criarPartidaAdmin: builder.mutation<{ id: string }, CriarPartidaAdminRequest>({
+      query: (body) => ({ url: `/api/partida/admin`, method: "POST", body }),
+      invalidatesTags: ["Partida"],
+    }),
+    editarPartidaAdmin: builder.mutation<void, EditarPartidaAdminRequest>({
+      query: ({ id, ...body }) => ({ url: `/api/partida/${id}/admin`, method: "PUT", body }),
+      invalidatesTags: ["Partida"],
+    }),
+    deletarPartidaAdmin: builder.mutation<void, string>({
+      query: (id) => ({ url: `/api/partida/${id}/admin`, method: "DELETE" }),
+      invalidatesTags: ["Partida"],
+    }),
+    atualizarPlacarAdmin: builder.mutation<void, AtualizarPlacarAdminRequest>({
+      query: ({ partidaId, golsTimeCasa, golsTimeVisitante }) => ({
+        url: `/api/partida/${partidaId}/admin-placar`,
+        method: "PATCH",
+        body: { golsTimeCasa, golsTimeVisitante },
+      }),
+      invalidatesTags: ["Partida", "Campeonato"],
+    }),
   }),
 });
 
@@ -62,4 +88,8 @@ export const {
   useObterClassificacaoQuery,
   useObterChaveamentoQuery,
   useListarJogosQuery,
+  useCriarPartidaAdminMutation,
+  useEditarPartidaAdminMutation,
+  useDeletarPartidaAdminMutation,
+  useAtualizarPlacarAdminMutation,
 } = partidaApi;

@@ -116,34 +116,6 @@ export function isPasswordValid(password: string, minLength: number = 6): boolea
   return password.length >= minLength;
 }
 
-/**
- * Extrai o nome do usuario a partir do email ou CPF
- * @param identifier - Email ou CPF
- * @param type - Tipo do identificador
- * @returns Nome extraido
- */
-export function extractUserName(identifier: string, type: IdentifierType): string {
-  if (type === "email") {
-    return identifier.split("@")[0];
-  }
-
-  if (type === "cpf") {
-    const cleaned = identifier.replace(/\D/g, "");
-    return `Usuario-${cleaned.slice(0, 3)}`;
-  }
-
-  return "Usuario";
-}
-
-/**
- * Gera um email mockado a partir de CPF
- * @param cpf - CPF do usuario
- * @returns Email mockado
- */
-export function generateEmailFromCPF(cpf: string): string {
-  const cleaned = cpf.replace(/\D/g, "");
-  return `usuario${cleaned}@kivo.sports`;
-}
 
 /**
  * Determina a rota de dashboard baseado no cargo do usuario
@@ -158,12 +130,12 @@ export function getRedirectPathAfterLogin(cargo?: string | null): string {
   const cargoNormalizado = normalizeCargo(cargo);
 
   const routeMap: Record<string, string> = {
-    "torcedor": "/dashboard",
+    "torcedor": "/torcedor",
     "organizador-time": "/organizador/times",
     "organizador-de-time": "/organizador/times",
     "organizador-campeonato": "/organizador/campeonatos",
     "organizador-de-campeonato": "/organizador/campeonatos",
-    "administrador": "/dashboard",
+    "administrador": "/admin",
   };
 
   return routeMap[cargoNormalizado] || "/dashboard";

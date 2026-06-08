@@ -14,6 +14,7 @@ import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/molecules/Card";
 import { FormField } from "@/components/molecules/FormField";
 import { EsporteSelect } from "@/components/molecules/EsporteSelect";
+import { Select } from "@/components/atoms/Select";
 import { Icon } from "@/components/atoms/Icon";
 import { useToast } from "@/components/atoms/Toast";
 import { fadeInUp, getFadeTransition } from "@/lib/motion";
@@ -178,25 +179,6 @@ export default function CriarTimePage() {
   const isPerfilReady = !isLoadingPerfil && !!perfil?.organizadorTimeId;
   const canSubmit     = isPerfilReady && !isLoading && !logoError;
 
-  const selectStyles = [
-    "h-12",
-    "w-full",
-    "rounded-[var(--radius-md)]",
-    "border",
-    "bg-(--color-bg-input)",
-    "px-3",
-    "text-sm",
-    "text-(--color-text-primary)",
-    "outline-none",
-    "transition-all",
-    "duration-200",
-    "focus-visible:ring-2",
-    errors.estado?.message
-      ? "border-(--color-feedback-danger) focus-visible:border-(--color-feedback-danger) focus-visible:ring-(--color-feedback-danger-bg)"
-      : "border-(--color-border-default) focus-visible:border-(--color-border-focus) focus-visible:ring-(--color-feedback-success-bg)",
-  ]
-    .filter(Boolean)
-    .join(" ");
 
   return (
     <motion.main
@@ -377,36 +359,17 @@ export default function CriarTimePage() {
                 {...register("cidade")}
               />
 
-              <div>
-                <label
-                  htmlFor="estado"
-                  className="mb-2 inline-block text-sm font-semibold text-(--color-text-primary)"
-                >
-                  Estado
-                </label>
-                <select
-                  id="estado"
-                  aria-invalid={Boolean(errors.estado?.message)}
-                  className={selectStyles}
-                  defaultValue=""
-                  {...register("estado")}
-                >
-                  <option value="" disabled>Estado</option>
-                  {estadosBrasileiros.map((estado) => (
-                    <option key={estado.sigla} value={estado.sigla}>
-                      {estado.sigla} – {estado.nome}
-                    </option>
-                  ))}
-                </select>
-                {errors.estado?.message && (
-                  <p
-                    role="alert"
-                    style={{ marginTop: "var(--space-2)", marginBottom: 0, fontSize: "var(--text-sm)", color: "var(--color-feedback-danger)" }}
-                  >
-                    {errors.estado.message}
-                  </p>
-                )}
-              </div>
+              <Select
+                label="Estado"
+                value={estadoValue}
+                onChange={(v) => setValue("estado", v, { shouldValidate: true })}
+                placeholder="Selecione o estado"
+                options={estadosBrasileiros.map((estado) => ({
+                  value: estado.sigla,
+                  label: `${estado.sigla} – ${estado.nome}`,
+                }))}
+                error={errors.estado?.message}
+              />
 
               <EsporteSelect
                 value={esporteValue}

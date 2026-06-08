@@ -11,6 +11,7 @@ import { Avatar } from "@/components/atoms/Avatar";
 import { Badge } from "@/components/atoms/Badge";
 import { Card } from "@/components/molecules/Card";
 import { BotaoVoltar } from "@/components/molecules/BotaoVoltar";
+import { FavoriteButton } from "@/components/molecules/FavoriteButton";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Icon } from "@/components/atoms/Icon";
 import { fadeInUp, getFadeTransition, containerVariants, itemVariants } from "@/lib/motion";
@@ -337,8 +338,12 @@ export default function ExplorarTimeDetalhePage({ params }: { params: Promise<{ 
           borderRadius: "var(--radius-2xl)",
           boxShadow: "0 16px 48px rgba(0,0,0,0.4)",
           marginBottom: "var(--space-6)",
+          position: "relative",
         }}
       >
+        <div style={{ position: "absolute", top: "var(--space-3)", right: "var(--space-3)", zIndex: 2 }}>
+          <FavoriteButton tipo="Time" itemId={id} nome={time.nome} />
+        </div>
         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-5)", flexWrap: "wrap" }}>
           <button
             type="button"

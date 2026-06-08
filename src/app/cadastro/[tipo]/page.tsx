@@ -30,6 +30,7 @@ import { setCredentials } from '@/store/slices/authSlice';
 import { useToast } from '@/components/atoms/Toast';
 import { Button } from '@/components/atoms/Button';
 import { Input } from '@/components/atoms/Input';
+import { DateInput } from '@/components/atoms/DateInput';
 import { Spinner } from '@/components/atoms/Spinner';
 import { Card } from '@/components/molecules/Card';
 import { Stepper } from '@/components/molecules/Stepper/Stepper';
@@ -507,7 +508,7 @@ export default function CadastroFormPage() {
                     autoComplete="tel"
                   />
 
-                  <Input
+                  <DateInput
                     label="Data de Nascimento"
                     type="date"
                     value={formData.dataNascimento}

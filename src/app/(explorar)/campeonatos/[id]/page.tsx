@@ -12,6 +12,7 @@ import { Badge } from "@/components/atoms/Badge";
 import { Card } from "@/components/molecules/Card";
 import { CampeaoBanner } from "@/components/molecules/CampeaoBanner";
 import { BotaoVoltar } from "@/components/molecules/BotaoVoltar";
+import { FavoriteButton } from "@/components/molecules/FavoriteButton";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Icon } from "@/components/atoms/Icon";
 import { Chaveamento } from "@/components/organisms/Chaveamento";
@@ -232,8 +233,12 @@ export default function ExplorarCampeonatoDetalhePage({ params }: { params: Prom
           borderRadius: "var(--radius-2xl)",
           boxShadow: "0 16px 48px rgba(0,0,0,0.4)",
           marginBottom: "var(--space-6)",
+          position: "relative",
         }}
       >
+        <div style={{ position: "absolute", top: "var(--space-3)", right: "var(--space-3)", zIndex: 2 }}>
+          <FavoriteButton tipo="Campeonato" itemId={id} nome={campeonato.nome} />
+        </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-5)", alignItems: "center" }}>
           <div
             {...(campeonato.logoUrl

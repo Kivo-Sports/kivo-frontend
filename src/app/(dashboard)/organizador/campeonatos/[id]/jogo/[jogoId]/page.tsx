@@ -10,6 +10,7 @@ import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/molecules/Card";
 import { ContagemRegressivaJogo } from "@/components/molecules/ContagemRegressivaJogo";
+import { DateInput } from "@/components/atoms/DateInput";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Icon } from "@/components/atoms/Icon";
 import { useToast } from "@/components/atoms/Toast";
@@ -232,14 +233,10 @@ export default function DetalheJogoPage({ params }: { params: Promise<{ id: stri
         <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
           <div>
             <label style={labelStyle}>Data e hora do jogo</label>
-            <input
+            <DateInput
               type="datetime-local"
               max={dataFimMaxAttr}
               aria-invalid={dataAposFimCampeonato}
-              style={{
-                ...inputStyle,
-                border: dataAposFimCampeonato ? "1px solid var(--color-feedback-danger)" : inputStyle.border,
-              }}
               value={dataHora}
               onChange={(e) => setDataHora(e.target.value)}
             />
