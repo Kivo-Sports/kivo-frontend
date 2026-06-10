@@ -1,0 +1,80 @@
+/**
+ * @file sportIcons.ts
+ * @description Catálogo curado de ícones esportivos do Iconify (renderizados via @iconify/react).
+ * O nome do ícone (ex.: "mdi:basketball") é o valor salvo no campo `Icone` do Esporte.
+ * `keywords` alimenta a busca da grade de ícones (EsporteFormModal / EsporteSelect).
+ */
+
+export interface SportIcon {
+  name: string; // identificador Iconify, ex.: "mdi:basketball"
+  label: string; // rótulo amigável
+  keywords: string; // termos de busca (pt/en)
+}
+
+export const SPORT_ICONS: ReadonlyArray<SportIcon> = [
+  { name: "mdi:soccer", label: "Futebol", keywords: "futebol soccer football bola campo" },
+  { name: "mdi:basketball", label: "Basquete", keywords: "basquete basketball bola cesta" },
+  { name: "mdi:volleyball", label: "Vôlei", keywords: "volei voleibol volleyball bola rede" },
+  { name: "mdi:tennis", label: "Tênis", keywords: "tenis tennis raquete bola" },
+  { name: "mdi:tennis-ball", label: "Bola de Tênis", keywords: "tenis tennis bola ball" },
+  { name: "mdi:table-tennis", label: "Tênis de Mesa", keywords: "tenis de mesa ping pong table tennis" },
+  { name: "mdi:badminton", label: "Badminton", keywords: "badminton peteca raquete" },
+  { name: "mdi:baseball", label: "Beisebol", keywords: "beisebol baseball bola taco" },
+  { name: "mdi:baseball-bat", label: "Taco de Beisebol", keywords: "taco beisebol baseball bat" },
+  { name: "mdi:football", label: "Futebol Americano", keywords: "futebol americano football nfl" },
+  { name: "mdi:rugby", label: "Rugby", keywords: "rugby bola" },
+  { name: "mdi:hockey-sticks", label: "Hóquei", keywords: "hoquei hockey taco" },
+  { name: "mdi:hockey-puck", label: "Disco de Hóquei", keywords: "hoquei hockey puck disco" },
+  { name: "mdi:golf", label: "Golfe", keywords: "golfe golf taco buraco" },
+  { name: "mdi:bowling", label: "Boliche", keywords: "boliche bowling pinos bola" },
+  { name: "mdi:billiards", label: "Sinuca", keywords: "sinuca bilhar billiards pool bola" },
+  { name: "mdi:cricket", label: "Críquete", keywords: "criquete cricket taco" },
+  { name: "mdi:boxing-glove", label: "Boxe", keywords: "boxe boxing luva luta" },
+  { name: "mdi:karate", label: "Artes Marciais", keywords: "karate judo luta artes marciais mma" },
+  { name: "mdi:weight-lifter", label: "Levantamento de Peso", keywords: "levantamento peso musculacao halterofilismo crossfit" },
+  { name: "mdi:dumbbell", label: "Musculação", keywords: "musculacao academia peso halter dumbbell fitness" },
+  { name: "mdi:run", label: "Corrida", keywords: "corrida atletismo run running maratona" },
+  { name: "mdi:run-fast", label: "Atletismo", keywords: "atletismo corrida sprint velocidade" },
+  { name: "mdi:swim", label: "Natação", keywords: "natacao swim piscina nado" },
+  { name: "mdi:bike", label: "Ciclismo", keywords: "ciclismo bike bicicleta pedal" },
+  { name: "mdi:bike-fast", label: "Ciclismo (veloz)", keywords: "ciclismo bike bicicleta velocidade" },
+  { name: "mdi:skateboard", label: "Skate", keywords: "skate skateboard" },
+  { name: "mdi:roller-skate", label: "Patins", keywords: "patins roller skate patinacao" },
+  { name: "mdi:ski", label: "Esqui", keywords: "esqui ski neve" },
+  { name: "mdi:snowboard", label: "Snowboard", keywords: "snowboard neve prancha" },
+  { name: "mdi:surfing", label: "Surfe", keywords: "surfe surf prancha onda" },
+  { name: "mdi:rowing", label: "Remo", keywords: "remo rowing barco" },
+  { name: "mdi:sail-boat", label: "Vela", keywords: "vela sailing barco veleiro" },
+  { name: "mdi:arm-flex", label: "Crossfit", keywords: "crossfit forca musculo biceps" },
+  { name: "mdi:yoga", label: "Yoga", keywords: "yoga alongamento pilates" },
+  { name: "mdi:gymnastics", label: "Ginástica", keywords: "ginastica gymnastics acrobacia" },
+  { name: "mdi:horse", label: "Hipismo", keywords: "hipismo horse cavalo equestre" },
+  { name: "mdi:archery", label: "Tiro com Arco", keywords: "tiro arco archery flecha" },
+  { name: "mdi:fencing", label: "Esgrima", keywords: "esgrima fencing espada" },
+  { name: "mdi:racing-helmet", label: "Automobilismo", keywords: "automobilismo corrida capacete f1 kart" },
+  { name: "mdi:go-kart", label: "Kart", keywords: "kart kartismo corrida" },
+  { name: "mdi:motorbike", label: "Motociclismo", keywords: "moto motociclismo motorbike corrida" },
+  { name: "mdi:chess-knight", label: "Xadrez", keywords: "xadrez chess tabuleiro" },
+  { name: "mdi:cards-playing", label: "Jogos de Carta", keywords: "cartas baralho jogos cards" },
+  { name: "mdi:darts", label: "Dardos", keywords: "dardos darts alvo" },
+  { name: "mdi:handball", label: "Handebol", keywords: "handebol handball bola" },
+  { name: "mdi:kabaddi", label: "Luta", keywords: "luta wrestling kabaddi" },
+  { name: "mdi:diving-scuba", label: "Mergulho", keywords: "mergulho diving scuba" },
+  { name: "mdi:diving", label: "Salto Ornamental", keywords: "salto ornamental diving mergulho" },
+  { name: "mdi:trophy", label: "Troféu", keywords: "trofeu trophy campeao premio" },
+  { name: "mdi:medal", label: "Medalha", keywords: "medalha medal premio" },
+  { name: "mdi:flag-checkered", label: "Bandeira", keywords: "bandeira corrida largada chegada" },
+  { name: "mdi:whistle", label: "Apito", keywords: "apito whistle arbitro juiz" },
+  { name: "mdi:stadium", label: "Estádio", keywords: "estadio stadium arena" },
+  { name: "mdi:scoreboard", label: "Placar", keywords: "placar scoreboard pontuacao" },
+  { name: "game-icons:soccer-ball", label: "Bola (Game)", keywords: "futebol bola soccer game" },
+  { name: "game-icons:volleyball-ball", label: "Vôlei (Game)", keywords: "volei volleyball game" },
+  { name: "game-icons:basketball-ball", label: "Basquete (Game)", keywords: "basquete basketball game" },
+  { name: "game-icons:tennis-ball", label: "Tênis (Game)", keywords: "tenis tennis game" },
+  { name: "game-icons:boxing-glove", label: "Boxe (Game)", keywords: "boxe boxing luva game" },
+  { name: "game-icons:rugby-conversion", label: "Rugby (Game)", keywords: "rugby game" },
+  { name: "game-icons:cricket-bat", label: "Críquete (Game)", keywords: "criquete cricket game" },
+  { name: "game-icons:ping-pong-bat", label: "Ping Pong (Game)", keywords: "ping pong tenis de mesa game" },
+  { name: "game-icons:water-polo", label: "Polo Aquático", keywords: "polo aquatico water polo" },
+  { name: "game-icons:american-football-ball", label: "Futebol Americano (Game)", keywords: "futebol americano football game" },
+];

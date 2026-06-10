@@ -4,12 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, Trophy, Users, Plus, TrendingUp, ArrowUpRight, Search, X, ChevronDown } from "lucide-react";
+import { Avatar } from "@/components/atoms/Avatar";
 import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Card } from "@/components/molecules/Card";
 import { PageHeader } from "@/components/molecules/PageHeader";
 import { Icon } from "@/components/atoms/Icon";
+import { Icon as IconifyIcon } from "@iconify/react";
 import { containerVariants, fadeIn, fadeInUp, itemVariants } from "@/lib/motion";
 import { useListarCampeonatosQuery } from "@/store/api/campeonatoApi";
 import { useGetPerfilUsuarioQuery } from "@/store/api/userApi";
@@ -35,14 +37,6 @@ const STATUS_FILTERS: { key: StatusFilter; label: string }[] = [
   { key: "Finalizado",        label: "Finalizado"         },
   { key: "Cancelado",         label: "Cancelado"          },
 ];
-
-const STATUS_LINE: Record<string, string> = {
-  Rascunho:          "rgba(200,200,200,0.35)",
-  InscricoesAbertas: "linear-gradient(90deg, rgba(0,230,118,0.9), rgba(0,230,118,0.1))",
-  EmAndamento:       "linear-gradient(90deg, rgba(96,165,250,0.9), rgba(96,165,250,0.1))",
-  Finalizado:        "rgba(180,180,180,0.25)",
-  Cancelado:         "linear-gradient(90deg, rgba(255,72,68,0.9), rgba(255,72,68,0.1))",
-};
 
 const STATUS_DOT: Record<string, string> = {
   todos:             "rgba(255,255,255,0.3)",
@@ -506,22 +500,6 @@ export default function OrganizadorCampeonatoPage() {
               const statusCfg      = STATUS_CONFIG[campeonato.status] ?? { label: campeonato.status, variant: "default" as const };
               const dataInicio     = new Date(campeonato.dataInicio);
               const dataFim        = new Date(campeonato.dataFim);
-              const agora          = Date.now();
-              const diasParaInicio = Math.ceil((dataInicio.getTime() - agora) / (1000 * 60 * 60 * 24));
-              const diasParaFim    = Math.ceil((dataFim.getTime() - agora) / (1000 * 60 * 60 * 24));
-              const contagem = (() => {
-                switch (campeonato.status) {
-                  case "Rascunho":
-                  case "InscricoesAbertas":
-                  case "InscricoesEncerradas":
-                    return diasParaInicio > 0 ? `${diasParaInicio} dias p/ início` : "Iniciando";
-                  case "EmAndamento":
-                    return diasParaFim > 0 ? `${diasParaFim} dias p/ fim` : "Encerrando";
-                  case "Finalizado": return "Finalizado";
-                  case "Cancelado":  return "Cancelado";
-                  default:           return "—";
-                }
-              })();
 
               return (
                 <motion.div key={campeonato.id} variants={itemVariants}>
@@ -539,23 +517,17 @@ export default function OrganizadorCampeonatoPage() {
                       overflow: "hidden",
                     }}
                   >
-                    <span
-                      aria-hidden="true"
-                      style={{
-                        position: "absolute", top: 0, left: 0,
-                        width: "100%", height: "2px",
-                        background: STATUS_LINE[campeonato.status] ?? "rgba(255,255,255,0.2)",
-                      }}
-                    />
-
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "var(--space-2)" }}>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <h3 style={{ margin: 0, fontSize: "var(--text-base)", fontWeight: 600, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                          {campeonato.nome}
-                        </h3>
-                        <p style={{ margin: "2px 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
-                          Criado em {new Date(campeonato.criadoEm).toLocaleDateString("pt-BR")}
-                        </p>
+                      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", flex: 1, minWidth: 0 }}>
+                        <Avatar name={campeonato.nome} src={campeonato.logoUrl || undefined} size="md" />
+                        <div style={{ minWidth: 0 }}>
+                          <h3 style={{ margin: 0, fontSize: "var(--text-base)", fontWeight: 600, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {campeonato.nome}
+                          </h3>
+                          <p style={{ margin: "2px 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
+                            Criado em {new Date(campeonato.criadoEm).toLocaleDateString("pt-BR")}
+                          </p>
+                        </div>
                       </div>
                       <Badge variant={statusCfg.variant} size="sm" style={{ flexShrink: 0 }}>
                         {statusCfg.label}
@@ -576,12 +548,16 @@ export default function OrganizadorCampeonatoPage() {
                           {campeonato.totalTimes} {campeonato.totalTimes === 1 ? "time" : "times"}
                         </span>
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-1)" }}>
-                        <Icon icon={Calendar} size={11} style={{ color: "var(--color-text-muted)" }} />
-                        <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
-                          {contagem}
-                        </span>
-                      </div>
+                      {campeonato.esporteNome && (
+                        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-1)" }}>
+                          {campeonato.esporteIcone && (
+                            <IconifyIcon icon={campeonato.esporteIcone} width={13} height={13} style={{ color: "var(--color-text-muted)" }} />
+                          )}
+                          <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
+                            {campeonato.esporteNome}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     <Button
@@ -597,7 +573,7 @@ export default function OrganizadorCampeonatoPage() {
                       }}
                       onClick={() => router.push(`/organizador/campeonatos/${campeonato.id}`)}
                     >
-                      Ver detalhes
+                      Gerenciar campeonato
                       <Icon icon={ArrowUpRight} size={14} style={{ color: "var(--color-brand-primary)" }} />
                     </Button>
                   </Card>

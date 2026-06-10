@@ -11,6 +11,7 @@ import { useToast } from '@/components/atoms/Toast';
 import { Card } from '@/components/molecules/Card/Card';
 import { Button } from '@/components/atoms/Button';
 import { Input } from '@/components/atoms/Input';
+import { DateInput } from '@/components/atoms/DateInput';
 import {
   criarAdmin,
   editarAdmin,
@@ -310,7 +311,7 @@ export function AdminFormModal({
                   disabled={isLoading}
                 />
 
-                <Input
+                <DateInput
                   label="Data de Nascimento"
                   name="dataNascimento"
                   type="date"

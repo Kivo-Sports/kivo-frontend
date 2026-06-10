@@ -1,19 +1,66 @@
+export type FormatoCampeonato = "PontosCorridos" | "MataMata" | "Hibrido";
+
+// Valor numérico esperado pelo enum EnumFormatoCampeonato no backend
+export const FORMATO_CAMPEONATO: Record<
+  FormatoCampeonato,
+  { valor: number; label: string; desc: string }
+> = {
+  PontosCorridos: {
+    valor: 0,
+    label: "Pontos Corridos",
+    desc: "Todos jogam contra todos; vence quem somar mais pontos.",
+  },
+  MataMata: {
+    valor: 1,
+    label: "Mata-Mata",
+    desc: "Confrontos eliminatórios diretos. Exige potência de 2 (4, 8, 16…).",
+  },
+  Hibrido: {
+    valor: 2,
+    label: "Híbrido",
+    desc: "Fase de pontos corridos seguida de mata-mata entre os classificados.",
+  },
+};
+
 export interface CriarCampeonatoRequest {
   organizadorCampeonatoId: string;
+  esporteId: string;
   nome: string;
   dataInicio: string;
   dataFim: string;
   pontosVitoria: number;
   pontosDerrota: number;
   pontosEmpate: number;
+  formatoCampeonato: number;
+  quantidadeTimesClassificam: number;
+  logo?: File;
+}
+
+export interface EditarCampeonatoRequest {
+  id: string;
+  esporteId: string;
+  nome: string;
+  dataInicio: string;
+  dataFim: string;
+  pontosVitoria: number;
+  pontosDerrota: number;
+  pontosEmpate: number;
+  formatoCampeonato: number;
+  quantidadeTimesClassificam: number;
+  logo?: File;
 }
 
 export interface CampeonatoResponse {
   id: string;
   organizadorCampeonatoId: string;
+  organizadorNome?: string | null;
+  esporteId: string;
+  esporteNome?: string | null;
+  esporteIcone?: string | null;
   nome: string;
   dataInicio: string;
   dataFim: string;
+  logoUrl: string | null;
   status: string;
   totalTimes: number;
   criadoEm: string;
@@ -21,6 +68,11 @@ export interface CampeonatoResponse {
   pontosDerrota: number;
   pontosEmpate: number;
   times: string[];
+  formatoCampeonato: string;
+  quantidadeTimesClassificam: number;
+  vencedorTimeId: string | null;
+  vencedorTimeNome: string | null;
+  vencedorTimeLogo: string | null;
 }
 
 export interface CampeonatoFormValues {
@@ -30,6 +82,7 @@ export interface CampeonatoFormValues {
   pontosVitoria: number;
   pontosDerrota: number;
   pontosEmpate: number;
+  esporteId: string;
 }
 
 export interface ConviteRequest {

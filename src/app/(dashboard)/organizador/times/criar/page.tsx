@@ -8,10 +8,13 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type Resolver } from "react-hook-form";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { Users, MapPin, ImageIcon, CheckCircle, ArrowLeft, Loader2 } from "lucide-react";
+import { Users, MapPin, ImageIcon, CheckCircle, Loader2 } from "lucide-react";
+import { BotaoVoltar } from "@/components/molecules/BotaoVoltar";
 import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/molecules/Card";
 import { FormField } from "@/components/molecules/FormField";
+import { EsporteSelect } from "@/components/molecules/EsporteSelect";
+import { Select } from "@/components/atoms/Select";
 import { Icon } from "@/components/atoms/Icon";
 import { useToast } from "@/components/atoms/Toast";
 import { fadeInUp, getFadeTransition } from "@/lib/motion";
@@ -44,6 +47,7 @@ const criarTimeSchema = z.object({
     .trim()
     .length(2, "Selecione um estado")
     .refine((value) => BR_STATE_CODES.includes(value), "Estado inválido"),
+  esporteId: z.string().uuid("Selecione um esporte"),
 });
 
 const estadosBrasileiros: ReadonlyArray<{ sigla: string; nome: string }> = [
@@ -109,28 +113,26 @@ export default function CriarTimePage() {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isValid },
   } = useForm<TimeFormValues>({
     resolver: zodResolver(criarTimeSchema) as Resolver<TimeFormValues>,
-    defaultValues: { nome: "", cidade: "", estado: "" },
+    defaultValues: { nome: "", cidade: "", estado: "", esporteId: "" },
     mode: "onChange",
   });
 
-  const nomeValue   = watch("nome");
-  const cidadeValue = watch("cidade");
-  const estadoValue = watch("estado");
+  const nomeValue    = watch("nome");
+  const cidadeValue  = watch("cidade");
+  const estadoValue  = watch("estado");
+  const esporteValue = watch("esporteId");
 
   const onSubmit = async (values: TimeFormValues): Promise<void> => {
     if (!perfil?.organizadorTimeId) {
       toastError("Perfil de organizador não encontrado. Tente novamente.", "Erro");
       return;
     }
-    if (!logoFile) {
-      setLogoError("Selecione uma imagem de logo para o time.");
-      return;
-    }
     try {
-      await criarTime({ ...values, organizadorTimeId: perfil.organizadorTimeId, logo: logoFile }).unwrap();
+      await criarTime({ ...values, organizadorTimeId: perfil.organizadorTimeId, logo: logoFile ?? undefined }).unwrap();
       toastSuccess("Time criado com sucesso!");
       router.push("/organizador/times");
     } catch (error: unknown) {
@@ -175,27 +177,8 @@ export default function CriarTimePage() {
   };
 
   const isPerfilReady = !isLoadingPerfil && !!perfil?.organizadorTimeId;
-  const canSubmit     = isPerfilReady && !isLoading && !!logoFile && !logoError;
+  const canSubmit     = isPerfilReady && !isLoading && !logoError;
 
-  const selectStyles = [
-    "h-12",
-    "w-full",
-    "rounded-[var(--radius-md)]",
-    "border",
-    "bg-(--color-bg-input)",
-    "px-3",
-    "text-sm",
-    "text-(--color-text-primary)",
-    "outline-none",
-    "transition-all",
-    "duration-200",
-    "focus-visible:ring-2",
-    errors.estado?.message
-      ? "border-(--color-feedback-danger) focus-visible:border-(--color-feedback-danger) focus-visible:ring-(--color-feedback-danger-bg)"
-      : "border-(--color-border-default) focus-visible:border-(--color-border-focus) focus-visible:ring-(--color-feedback-success-bg)",
-  ]
-    .filter(Boolean)
-    .join(" ");
 
   return (
     <motion.main
@@ -213,21 +196,7 @@ export default function CriarTimePage() {
         transition={{ duration: 0.3 }}
         style={{ marginBottom: "var(--space-5)" }}
       >
-        <Link
-          href="/organizador/times"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "var(--space-2)",
-            color: "var(--color-text-muted)",
-            textDecoration: "none",
-            fontSize: "var(--text-sm)",
-            transition: "color 0.15s",
-          }}
-        >
-          <Icon icon={ArrowLeft} size={14} />
-          Voltar para times
-        </Link>
+        <BotaoVoltar fallbackHref="/organizador/times" label="Voltar para times" />
       </motion.div>
 
       <div data-criar-grid style={{ display: "grid", gridTemplateColumns: "minmax(0, 5fr) minmax(0, 7fr)", gap: "var(--space-6)", alignItems: "start" }}>
@@ -390,36 +359,23 @@ export default function CriarTimePage() {
                 {...register("cidade")}
               />
 
-              <div>
-                <label
-                  htmlFor="estado"
-                  className="mb-2 inline-block text-sm font-semibold text-(--color-text-primary)"
-                >
-                  Estado
-                </label>
-                <select
-                  id="estado"
-                  aria-invalid={Boolean(errors.estado?.message)}
-                  className={selectStyles}
-                  defaultValue=""
-                  {...register("estado")}
-                >
-                  <option value="" disabled>Estado</option>
-                  {estadosBrasileiros.map((estado) => (
-                    <option key={estado.sigla} value={estado.sigla}>
-                      {estado.sigla} – {estado.nome}
-                    </option>
-                  ))}
-                </select>
-                {errors.estado?.message && (
-                  <p
-                    role="alert"
-                    style={{ marginTop: "var(--space-2)", marginBottom: 0, fontSize: "var(--text-sm)", color: "var(--color-feedback-danger)" }}
-                  >
-                    {errors.estado.message}
-                  </p>
-                )}
-              </div>
+              <Select
+                label="Estado"
+                value={estadoValue}
+                onChange={(v) => setValue("estado", v, { shouldValidate: true })}
+                placeholder="Selecione o estado"
+                options={estadosBrasileiros.map((estado) => ({
+                  value: estado.sigla,
+                  label: `${estado.sigla} – ${estado.nome}`,
+                }))}
+                error={errors.estado?.message}
+              />
+
+              <EsporteSelect
+                value={esporteValue}
+                onChange={(id) => setValue("esporteId", id, { shouldValidate: true })}
+                error={errors.esporteId?.message}
+              />
 
               {/* Upload de logo */}
               <div>
@@ -427,7 +383,7 @@ export default function CriarTimePage() {
                   htmlFor="logo"
                   className="mb-2 inline-block text-sm font-semibold text-(--color-text-primary)"
                 >
-                  Logo do time
+                  Logo do time <span style={{ fontWeight: 400, color: "var(--color-text-muted)" }}>(opcional)</span>
                 </label>
                 <input
                   ref={logoInputRef}
