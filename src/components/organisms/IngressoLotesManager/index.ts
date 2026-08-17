@@ -1,0 +1,1 @@
+export { IngressoLotesManager } from "./IngressoLotesManager";

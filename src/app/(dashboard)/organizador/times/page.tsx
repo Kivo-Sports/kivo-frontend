@@ -4,7 +4,22 @@ import { useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Bell, CheckCircle, XCircle, Calendar, Star, Shield, MapPin, ArrowUpRight, Search, Users, Plus, GitFork, UserCog, type LucideIcon } from "lucide-react";
+import {
+  Bell,
+  CheckCircle,
+  XCircle,
+  Calendar,
+  Star,
+  Shield,
+  MapPin,
+  ArrowUpRight,
+  Search,
+  Users,
+  Plus,
+  GitFork,
+  UserCog,
+  type LucideIcon,
+} from "lucide-react";
 import { Avatar } from "@/components/atoms/Avatar";
 import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
@@ -25,12 +40,18 @@ import { useToast } from "@/components/atoms/Toast";
 import { Icon } from "@/components/atoms/Icon";
 import { Icon as IconifyIcon } from "@iconify/react";
 import { FORMATO_CAMPEONATO } from "@/types/campeonato";
-import type { ConvitePendenteResponse, FormatoCampeonato, CampeonatoResponse } from "@/types/campeonato";
+import type {
+  ConvitePendenteResponse,
+  FormatoCampeonato,
+  CampeonatoResponse,
+} from "@/types/campeonato";
+import type { TimeResponse } from "@/types/time";
 
 // ─── Painel de Convites ──────────────────────────────────────────────────────
 
 interface ConvitesPainelProps {
   organizadorTimeId: string;
+  times: TimeResponse[];
 }
 
 const STATUS_CAMPEONATO_LABEL: Record<string, string> = {
@@ -42,7 +63,15 @@ const STATUS_CAMPEONATO_LABEL: Record<string, string> = {
 };
 
 // Linha de detalhe (ícone + rótulo + valor)
-function DetalheLinha({ icon, label, children }: { icon: LucideIcon; label: string; children: ReactNode }) {
+function DetalheLinha({
+  icon,
+  label,
+  children,
+}: {
+  icon: LucideIcon;
+  label: string;
+  children: ReactNode;
+}) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
       <Icon icon={icon} size={11} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
@@ -68,7 +97,8 @@ function ConviteCard({
 }) {
   const statusLabel = STATUS_CAMPEONATO_LABEL[convite.statusCampeonato] ?? convite.statusCampeonato;
   const formatoLabel = camp
-    ? (FORMATO_CAMPEONATO[camp.formatoCampeonato as FormatoCampeonato]?.label ?? camp.formatoCampeonato)
+    ? (FORMATO_CAMPEONATO[camp.formatoCampeonato as FormatoCampeonato]?.label ??
+      camp.formatoCampeonato)
     : null;
   const href = `/campeonatos/${convite.campeonatoId}`;
 
@@ -86,44 +116,116 @@ function ConviteCard({
       }}
     >
       {/* Cabeçalho: logo + nome (clicáveis) + status */}
-      <div style={{ padding: "var(--space-3)", borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
-        <Link href={href} title="Ver campeonato" style={{ flexShrink: 0, borderRadius: "var(--radius-lg)", outline: "none" }}>
+      <div
+        style={{
+          padding: "var(--space-3)",
+          borderBottom: "1px solid rgba(255,255,255,0.05)",
+          display: "flex",
+          alignItems: "center",
+          gap: "var(--space-3)",
+        }}
+      >
+        <Link
+          href={href}
+          title="Ver campeonato"
+          style={{ flexShrink: 0, borderRadius: "var(--radius-lg)", outline: "none" }}
+        >
           <Avatar name={convite.nomeCampeonato} src={camp?.logoUrl || undefined} size="md" />
         </Link>
         <div style={{ flex: 1, minWidth: 0 }}>
           <Link
             href={href}
-            style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "4px", color: "white", maxWidth: "100%" }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-brand-primary)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = "white"; }}
+            style={{
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "4px",
+              color: "white",
+              maxWidth: "100%",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "var(--color-brand-primary)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = "white";
+            }}
           >
-            <span style={{ fontWeight: 700, fontSize: "var(--text-sm)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <span
+              style={{
+                fontWeight: 700,
+                fontSize: "var(--text-sm)",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
               {convite.nomeCampeonato}
             </span>
             <Icon icon={ArrowUpRight} size={13} style={{ flexShrink: 0 }} />
           </Link>
-          <p style={{ margin: "2px 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
+          <p
+            style={{
+              margin: "2px 0 0",
+              fontSize: "var(--text-xs)",
+              color: "var(--color-text-muted)",
+            }}
+          >
             Recebido em {new Date(convite.convidadoEm).toLocaleDateString("pt-BR")}
           </p>
         </div>
-        <span style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", padding: "2px 8px", borderRadius: "var(--radius-full)", fontSize: "var(--text-xs)", fontWeight: 600, background: "rgba(0,230,118,0.1)", color: "var(--color-brand-primary)", border: "1px solid rgba(0,230,118,0.2)" }}>
+        <span
+          style={{
+            flexShrink: 0,
+            display: "inline-flex",
+            alignItems: "center",
+            padding: "2px 8px",
+            borderRadius: "var(--radius-full)",
+            fontSize: "var(--text-xs)",
+            fontWeight: 600,
+            background: "rgba(0,230,118,0.1)",
+            color: "var(--color-brand-primary)",
+            border: "1px solid rgba(0,230,118,0.2)",
+          }}
+        >
           {statusLabel}
         </span>
       </div>
 
       {/* Detalhes do campeonato */}
-      <div style={{ padding: "var(--space-3)", display: "grid", gap: "var(--space-2)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-        {formatoLabel && <DetalheLinha icon={GitFork} label="Formato">{formatoLabel}</DetalheLinha>}
-        {camp?.organizadorNome && <DetalheLinha icon={UserCog} label="Organização">{camp.organizadorNome}</DetalheLinha>}
+      <div
+        style={{
+          padding: "var(--space-3)",
+          display: "grid",
+          gap: "var(--space-2)",
+          borderBottom: "1px solid rgba(255,255,255,0.05)",
+        }}
+      >
+        {formatoLabel && (
+          <DetalheLinha icon={GitFork} label="Formato">
+            {formatoLabel}
+          </DetalheLinha>
+        )}
+        {camp?.organizadorNome && (
+          <DetalheLinha icon={UserCog} label="Organização">
+            {camp.organizadorNome}
+          </DetalheLinha>
+        )}
         <DetalheLinha icon={Calendar} label="Período">
-          {new Date(convite.dataInicio).toLocaleDateString("pt-BR")} → {new Date(convite.dataFim).toLocaleDateString("pt-BR")}
+          {new Date(convite.dataInicio).toLocaleDateString("pt-BR")} →{" "}
+          {new Date(convite.dataFim).toLocaleDateString("pt-BR")}
         </DetalheLinha>
         <DetalheLinha icon={Star} label="Pontuação">
-          <span style={{ color: "var(--color-feedback-success)", fontWeight: 600 }}>V {convite.pontosVitoria}</span>
+          <span style={{ color: "var(--color-feedback-success)", fontWeight: 600 }}>
+            V {convite.pontosVitoria}
+          </span>
           {" · "}
-          <span style={{ color: "var(--color-feedback-warning)", fontWeight: 600 }}>E {convite.pontosEmpate}</span>
+          <span style={{ color: "var(--color-feedback-warning)", fontWeight: 600 }}>
+            E {convite.pontosEmpate}
+          </span>
           {" · "}
-          <span style={{ color: "var(--color-text-muted)", fontWeight: 600 }}>D {convite.pontosDerrota}</span>
+          <span style={{ color: "var(--color-text-muted)", fontWeight: 600 }}>
+            D {convite.pontosDerrota}
+          </span>
         </DetalheLinha>
       </div>
 
@@ -135,7 +237,13 @@ function ConviteCard({
           loading={isLoading}
           disabled={isLoading}
           onClick={() => onResponder(convite, true)}
-          style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--space-1)" }}
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "var(--space-1)",
+          }}
         >
           <Icon icon={CheckCircle} size={13} />
           Aceitar
@@ -146,7 +254,15 @@ function ConviteCard({
           loading={isLoading}
           disabled={isLoading}
           onClick={() => onResponder(convite, false)}
-          style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--space-1)", color: "var(--color-feedback-danger)", border: "1px solid rgba(255,72,68,0.3)" }}
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "var(--space-1)",
+            color: "var(--color-feedback-danger)",
+            border: "1px solid rgba(255,72,68,0.3)",
+          }}
         >
           <Icon icon={XCircle} size={13} />
           Recusar
@@ -156,11 +272,10 @@ function ConviteCard({
   );
 }
 
-function ConvitesPainel({ organizadorTimeId }: ConvitesPainelProps) {
+function ConvitesPainel({ organizadorTimeId, times }: ConvitesPainelProps) {
   const { success: toastSuccess, error: toastError } = useToast();
   const { data: convites = [], isLoading } = useListarConvitesPendentesQuery(organizadorTimeId);
   const { data: campeonatos = [] } = useListarCampeonatosQuery();
-  const { data: times = [] } = useListarTimesOrganizadorQuery();
   const [responderConvite, { isLoading: isRespondendo }] = useResponderConviteMutation();
   const [respondendoId, setRespondendoId] = useState<string | null>(null);
 
@@ -204,7 +319,14 @@ function ConvitesPainel({ organizadorTimeId }: ConvitesPainelProps) {
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "var(--space-3)" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "var(--space-2)",
+          marginBottom: "var(--space-3)",
+        }}
+      >
         <Icon icon={Bell} size={16} style={{ color: "var(--color-brand-primary)" }} />
         <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>
           Convites pendentes
@@ -231,11 +353,33 @@ function ConvitesPainel({ organizadorTimeId }: ConvitesPainelProps) {
       </div>
 
       {convites.length === 0 ? (
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "var(--space-2)", padding: "var(--space-6) var(--space-3)", textAlign: "center" }}>
-          <div style={{ width: "44px", height: "44px", borderRadius: "50%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "var(--space-2)",
+            padding: "var(--space-6) var(--space-3)",
+            textAlign: "center",
+          }}
+        >
+          <div
+            style={{
+              width: "44px",
+              height: "44px",
+              borderRadius: "50%",
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             <Icon icon={Bell} size={20} style={{ color: "var(--color-text-muted)" }} />
           </div>
-          <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>Nenhum convite no momento</p>
+          <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>
+            Nenhum convite no momento
+          </p>
           <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
             Quando um organizador convidar seu time, o convite aparece aqui.
           </p>
@@ -247,15 +391,54 @@ function ConvitesPainel({ organizadorTimeId }: ConvitesPainelProps) {
             return (
               <div key={nomeTime}>
                 {/* Cabeçalho do time — nome + linha divisória */}
-                <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "var(--space-3)" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "var(--space-2)",
+                    marginBottom: "var(--space-3)",
+                  }}
+                >
                   <Avatar name={nomeTime} src={time?.logoUrl || undefined} size="sm" />
-                  <span style={{ fontWeight: 700, fontSize: "var(--text-sm)", color: "white", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "55%" }}>
+                  <span
+                    style={{
+                      fontWeight: 700,
+                      fontSize: "var(--text-sm)",
+                      color: "white",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      maxWidth: "55%",
+                    }}
+                  >
                     {nomeTime}
                   </span>
-                  <span style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: "18px", height: "18px", padding: "0 5px", borderRadius: "var(--radius-full)", background: "rgba(0,230,118,0.12)", color: "var(--color-brand-primary)", fontSize: "10px", fontWeight: 700 }}>
+                  <span
+                    style={{
+                      flexShrink: 0,
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      minWidth: "18px",
+                      height: "18px",
+                      padding: "0 5px",
+                      borderRadius: "var(--radius-full)",
+                      background: "rgba(0,230,118,0.12)",
+                      color: "var(--color-brand-primary)",
+                      fontSize: "10px",
+                      fontWeight: 700,
+                    }}
+                  >
                     {lista.length}
                   </span>
-                  <div style={{ flex: 1, height: "1px", background: "linear-gradient(90deg, rgba(0,230,118,0.3), rgba(255,255,255,0.04))" }} />
+                  <div
+                    style={{
+                      flex: 1,
+                      height: "1px",
+                      background:
+                        "linear-gradient(90deg, rgba(0,230,118,0.3), rgba(255,255,255,0.04))",
+                    }}
+                  />
                 </div>
 
                 {/* Convites do time */}
@@ -284,30 +467,38 @@ function ConvitesPainel({ organizadorTimeId }: ConvitesPainelProps) {
 export default function OrganizadorTimePage() {
   const router = useRouter();
   const { user } = useAppSelector((state) => state.auth);
-  const { data: times = [], isLoading, isFetching, isError } = useListarTimesOrganizadorQuery();
+  const { data: times = [], isLoading, isError } = useListarTimesOrganizadorQuery();
   const { data: perfil } = useGetPerfilUsuarioQuery(user?.id ?? "", { skip: !user?.id });
 
-  const [search, setSearch]             = useState("");
+  const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"todos" | "ativo" | "inativo">("todos");
   const [esporteFilter, setEsporteFilter] = useState<string>("todos");
 
   const activeTeams = times.filter((time) => time.ativo);
-  const heroStats   = [
-    { label: "Times ativos",   value: activeTeams.length, icon: Shield },
-    { label: "Total de times", value: times.length,       icon: Users  },
+  const heroStats = [
+    { label: "Times ativos", value: activeTeams.length, icon: Shield },
+    { label: "Total de times", value: times.length, icon: Users },
   ];
   const userName = user?.name?.split(" ")[0] ?? "Organizador";
 
   const timesFiltrados = times.filter((t) => {
-    const matchNome    = t.nome.toLowerCase().includes(search.toLowerCase());
-    const matchStatus  = statusFilter === "todos" ? true : t.ativo === (statusFilter === "ativo");
+    const matchNome = t.nome.toLowerCase().includes(search.toLowerCase());
+    const matchStatus = statusFilter === "todos" ? true : t.ativo === (statusFilter === "ativo");
     const matchEsporte = esporteFilter === "todos" ? true : t.esporteId === esporteFilter;
     return matchNome && matchStatus && matchEsporte;
   });
 
-  if (isLoading || isFetching) {
+  if (isLoading) {
     return (
-      <main style={{ minHeight: "55vh", display: "flex", alignItems: "center", justifyContent: "center" }} aria-busy="true">
+      <main
+        style={{
+          minHeight: "55vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        aria-busy="true"
+      >
         <div style={{ display: "grid", justifyItems: "center", gap: "var(--space-3)" }}>
           <Spinner size="lg" ariaLabel="Carregando times" />
           <p style={{ margin: 0, fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
@@ -321,9 +512,15 @@ export default function OrganizadorTimePage() {
   return (
     <div
       data-times-page
-      style={{ width: "100%", maxWidth: "90rem", margin: "0 auto", display: "flex", flexDirection: "column", gap: "var(--space-6)" }}
+      style={{
+        width: "100%",
+        maxWidth: "90rem",
+        margin: "0 auto",
+        display: "flex",
+        flexDirection: "column",
+        gap: "var(--space-6)",
+      }}
     >
-
       {/* Hero */}
       <motion.div
         data-times-hero
@@ -334,7 +531,8 @@ export default function OrganizadorTimePage() {
         style={{
           borderRadius: "var(--radius-2xl)",
           padding: "var(--space-6)",
-          background: "linear-gradient(145deg, rgba(0, 230, 118, 0.15) 0%, rgba(0, 0, 0, 0.7) 100%)",
+          background:
+            "linear-gradient(145deg, rgba(0, 230, 118, 0.15) 0%, rgba(0, 0, 0, 0.7) 100%)",
           border: "1px solid rgba(0, 230, 118, 0.2)",
           boxShadow: "0 20px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.05)",
           display: "grid",
@@ -344,17 +542,45 @@ export default function OrganizadorTimePage() {
       >
         <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
           <div>
-            <p style={{ margin: "0 0 var(--space-1)", fontSize: "var(--text-xs)", letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--color-brand-primary)" }}>
+            <p
+              style={{
+                margin: "0 0 var(--space-1)",
+                fontSize: "var(--text-xs)",
+                letterSpacing: "0.3em",
+                textTransform: "uppercase",
+                color: "var(--color-brand-primary)",
+              }}
+            >
               Central de Times
             </p>
-            <h1 style={{ margin: 0, fontSize: "clamp(1.75rem, 3.5vw, 2.75rem)", fontWeight: 700, color: "white", lineHeight: 1.15 }}>
+            <h1
+              style={{
+                margin: 0,
+                fontSize: "clamp(1.75rem, 3.5vw, 2.75rem)",
+                fontWeight: 700,
+                color: "white",
+                lineHeight: 1.15,
+              }}
+            >
               Olá, {userName}
             </h1>
-            <p className="text-secondary" style={{ marginTop: "var(--space-2)", maxWidth: "30rem", lineHeight: 1.6 }}>
-              Organize seus times, acompanhe o status de cada frente e mantenha torcedores engajados.
+            <p
+              className="text-secondary"
+              style={{ marginTop: "var(--space-2)", maxWidth: "30rem", lineHeight: 1.6 }}
+            >
+              Organize seus times, acompanhe o status de cada frente e mantenha torcedores
+              engajados.
             </p>
           </div>
-          <div style={{ marginTop: "var(--space-4)", display: "flex", gap: "var(--space-3)", flexWrap: "wrap", alignItems: "center" }}>
+          <div
+            style={{
+              marginTop: "var(--space-4)",
+              display: "flex",
+              gap: "var(--space-3)",
+              flexWrap: "wrap",
+              alignItems: "center",
+            }}
+          >
             <Button
               variant="secondary"
               onClick={() => router.push("/organizador/times/criar")}
@@ -363,10 +589,26 @@ export default function OrganizadorTimePage() {
               <Icon icon={Plus} size={16} />
               Criar time
             </Button>
+            <Button
+              variant="ghost"
+              onClick={() => router.push("/organizador/times/jogos")}
+              style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-2)" }}
+            >
+              <Icon icon={Calendar} size={16} />
+              Jogos dos meus times
+            </Button>
           </div>
         </div>
 
-        <div data-times-hero-stats style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "var(--space-3)", alignContent: "center" }}>
+        <div
+          data-times-hero-stats
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+            gap: "var(--space-3)",
+            alignContent: "center",
+          }}
+        >
           {heroStats.map((stat) => (
             <Card
               key={stat.label}
@@ -378,9 +620,24 @@ export default function OrganizadorTimePage() {
                 textAlign: "center",
               }}
             >
-              <Icon icon={stat.icon} size={20} style={{ color: "var(--color-brand-primary)", margin: "0 auto var(--space-2)" }} />
-              <p style={{ margin: 0, fontSize: "var(--text-2xl)", fontWeight: 700, color: "white" }}>{stat.value}</p>
-              <p style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", letterSpacing: "0.1em" }}>
+              <Icon
+                icon={stat.icon}
+                size={20}
+                style={{ color: "var(--color-brand-primary)", margin: "0 auto var(--space-2)" }}
+              />
+              <p
+                style={{ margin: 0, fontSize: "var(--text-2xl)", fontWeight: 700, color: "white" }}
+              >
+                {stat.value}
+              </p>
+              <p
+                style={{
+                  margin: "var(--space-1) 0 0",
+                  fontSize: "var(--text-xs)",
+                  color: "var(--color-text-muted)",
+                  letterSpacing: "0.1em",
+                }}
+              >
                 {stat.label}
               </p>
             </Card>
@@ -389,8 +646,14 @@ export default function OrganizadorTimePage() {
       </motion.div>
 
       {/* Conteúdo principal */}
-      <div data-times-layout style={{ display: "grid", gridTemplateColumns: "minmax(0, 3fr) minmax(0, 2fr)", gap: "var(--space-5)" }}>
-
+      <div
+        data-times-layout
+        style={{
+          display: "grid",
+          gridTemplateColumns: "minmax(0, 3fr) minmax(0, 2fr)",
+          gap: "var(--space-5)",
+        }}
+      >
         {/* Lista de times */}
         <div>
           <PageHeader
@@ -405,24 +668,34 @@ export default function OrganizadorTimePage() {
           />
 
           {isError || times.length === 0 ? (
-            <motion.div variants={fadeInUp} initial="initial" animate="animate" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <motion.div
+              variants={fadeInUp}
+              initial="initial"
+              animate="animate"
+              style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+            >
               <Card
                 padding="lg"
                 style={{
-                  maxWidth: "48rem", width: "100%",
+                  maxWidth: "48rem",
+                  width: "100%",
                   borderRadius: "var(--radius-2xl)",
                   background: "linear-gradient(160deg, rgba(0, 230, 118, 0.2), rgba(0, 0, 0, 0.6))",
-                  textAlign: "center", color: "white",
+                  textAlign: "center",
+                  color: "white",
                   border: "1px solid rgba(0, 230, 118, 0.3)",
                 }}
               >
                 <div
                   role="presentation"
                   style={{
-                    width: "5rem", height: "5rem",
+                    width: "5rem",
+                    height: "5rem",
                     margin: "0 auto var(--space-3)",
                     borderRadius: "50%",
-                    display: "flex", alignItems: "center", justifyContent: "center",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                     background: "color-mix(in srgb, var(--color-brand-secondary), transparent 65%)",
                   }}
                 >
@@ -432,7 +705,8 @@ export default function OrganizadorTimePage() {
                   Você ainda não tem um time ativo
                 </h2>
                 <p className="text-secondary" style={{ margin: 0 }}>
-                  Comece criando seu time, definindo a identidade e liberando o acesso a campeonatos.
+                  Comece criando seu time, definindo a identidade e liberando o acesso a
+                  campeonatos.
                 </p>
                 <div style={{ marginTop: "var(--space-4)" }}>
                   <Button variant="primary" onClick={() => router.push("/organizador/times/criar")}>
@@ -443,7 +717,13 @@ export default function OrganizadorTimePage() {
             </motion.div>
           ) : timesFiltrados.length === 0 ? (
             <motion.div variants={fadeInUp} initial="initial" animate="animate">
-              <p style={{ color: "var(--color-text-muted)", textAlign: "center", padding: "var(--space-8)" }}>
+              <p
+                style={{
+                  color: "var(--color-text-muted)",
+                  textAlign: "center",
+                  padding: "var(--space-8)",
+                }}
+              >
                 Nenhum time encontrado com estes filtros.
               </p>
             </motion.div>
@@ -475,86 +755,157 @@ export default function OrganizadorTimePage() {
                       : `Criado há ${diasDesdeCriacao} dias`;
 
                 return (
-                <motion.div key={time.id} variants={itemVariants}>
-                  <Card
-                    padding="md"
-                    hoverable
-                    style={{
-                      borderRadius: "var(--radius-xl)",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "var(--space-3)",
-                      background: "linear-gradient(150deg, rgba(20,20,20,0.95), rgba(10,10,10,0.8))",
-                      border: "1px solid rgba(255,255,255,0.06)",
-                      position: "relative",
-                      overflow: "hidden",
-                    }}
-                  >
-                    {/* Cabeçalho */}
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "var(--space-2)" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", flex: 1, minWidth: 0 }}>
-                        <Avatar name={time.nome} src={time.logoUrl || undefined} size="md" />
-                        <div style={{ minWidth: 0 }}>
-                          <h3 style={{ margin: 0, fontSize: "var(--text-base)", fontWeight: 600, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                            {time.nome}
-                          </h3>
-                          <p style={{ margin: "2px 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
-                            {tempoDeCriacao}
-                          </p>
+                  <motion.div key={time.id} variants={itemVariants}>
+                    <Card
+                      padding="md"
+                      hoverable
+                      style={{
+                        borderRadius: "var(--radius-xl)",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "var(--space-3)",
+                        background:
+                          "linear-gradient(150deg, rgba(20,20,20,0.95), rgba(10,10,10,0.8))",
+                        border: "1px solid rgba(255,255,255,0.06)",
+                        position: "relative",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {/* Cabeçalho */}
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "flex-start",
+                          gap: "var(--space-2)",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "var(--space-2)",
+                            flex: 1,
+                            minWidth: 0,
+                          }}
+                        >
+                          <Avatar name={time.nome} src={time.logoUrl || undefined} size="md" />
+                          <div style={{ minWidth: 0 }}>
+                            <h3
+                              style={{
+                                margin: 0,
+                                fontSize: "var(--text-base)",
+                                fontWeight: 600,
+                                color: "white",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {time.nome}
+                            </h3>
+                            <p
+                              style={{
+                                margin: "2px 0 0",
+                                fontSize: "var(--text-xs)",
+                                color: "var(--color-text-muted)",
+                              }}
+                            >
+                              {tempoDeCriacao}
+                            </p>
+                          </div>
                         </div>
+                        <Badge
+                          variant={time.ativo ? "success" : "danger"}
+                          size="sm"
+                          style={{ flexShrink: 0 }}
+                        >
+                          {time.ativo ? "Ativo" : "Inativo"}
+                        </Badge>
                       </div>
-                      <Badge variant={time.ativo ? "success" : "danger"} size="sm" style={{ flexShrink: 0 }}>
-                        {time.ativo ? "Ativo" : "Inativo"}
-                      </Badge>
-                    </div>
 
-                    {/* Localização + Esporte */}
-                    <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)", flexWrap: "wrap" }}>
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-1)" }}>
-                        <Icon icon={MapPin} size={12} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
-                        <span className="text-secondary" style={{ fontSize: "var(--text-xs)" }}>
-                          {time.cidade} · {time.estado}
-                        </span>
-                      </span>
-                      {time.esporteNome && (
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-1)" }}>
-                          {time.esporteIcone && (
-                            <IconifyIcon icon={time.esporteIcone} width={13} height={13} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
-                          )}
+                      {/* Localização + Esporte */}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "var(--space-4)",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <span
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "var(--space-1)",
+                          }}
+                        >
+                          <Icon
+                            icon={MapPin}
+                            size={12}
+                            style={{ color: "var(--color-text-muted)", flexShrink: 0 }}
+                          />
                           <span className="text-secondary" style={{ fontSize: "var(--text-xs)" }}>
-                            {time.esporteNome}
+                            {time.cidade} · {time.estado}
                           </span>
                         </span>
-                      )}
-                    </div>
+                        {time.esporteNome && (
+                          <span
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "var(--space-1)",
+                            }}
+                          >
+                            {time.esporteIcone && (
+                              <IconifyIcon
+                                icon={time.esporteIcone}
+                                width={13}
+                                height={13}
+                                style={{ color: "var(--color-text-muted)", flexShrink: 0 }}
+                              />
+                            )}
+                            <span className="text-secondary" style={{ fontSize: "var(--text-xs)" }}>
+                              {time.esporteNome}
+                            </span>
+                          </span>
+                        )}
+                      </div>
 
-                    {/* Footer */}
-                    <Button
-                      variant="ghost"
-                      style={{
-                        marginTop: "var(--space-1)",
-                        width: "100%",
-                        justifyContent: "space-between",
-                        border: "1px solid rgba(255,255,255,0.08)",
-                        background: "rgba(255,255,255,0.03)",
-                        color: "white",
-                        fontWeight: 600,
-                      }}
-                      onClick={() => router.push(`/organizador/times/${time.id}`)}
-                    >
-                      Gerenciar time
-                      <Icon icon={ArrowUpRight} size={14} style={{ color: "var(--color-brand-primary)" }} />
-                    </Button>
-                  </Card>
-                </motion.div>
-              );
+                      {/* Footer */}
+                      <Button
+                        variant="ghost"
+                        style={{
+                          marginTop: "var(--space-1)",
+                          width: "100%",
+                          justifyContent: "space-between",
+                          border: "1px solid rgba(255,255,255,0.08)",
+                          background: "rgba(255,255,255,0.03)",
+                          color: "white",
+                          fontWeight: 600,
+                        }}
+                        onClick={() => router.push(`/organizador/times/${time.id}`)}
+                      >
+                        Gerenciar time
+                        <Icon
+                          icon={ArrowUpRight}
+                          size={14}
+                          style={{ color: "var(--color-brand-primary)" }}
+                        />
+                      </Button>
+                    </Card>
+                  </motion.div>
+                );
               })}
             </motion.div>
           )}
         </div>
 
         {/* Sidebar direita */}
-        <div data-times-sidebar style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+        <div
+          data-times-sidebar
+          style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}
+        >
           {/* Painel de convites */}
           <motion.div variants={fadeIn} initial="initial" animate="animate">
             <Card
@@ -566,16 +917,36 @@ export default function OrganizadorTimePage() {
               }}
             >
               {perfil?.organizadorTimeId ? (
-                <ConvitesPainel organizadorTimeId={perfil.organizadorTimeId} />
+                <ConvitesPainel organizadorTimeId={perfil.organizadorTimeId} times={times} />
               ) : (
                 <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "var(--space-2)" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "var(--space-2)",
+                      marginBottom: "var(--space-2)",
+                    }}
+                  >
                     <Icon icon={Bell} size={16} style={{ color: "var(--color-brand-primary)" }} />
-                    <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: "var(--text-sm)",
+                        fontWeight: 600,
+                        color: "white",
+                      }}
+                    >
                       Convites pendentes
                     </p>
                   </div>
-                  <p style={{ margin: 0, fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "var(--text-sm)",
+                      color: "var(--color-text-muted)",
+                    }}
+                  >
                     Carregando perfil...
                   </p>
                 </div>
@@ -591,11 +962,21 @@ export default function OrganizadorTimePage() {
                 borderRadius: "var(--radius-xl)",
                 background: "var(--color-bg-elevated)",
                 border: "1px solid var(--color-border-default)",
-                display: "flex", flexDirection: "column", gap: "var(--space-3)",
+                display: "flex",
+                flexDirection: "column",
+                gap: "var(--space-3)",
               }}
             >
               {/* Cabeçalho */}
-              <p style={{ margin: 0, fontSize: "var(--text-xs)", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--color-text-muted)" }}>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "var(--text-xs)",
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: "var(--color-text-muted)",
+                }}
+              >
                 Filtros
               </p>
 
@@ -676,7 +1057,10 @@ export default function OrganizadorTimePage() {
                       fontSize: "var(--text-xs)",
                       fontWeight: 600,
                       cursor: "pointer",
-                      border: statusFilter === s ? "1px solid rgba(255,255,255,0.15)" : "1px solid transparent",
+                      border:
+                        statusFilter === s
+                          ? "1px solid rgba(255,255,255,0.15)"
+                          : "1px solid transparent",
                       background: statusFilter === s ? "rgba(255,255,255,0.07)" : "transparent",
                       color: statusFilter === s ? "white" : "var(--color-text-muted)",
                       transition: "all 0.15s",
@@ -687,7 +1071,6 @@ export default function OrganizadorTimePage() {
                   </button>
                 ))}
               </div>
-
             </Card>
           </motion.div>
         </div>

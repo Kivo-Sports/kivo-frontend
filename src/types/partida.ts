@@ -56,6 +56,8 @@ export interface JogoResponse {
 export interface DetalhePartidaResponse {
   id: string;
   campeonatoId: string;
+  timeCasaId?: string | null;
+  timeVisitanteId?: string | null;
   rodada: number | null;
   fase: string;
   nomeTimeCasa: string;
@@ -81,4 +83,22 @@ export interface AgendarPartidaRequest {
   partidaId: string;
   dataHora: string | null;
   local: string;
+}
+
+export interface JogoOrganizadorTime {
+  id: string;
+  campeonatoId: string;
+  nomeCampeonato: string;
+  timeCasaId: string | null;
+  nomeTimeCasa: string;
+  logoTimeCasa: string | null;
+  timeVisitanteId: string | null;
+  nomeTimeVisitante: string;
+  logoTimeVisitante: string | null;
+  dataHora: string | null;
+  local: string;
+  golsTimeCasa: number;
+  golsTimeVisitante: number;
+  finalizado: boolean;
+  ehMandante: boolean;
 }

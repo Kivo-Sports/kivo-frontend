@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
-import { useRouter, usePathname } from 'next/navigation';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { clearCredentials } from '@/store/slices/authSlice';
-import { Icon } from '@/components/atoms/Icon';
-import { LogOut, Settings } from 'lucide-react';
-import { getRedirectPathAfterLogin, getHomeRoute } from '@/lib/auth.utils';
+import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
+import { useRouter, usePathname } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { clearCredentials } from "@/store/slices/authSlice";
+import { Icon } from "@/components/atoms/Icon";
+import { LogOut, Settings, Ticket } from "lucide-react";
+import { getRedirectPathAfterLogin, getHomeRoute } from "@/lib/auth.utils";
 
 export function Header() {
   const router = useRouter();
@@ -20,14 +20,14 @@ export function Header() {
   const isActive = (path: string) => pathname === path;
 
   const getNavLinkStyle = (path: string) => ({
-    color: isActive(path) ? 'var(--color-brand-primary)' : 'var(--color-text-secondary)',
-    fontSize: 'clamp(12px, 2vw, 14px)',
+    color: isActive(path) ? "var(--color-brand-primary)" : "var(--color-text-secondary)",
+    fontSize: "clamp(12px, 2vw, 14px)",
     fontWeight: isActive(path) ? 600 : 500,
-    transition: 'color 0.3s ease',
-    cursor: 'pointer',
-    textDecoration: 'none',
-    paddingBottom: '4px',
-    borderBottom: isActive(path) ? '2px solid var(--color-brand-primary)' : 'none',
+    transition: "color 0.3s ease",
+    cursor: "pointer",
+    textDecoration: "none",
+    paddingBottom: "4px",
+    borderBottom: isActive(path) ? "2px solid var(--color-brand-primary)" : "none",
   });
 
   const dashboardRoute = getRedirectPathAfterLogin(user?.cargo);
@@ -41,51 +41,51 @@ export function Header() {
     };
 
     if (isDropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isDropdownOpen]);
 
   const handleLogout = () => {
     dispatch(clearCredentials());
     setIsDropdownOpen(false);
-    router.push('/login');
+    router.push("/login");
   };
 
   return (
     <header
       style={{
-        position: 'fixed',
+        position: "fixed",
         top: 0,
         left: 0,
         right: 0,
         zIndex: 1000,
-        background: 'rgba(20, 20, 20, 0.98)',
-        backdropFilter: 'blur(8px)',
-        borderBottom: '1px solid rgba(0, 230, 118, 0.2)',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+        background: "rgba(20, 20, 20, 0.98)",
+        backdropFilter: "blur(8px)",
+        borderBottom: "1px solid rgba(0, 230, 118, 0.2)",
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
       }}
     >
       <div
         style={{
-          maxWidth: '1400px',
-          margin: '0 auto',
-          padding: '0 var(--space-4)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          height: '70px',
+          maxWidth: "1400px",
+          margin: "0 auto",
+          padding: "0 var(--space-4)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          height: "70px",
         }}
       >
         {/* Logo - Esquerda */}
         <div
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'var(--space-2)',
-            cursor: 'pointer',
-            minWidth: '120px',
-            transition: 'opacity 0.2s ease',
+            display: "flex",
+            alignItems: "center",
+            gap: "var(--space-2)",
+            cursor: "pointer",
+            minWidth: "120px",
+            transition: "opacity 0.2s ease",
           }}
           onClick={() => {
             if (isAuthenticated) {
@@ -93,18 +93,18 @@ export function Header() {
             }
           }}
           onMouseEnter={(e) => {
-            (e.currentTarget as HTMLDivElement).style.opacity = '0.8';
+            (e.currentTarget as HTMLDivElement).style.opacity = "0.8";
           }}
           onMouseLeave={(e) => {
-            (e.currentTarget as HTMLDivElement).style.opacity = '1';
+            (e.currentTarget as HTMLDivElement).style.opacity = "1";
           }}
         >
           <Image
             src="/LogoKivoSportsSFundoBranca.png"
             alt="Kivo Sports"
             width={120}
-            height= {40}
-            style={{ objectFit: 'contain' }}
+            height={40}
+            style={{ objectFit: "contain" }}
             priority
           />
         </div>
@@ -113,11 +113,11 @@ export function Header() {
         {isAuthenticated && (
           <nav
             style={{
-              display: 'flex',
-              gap: 'var(--space-6)',
-              alignItems: 'center',
+              display: "flex",
+              gap: "var(--space-6)",
+              alignItems: "center",
               flex: 1,
-              justifyContent: 'center',
+              justifyContent: "center",
             }}
           >
             <a
@@ -125,12 +125,12 @@ export function Header() {
               style={getNavLinkStyle(dashboardRoute)}
               onMouseEnter={(e) => {
                 if (!isActive(dashboardRoute)) {
-                  e.currentTarget.style.color = 'var(--color-brand-primary)';
+                  e.currentTarget.style.color = "var(--color-brand-primary)";
                 }
               }}
               onMouseLeave={(e) => {
                 if (!isActive(dashboardRoute)) {
-                  e.currentTarget.style.color = 'var(--color-text-secondary)';
+                  e.currentTarget.style.color = "var(--color-text-secondary)";
                 }
               }}
             >
@@ -141,12 +141,12 @@ export function Header() {
               style={getNavLinkStyle(homeRoute)}
               onMouseEnter={(e) => {
                 if (!isActive(homeRoute)) {
-                  e.currentTarget.style.color = 'var(--color-brand-primary)';
+                  e.currentTarget.style.color = "var(--color-brand-primary)";
                 }
               }}
               onMouseLeave={(e) => {
                 if (!isActive(homeRoute)) {
-                  e.currentTarget.style.color = 'var(--color-text-secondary)';
+                  e.currentTarget.style.color = "var(--color-text-secondary)";
                 }
               }}
             >
@@ -155,23 +155,23 @@ export function Header() {
             <a
               href="/times"
               style={{
-                ...getNavLinkStyle('/times'),
-                color: pathname.startsWith('/times')
-                  ? 'var(--color-brand-primary)'
-                  : 'var(--color-text-secondary)',
-                fontWeight: pathname.startsWith('/times') ? 600 : 500,
-                borderBottom: pathname.startsWith('/times')
-                  ? '2px solid var(--color-brand-primary)'
-                  : 'none',
+                ...getNavLinkStyle("/times"),
+                color: pathname.startsWith("/times")
+                  ? "var(--color-brand-primary)"
+                  : "var(--color-text-secondary)",
+                fontWeight: pathname.startsWith("/times") ? 600 : 500,
+                borderBottom: pathname.startsWith("/times")
+                  ? "2px solid var(--color-brand-primary)"
+                  : "none",
               }}
               onMouseEnter={(e) => {
-                if (!pathname.startsWith('/times')) {
-                  e.currentTarget.style.color = 'var(--color-brand-primary)';
+                if (!pathname.startsWith("/times")) {
+                  e.currentTarget.style.color = "var(--color-brand-primary)";
                 }
               }}
               onMouseLeave={(e) => {
-                if (!pathname.startsWith('/times')) {
-                  e.currentTarget.style.color = 'var(--color-text-secondary)';
+                if (!pathname.startsWith("/times")) {
+                  e.currentTarget.style.color = "var(--color-text-secondary)";
                 }
               }}
             >
@@ -180,171 +180,181 @@ export function Header() {
             <a
               href="/campeonatos"
               style={{
-                ...getNavLinkStyle('/campeonatos'),
-                color: pathname.startsWith('/campeonatos')
-                  ? 'var(--color-brand-primary)'
-                  : 'var(--color-text-secondary)',
-                fontWeight: pathname.startsWith('/campeonatos') ? 600 : 500,
-                borderBottom: pathname.startsWith('/campeonatos')
-                  ? '2px solid var(--color-brand-primary)'
-                  : 'none',
+                ...getNavLinkStyle("/campeonatos"),
+                color: pathname.startsWith("/campeonatos")
+                  ? "var(--color-brand-primary)"
+                  : "var(--color-text-secondary)",
+                fontWeight: pathname.startsWith("/campeonatos") ? 600 : 500,
+                borderBottom: pathname.startsWith("/campeonatos")
+                  ? "2px solid var(--color-brand-primary)"
+                  : "none",
               }}
               onMouseEnter={(e) => {
-                if (!pathname.startsWith('/campeonatos')) {
-                  e.currentTarget.style.color = 'var(--color-brand-primary)';
+                if (!pathname.startsWith("/campeonatos")) {
+                  e.currentTarget.style.color = "var(--color-brand-primary)";
                 }
               }}
               onMouseLeave={(e) => {
-                if (!pathname.startsWith('/campeonatos')) {
-                  e.currentTarget.style.color = 'var(--color-text-secondary)';
+                if (!pathname.startsWith("/campeonatos")) {
+                  e.currentTarget.style.color = "var(--color-text-secondary)";
                 }
               }}
             >
               Campeonatos
             </a>
+            {(user?.cargo === "OrganizadorTime" || user?.cargo === "Administrador") && (
+              <a href="/organizador/portaria" style={getNavLinkStyle("/organizador/portaria")}>
+                Portaria
+              </a>
+            )}
           </nav>
         )}
 
         {/* User Menu - Direita */}
         {isAuthenticated && user ? (
-          <div style={{ position: 'relative', minWidth: '120px', textAlign: 'right' }} ref={dropdownRef}>
+          <div
+            style={{ position: "relative", minWidth: "120px", textAlign: "right" }}
+            ref={dropdownRef}
+          >
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               style={{
-                padding: 'var(--space-2) var(--space-3)',
-                background: 'rgba(0, 230, 118, 0.08)',
-                border: '1px solid rgba(0, 230, 118, 0.3)',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
+                padding: "var(--space-2) var(--space-3)",
+                background: "rgba(0, 230, 118, 0.08)",
+                border: "1px solid rgba(0, 230, 118, 0.3)",
+                borderRadius: "8px",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
                 fontWeight: 500,
-                color: 'var(--color-brand-primary)',
-                fontSize: 'clamp(11px, 2vw, 13px)',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                maxWidth: '180px',
+                color: "var(--color-brand-primary)",
+                fontSize: "clamp(11px, 2vw, 13px)",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                maxWidth: "180px",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(0, 230, 118, 0.15)';
-                e.currentTarget.style.borderColor = 'rgba(0, 230, 118, 0.5)';
+                e.currentTarget.style.background = "rgba(0, 230, 118, 0.15)";
+                e.currentTarget.style.borderColor = "rgba(0, 230, 118, 0.5)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(0, 230, 118, 0.08)';
-                e.currentTarget.style.borderColor = 'rgba(0, 230, 118, 0.3)';
+                e.currentTarget.style.background = "rgba(0, 230, 118, 0.08)";
+                e.currentTarget.style.borderColor = "rgba(0, 230, 118, 0.3)";
               }}
             >
-              {user?.email || 'Usuário'}
+              {user?.email || "Usuário"}
             </button>
 
             {isDropdownOpen && (
               <div
                 style={{
-                  position: 'absolute',
-                  top: '100%',
+                  position: "absolute",
+                  top: "100%",
                   right: 0,
-                  marginTop: 'var(--space-3)',
-                  background: 'rgba(20, 20, 20, 0.99)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(0, 230, 118, 0.3)',
-                  borderRadius: '12px',
-                  minWidth: '240px',
-                  maxWidth: 'calc(100vw - 32px)',
-                  boxShadow: '0 10px 40px rgba(0, 0, 0, 0.4)',
+                  marginTop: "var(--space-3)",
+                  background: "rgba(20, 20, 20, 0.99)",
+                  backdropFilter: "blur(10px)",
+                  border: "1px solid rgba(0, 230, 118, 0.3)",
+                  borderRadius: "12px",
+                  minWidth: "220px",
+                  maxWidth: "calc(100vw - 32px)",
+                  boxShadow: "0 10px 40px rgba(0, 0, 0, 0.4)",
                   zIndex: 1001,
-                  overflow: 'hidden',
-                  animation: 'slideDown 0.3s ease-out',
+                  overflow: "hidden",
+                  animation: "slideDown 0.3s ease-out",
                 }}
               >
                 <div
                   style={{
-                    padding: 'var(--space-4)',
-                    borderBottom: '1px solid rgba(0, 230, 118, 0.2)',
+                    padding: "var(--space-3) var(--space-4)",
+                    borderBottom: "1px solid rgba(0, 230, 118, 0.2)",
                   }}
                 >
                   <div
                     style={{
-                      fontSize: 'var(--text-xs)',
-                      color: 'var(--color-text-muted)',
-                      marginBottom: 'var(--space-2)',
-                      textTransform: 'uppercase',
-                      letterSpacing: '1px',
+                      fontSize: "var(--text-sm)",
+                      color: "white",
+                      marginBottom: "3px",
                       fontWeight: 600,
+                      wordBreak: "break-word",
                     }}
                   >
-                    Usuário
+                    {user?.name || "Usuário"}
                   </div>
                   <div
                     style={{
-                      fontSize: 'var(--text-sm)',
-                      fontWeight: 600,
-                      color: 'white',
-                      wordBreak: 'break-all',
-                    }}
-                  >
-                    {user?.name || 'Usuário'}
-                  </div>
-                </div>
-
-                <div
-                  style={{
-                    padding: 'var(--space-4)',
-                    borderBottom: '1px solid rgba(0, 230, 118, 0.2)',
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: 'var(--text-xs)',
-                      color: 'var(--color-text-muted)',
-                      marginBottom: 'var(--space-2)',
-                      textTransform: 'uppercase',
-                      letterSpacing: '1px',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Email
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 'var(--text-xs)',
-                      color: 'var(--color-brand-primary)',
-                      wordBreak: 'break-all',
+                      fontSize: "var(--text-xs)",
                       fontWeight: 500,
+                      color: "var(--color-brand-primary)",
+                      wordBreak: "break-all",
                     }}
                   >
-                    {user?.email || 'email@exemplo.com'}
+                    {user?.email || "email@exemplo.com"}
                   </div>
                 </div>
 
-                <div style={{ padding: 'var(--space-2)' }}>
+                <div style={{ padding: "var(--space-2)" }}>
                   <button
                     onClick={() => {
                       setIsDropdownOpen(false);
-                      router.push('/configuracoes');
+                      router.push("/meus-ingressos");
                     }}
                     style={{
-                      width: '100%',
-                      padding: 'var(--space-3) var(--space-4)',
-                      textAlign: 'left',
-                      background: 'transparent',
-                      border: 'none',
-                      color: 'var(--color-text-secondary)',
-                      fontSize: 'var(--text-sm)',
-                      cursor: 'pointer',
-                      borderRadius: '8px',
-                      transition: 'all 0.2s ease',
-                      marginBottom: 'var(--space-1)',
+                      width: "100%",
+                      padding: "var(--space-3) var(--space-4)",
+                      textAlign: "left",
+                      background: "transparent",
+                      border: "none",
+                      color: "var(--color-text-secondary)",
+                      fontSize: "var(--text-sm)",
+                      cursor: "pointer",
+                      borderRadius: "8px",
+                      transition: "all 0.2s ease",
+                      marginBottom: "var(--space-1)",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(0, 230, 118, 0.1)';
-                      e.currentTarget.style.color = 'var(--color-brand-primary)';
+                      e.currentTarget.style.background = "rgba(0, 230, 118, 0.1)";
+                      e.currentTarget.style.color = "var(--color-brand-primary)";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'transparent';
-                      e.currentTarget.style.color = 'var(--color-text-secondary)';
+                      e.currentTarget.style.background = "transparent";
+                      e.currentTarget.style.color = "var(--color-text-secondary)";
                     }}
                   >
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+                      <Icon icon={Ticket} size={16} />
+                      Meus ingressos
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      router.push("/configuracoes");
+                    }}
+                    style={{
+                      width: "100%",
+                      padding: "var(--space-3) var(--space-4)",
+                      textAlign: "left",
+                      background: "transparent",
+                      border: "none",
+                      color: "var(--color-text-secondary)",
+                      fontSize: "var(--text-sm)",
+                      cursor: "pointer",
+                      borderRadius: "8px",
+                      transition: "all 0.2s ease",
+                      marginBottom: "var(--space-1)",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "rgba(0, 230, 118, 0.1)";
+                      e.currentTarget.style.color = "var(--color-brand-primary)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "transparent";
+                      e.currentTarget.style.color = "var(--color-text-secondary)";
+                    }}
+                  >
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
                       <Icon icon={Settings} size={16} />
                       Configurações
                     </span>
@@ -353,26 +363,26 @@ export function Header() {
                   <button
                     onClick={handleLogout}
                     style={{
-                      width: '100%',
-                      padding: 'var(--space-3) var(--space-4)',
-                      textAlign: 'left',
-                      background: 'transparent',
-                      border: 'none',
-                      color: 'var(--color-feedback-danger)',
-                      fontSize: 'var(--text-sm)',
+                      width: "100%",
+                      padding: "var(--space-3) var(--space-4)",
+                      textAlign: "left",
+                      background: "transparent",
+                      border: "none",
+                      color: "var(--color-feedback-danger)",
+                      fontSize: "var(--text-sm)",
                       fontWeight: 500,
-                      cursor: 'pointer',
-                      borderRadius: '8px',
-                      transition: 'all 0.2s ease',
+                      cursor: "pointer",
+                      borderRadius: "8px",
+                      transition: "all 0.2s ease",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(255, 23, 68, 0.1)';
+                      e.currentTarget.style.background = "rgba(255, 23, 68, 0.1)";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'transparent';
+                      e.currentTarget.style.background = "transparent";
                     }}
                   >
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
                       <Icon icon={LogOut} size={16} />
                       Desconectar
                     </span>
@@ -382,25 +392,25 @@ export function Header() {
             )}
           </div>
         ) : (
-          <div style={{ minWidth: '120px', textAlign: 'right' }}>
+          <div style={{ minWidth: "120px", textAlign: "right" }}>
             <button
-              onClick={() => router.push('/login')}
+              onClick={() => router.push("/login")}
               style={{
-                padding: 'var(--space-2) var(--space-4)',
-                background: 'var(--color-brand-primary)',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
+                padding: "var(--space-2) var(--space-4)",
+                background: "var(--color-brand-primary)",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
                 fontWeight: 700,
-                color: '#000',
-                fontSize: '13px',
-                transition: 'all 0.2s ease',
+                color: "#000",
+                fontSize: "13px",
+                transition: "all 0.2s ease",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.opacity = '0.85';
+                e.currentTarget.style.opacity = "0.85";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = '1';
+                e.currentTarget.style.opacity = "1";
               }}
             >
               Fazer login
