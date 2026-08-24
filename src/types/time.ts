@@ -16,7 +16,7 @@ export interface TimeResponse {
   nome: string;
   cidade: string;
   estado: string;
-  logoUrl: string;
+  logoUrl: string | null;
   ativo: boolean;
   criadoEm: string;
 }
