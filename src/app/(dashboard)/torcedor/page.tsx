@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import { Avatar } from "@/components/atoms/Avatar";
 import { Badge } from "@/components/atoms/Badge";
 import { Card } from "@/components/molecules/Card";
+import { ErrorState } from "@/components/molecules/ErrorState";
 import { Modal } from "@/components/molecules/Modal";
 import { Icon } from "@/components/atoms/Icon";
 import { Spinner } from "@/components/atoms/Spinner";
@@ -426,14 +427,28 @@ function SeguindoModal({
 
 export default function TorcedorDashboardPage() {
   const user = useAppSelector((state) => state.auth.user);
-  const { data: favoritos, isLoading: carregandoFavoritos } = useListarFavoritosQuery();
-  const { data: timeline = [], isLoading: carregandoTimeline } = useObterTimelineFavoritosQuery();
+  const {
+    data: favoritos,
+    isLoading: carregandoFavoritos,
+    isError: erroFavoritos,
+    refetch: recarregarFavoritos,
+  } = useListarFavoritosQuery();
+  const {
+    data: timeline = [],
+    isLoading: carregandoTimeline,
+    isError: erroTimeline,
+    refetch: recarregarTimeline,
+  } = useObterTimelineFavoritosQuery();
   const { data: ingressos = [] } = useObterMeusIngressosQuery(undefined, {
     pollingInterval: 15000,
     skipPollingIfUnfocused: true,
   });
-  const { data: partidasComIngressos = [], isLoading: carregandoPartidasComIngressos } =
-    useObterPartidasComIngressosQuery();
+  const {
+    data: partidasComIngressos = [],
+    isLoading: carregandoPartidasComIngressos,
+    isError: erroPartidasComIngressos,
+    refetch: recarregarPartidasComIngressos,
+  } = useObterPartidasComIngressosQuery();
 
   const times = favoritos?.times ?? [];
   const campeonatos = favoritos?.campeonatos ?? [];
@@ -474,6 +489,20 @@ export default function TorcedorDashboardPage() {
         >
           Acompanhe seus times e campeonatos favoritos e os próximos jogos.
         </p>
+
+        {/* Falha de API nao pode virar estado vazio (BUG-001) */}
+        {(erroFavoritos || erroTimeline) && (
+          <div style={{ marginTop: "var(--space-4)" }}>
+            <ErrorState
+              title="Não foi possível carregar seu painel"
+              message="Houve uma falha de conexão com o servidor. Seus favoritos e jogos não foram perdidos."
+              onRetry={() => {
+                recarregarFavoritos();
+                recarregarTimeline();
+              }}
+            />
+          </div>
+        )}
 
         {/* Contadores estilo perfil (clicáveis) */}
         <div style={{ display: "flex", gap: "var(--space-5)", marginTop: "var(--space-3)" }}>
@@ -568,6 +597,12 @@ export default function TorcedorDashboardPage() {
           <div style={{ display: "flex", justifyContent: "center", padding: "var(--space-6)" }}>
             <Spinner size="md" ariaLabel="Carregando partidas com ingressos" />
           </div>
+        ) : erroPartidasComIngressos ? (
+          <ErrorState
+            title="Não foi possível carregar os ingressos disponíveis"
+            message="Houve uma falha de conexão com o servidor."
+            onRetry={() => recarregarPartidasComIngressos()}
+          />
         ) : partidasComIngressos.length === 0 ? (
           <Card padding="lg" style={{ border: "1px dashed rgba(255,255,255,0.1)" }}>
             <p style={{ margin: 0, color: "var(--color-text-muted)", fontSize: "var(--text-sm)" }}>

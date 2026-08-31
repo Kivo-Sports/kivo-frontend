@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Users, MapPin, Search, X } from "lucide-react";
 import { Avatar } from "@/components/atoms/Avatar";
 import { Card } from "@/components/molecules/Card";
+import { ErrorState } from "@/components/molecules/ErrorState";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Icon } from "@/components/atoms/Icon";
 import { Icon as IconifyIcon } from "@iconify/react";
@@ -71,7 +72,7 @@ function TimeCard({ time }: { time: TimeResponse }) {
 // ─── Página ───────────────────────────────────────────────────────────────────
 
 export default function ExplorarTimesPage() {
-  const { data: times = [], isLoading } = useListarTodosOsTimesQuery();
+  const { data: times = [], isLoading, isError, refetch } = useListarTodosOsTimesQuery();
   const [busca, setBusca] = useState("");
   const [esporteFiltro, setEsporteFiltro] = useState("todos");
 
@@ -187,6 +188,12 @@ export default function ExplorarTimesPage() {
         <div style={{ display: "flex", justifyContent: "center", padding: "var(--space-8)" }}>
           <Spinner size="lg" ariaLabel="Carregando times" />
         </div>
+      ) : isError ? (
+        <ErrorState
+          title="Não foi possível carregar os times"
+          message="Houve uma falha de conexão com o servidor. Isso não significa que não existam times."
+          onRetry={() => refetch()}
+        />
       ) : filtrados.length === 0 ? (
         <Card padding="lg" style={{ textAlign: "center" }}>
           <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto var(--space-3)" }}>

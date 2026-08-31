@@ -37,7 +37,16 @@ const baseQueryWithAutoLogout: BaseQueryFn<
 
 export const baseApi = createApi({
   reducerPath: "baseApi",
-  tagTypes: ["Time", "Campeonato", "Partida", "Esporte", "Organizador", "Favorito", "Ingresso"],
+  tagTypes: [
+    "Time",
+    "Campeonato",
+    "Partida",
+    "Esporte",
+    "Organizador",
+    "Favorito",
+    "Ingresso",
+    "Notificacao",
+  ],
   baseQuery: baseQueryWithAutoLogout,
   endpoints: () => ({}),
 });

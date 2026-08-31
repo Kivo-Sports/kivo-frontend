@@ -215,7 +215,7 @@ export default function LoginPage() {
             alt="Kivo Sports"
             width={200}
             height={68}
-            style={{ objectFit: "contain" }}
+            style={{ width: "auto", height: "auto", objectFit: "contain" }}
             priority
           />
         </div>

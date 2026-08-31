@@ -28,6 +28,10 @@ export function normalizeCargo(cargo?: string): string {
     .replace(/-+/g, "-");
 }
 
+export function isTorcedor(cargo?: string): boolean {
+  return normalizeCargo(cargo) === "torcedor";
+}
+
 export function isOrganizadorTime(cargo?: string): boolean {
   const cargoNormalizado = normalizeCargo(cargo);
 

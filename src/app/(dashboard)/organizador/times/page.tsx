@@ -25,6 +25,7 @@ import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Card } from "@/components/molecules/Card";
+import { ErrorState } from "@/components/molecules/ErrorState";
 import { PageHeader } from "@/components/molecules/PageHeader";
 import { containerVariants, fadeIn, fadeInUp, itemVariants } from "@/lib/motion";
 import { useListarTimesOrganizadorQuery } from "@/store/api/timeApi";
@@ -467,7 +468,12 @@ function ConvitesPainel({ organizadorTimeId, times }: ConvitesPainelProps) {
 export default function OrganizadorTimePage() {
   const router = useRouter();
   const { user } = useAppSelector((state) => state.auth);
-  const { data: times = [], isLoading, isError } = useListarTimesOrganizadorQuery();
+  const {
+    data: times = [],
+    isLoading,
+    isError,
+    refetch: refetchTimes,
+  } = useListarTimesOrganizadorQuery();
   const { data: perfil } = useGetPerfilUsuarioQuery(user?.id ?? "", { skip: !user?.id });
 
   const [search, setSearch] = useState("");
@@ -667,7 +673,15 @@ export default function OrganizadorTimePage() {
             }
           />
 
-          {isError || times.length === 0 ? (
+          {isError ? (
+            <motion.div variants={fadeInUp} initial="initial" animate="animate">
+              <ErrorState
+                title="Não foi possível carregar seus times"
+                message="Houve uma falha de conexão com o servidor. Seus times não foram perdidos."
+                onRetry={() => refetchTimes()}
+              />
+            </motion.div>
+          ) : times.length === 0 ? (
             <motion.div
               variants={fadeInUp}
               initial="initial"

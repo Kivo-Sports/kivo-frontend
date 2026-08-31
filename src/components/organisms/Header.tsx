@@ -2,10 +2,12 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { clearCredentials } from "@/store/slices/authSlice";
 import { Icon } from "@/components/atoms/Icon";
+import { NotificationBell } from "@/components/molecules/NotificationBell";
 import { LogOut, Settings, Ticket } from "lucide-react";
 import { getRedirectPathAfterLogin, getHomeRoute } from "@/lib/auth.utils";
 
@@ -104,7 +106,9 @@ export function Header() {
             alt="Kivo Sports"
             width={120}
             height={40}
-            style={{ objectFit: "contain" }}
+            // width/height "auto" preserva a proporção junto do `img { max-width: 100% }`
+            // global e elimina o warning do next/image.
+            style={{ width: "auto", height: "auto", objectFit: "contain" }}
             priority
           />
         </div>
@@ -120,7 +124,7 @@ export function Header() {
               justifyContent: "center",
             }}
           >
-            <a
+            <Link
               href={dashboardRoute}
               style={getNavLinkStyle(dashboardRoute)}
               onMouseEnter={(e) => {
@@ -135,8 +139,8 @@ export function Header() {
               }}
             >
               Dashboard
-            </a>
-            <a
+            </Link>
+            <Link
               href={homeRoute}
               style={getNavLinkStyle(homeRoute)}
               onMouseEnter={(e) => {
@@ -151,8 +155,8 @@ export function Header() {
               }}
             >
               Home
-            </a>
-            <a
+            </Link>
+            <Link
               href="/times"
               style={{
                 ...getNavLinkStyle("/times"),
@@ -176,8 +180,8 @@ export function Header() {
               }}
             >
               Times
-            </a>
-            <a
+            </Link>
+            <Link
               href="/campeonatos"
               style={{
                 ...getNavLinkStyle("/campeonatos"),
@@ -201,11 +205,11 @@ export function Header() {
               }}
             >
               Campeonatos
-            </a>
+            </Link>
             {(user?.cargo === "OrganizadorCampeonato" || user?.cargo === "Administrador") && (
-              <a href="/organizador/portaria" style={getNavLinkStyle("/organizador/portaria")}>
+              <Link href="/organizador/portaria" style={getNavLinkStyle("/organizador/portaria")}>
                 Portaria
-              </a>
+              </Link>
             )}
           </nav>
         )}
@@ -213,183 +217,223 @@ export function Header() {
         {/* User Menu - Direita */}
         {isAuthenticated && user ? (
           <div
-            style={{ position: "relative", minWidth: "120px", textAlign: "right" }}
-            ref={dropdownRef}
+            style={{
+              minWidth: "220px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              gap: "var(--space-3)",
+            }}
           >
-            <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              style={{
-                padding: "var(--space-2) var(--space-3)",
-                background: "rgba(0, 230, 118, 0.08)",
-                border: "1px solid rgba(0, 230, 118, 0.3)",
-                borderRadius: "8px",
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-                fontWeight: 500,
-                color: "var(--color-brand-primary)",
-                fontSize: "clamp(11px, 2vw, 13px)",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                maxWidth: "180px",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(0, 230, 118, 0.15)";
-                e.currentTarget.style.borderColor = "rgba(0, 230, 118, 0.5)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(0, 230, 118, 0.08)";
-                e.currentTarget.style.borderColor = "rgba(0, 230, 118, 0.3)";
-              }}
-            >
-              {user?.email || "Usuário"}
-            </button>
+            <NotificationBell />
 
-            {isDropdownOpen && (
-              <div
+            <div style={{ position: "relative", textAlign: "right" }} ref={dropdownRef}>
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 style={{
-                  position: "absolute",
-                  top: "100%",
-                  right: 0,
-                  marginTop: "var(--space-3)",
-                  background: "rgba(20, 20, 20, 0.99)",
-                  backdropFilter: "blur(10px)",
+                  padding: "var(--space-2) var(--space-3)",
+                  background: "rgba(0, 230, 118, 0.08)",
                   border: "1px solid rgba(0, 230, 118, 0.3)",
-                  borderRadius: "12px",
-                  minWidth: "220px",
-                  maxWidth: "calc(100vw - 32px)",
-                  boxShadow: "0 10px 40px rgba(0, 0, 0, 0.4)",
-                  zIndex: 1001,
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                  fontWeight: 500,
+                  color: "var(--color-brand-primary)",
+                  fontSize: "clamp(11px, 2vw, 13px)",
+                  whiteSpace: "nowrap",
                   overflow: "hidden",
-                  animation: "slideDown 0.3s ease-out",
+                  textOverflow: "ellipsis",
+                  maxWidth: "180px",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(0, 230, 118, 0.15)";
+                  e.currentTarget.style.borderColor = "rgba(0, 230, 118, 0.5)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(0, 230, 118, 0.08)";
+                  e.currentTarget.style.borderColor = "rgba(0, 230, 118, 0.3)";
                 }}
               >
+                {user?.email || "Usuário"}
+              </button>
+
+              {isDropdownOpen && (
                 <div
                   style={{
-                    padding: "var(--space-3) var(--space-4)",
-                    borderBottom: "1px solid rgba(0, 230, 118, 0.2)",
+                    position: "absolute",
+                    top: "100%",
+                    right: 0,
+                    marginTop: "var(--space-3)",
+                    background: "rgba(20, 20, 20, 0.99)",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(0, 230, 118, 0.3)",
+                    borderRadius: "12px",
+                    minWidth: "240px",
+                    maxWidth: "calc(100vw - 32px)",
+                    boxShadow: "0 10px 40px rgba(0, 0, 0, 0.4)",
+                    zIndex: 1001,
+                    overflow: "hidden",
+                    animation: "slideDown 0.3s ease-out",
                   }}
                 >
                   <div
                     style={{
-                      fontSize: "var(--text-sm)",
-                      color: "white",
-                      marginBottom: "3px",
-                      fontWeight: 600,
-                      wordBreak: "break-word",
+                      padding: "var(--space-4)",
+                      borderBottom: "1px solid rgba(0, 230, 118, 0.2)",
                     }}
                   >
-                    {user?.name || "Usuário"}
+                    <div
+                      style={{
+                        fontSize: "var(--text-xs)",
+                        color: "var(--color-text-muted)",
+                        marginBottom: "var(--space-2)",
+                        textTransform: "uppercase",
+                        letterSpacing: "1px",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Usuário
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "var(--text-sm)",
+                        fontWeight: 600,
+                        color: "white",
+                        wordBreak: "break-all",
+                      }}
+                    >
+                      {user?.name || "Usuário"}
+                    </div>
                   </div>
+
                   <div
                     style={{
-                      fontSize: "var(--text-xs)",
-                      fontWeight: 500,
-                      color: "var(--color-brand-primary)",
-                      wordBreak: "break-all",
+                      padding: "var(--space-4)",
+                      borderBottom: "1px solid rgba(0, 230, 118, 0.2)",
                     }}
                   >
-                    {user?.email || "email@exemplo.com"}
+                    <div
+                      style={{
+                        fontSize: "var(--text-xs)",
+                        color: "var(--color-text-muted)",
+                        marginBottom: "var(--space-2)",
+                        textTransform: "uppercase",
+                        letterSpacing: "1px",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Email
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "var(--text-xs)",
+                        color: "var(--color-brand-primary)",
+                        wordBreak: "break-all",
+                        fontWeight: 500,
+                      }}
+                    >
+                      {user?.email || "email@exemplo.com"}
+                    </div>
+                  </div>
+
+                  <div style={{ padding: "var(--space-2)" }}>
+                    <button
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        router.push("/meus-ingressos");
+                      }}
+                      style={{
+                        width: "100%",
+                        padding: "var(--space-3) var(--space-4)",
+                        textAlign: "left",
+                        background: "transparent",
+                        border: "none",
+                        color: "var(--color-text-secondary)",
+                        fontSize: "var(--text-sm)",
+                        cursor: "pointer",
+                        borderRadius: "8px",
+                        transition: "all 0.2s ease",
+                        marginBottom: "var(--space-1)",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "rgba(0, 230, 118, 0.1)";
+                        e.currentTarget.style.color = "var(--color-brand-primary)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "transparent";
+                        e.currentTarget.style.color = "var(--color-text-secondary)";
+                      }}
+                    >
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+                        <Icon icon={Ticket} size={16} />
+                        Meus ingressos
+                      </span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        router.push("/configuracoes");
+                      }}
+                      style={{
+                        width: "100%",
+                        padding: "var(--space-3) var(--space-4)",
+                        textAlign: "left",
+                        background: "transparent",
+                        border: "none",
+                        color: "var(--color-text-secondary)",
+                        fontSize: "var(--text-sm)",
+                        cursor: "pointer",
+                        borderRadius: "8px",
+                        transition: "all 0.2s ease",
+                        marginBottom: "var(--space-1)",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "rgba(0, 230, 118, 0.1)";
+                        e.currentTarget.style.color = "var(--color-brand-primary)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "transparent";
+                        e.currentTarget.style.color = "var(--color-text-secondary)";
+                      }}
+                    >
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+                        <Icon icon={Settings} size={16} />
+                        Configurações
+                      </span>
+                    </button>
+
+                    <button
+                      onClick={handleLogout}
+                      style={{
+                        width: "100%",
+                        padding: "var(--space-3) var(--space-4)",
+                        textAlign: "left",
+                        background: "transparent",
+                        border: "none",
+                        color: "var(--color-feedback-danger)",
+                        fontSize: "var(--text-sm)",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        borderRadius: "8px",
+                        transition: "all 0.2s ease",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "rgba(255, 23, 68, 0.1)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "transparent";
+                      }}
+                    >
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+                        <Icon icon={LogOut} size={16} />
+                        Desconectar
+                      </span>
+                    </button>
                   </div>
                 </div>
-
-                <div style={{ padding: "var(--space-2)" }}>
-                  <button
-                    onClick={() => {
-                      setIsDropdownOpen(false);
-                      router.push("/meus-ingressos");
-                    }}
-                    style={{
-                      width: "100%",
-                      padding: "var(--space-3) var(--space-4)",
-                      textAlign: "left",
-                      background: "transparent",
-                      border: "none",
-                      color: "var(--color-text-secondary)",
-                      fontSize: "var(--text-sm)",
-                      cursor: "pointer",
-                      borderRadius: "8px",
-                      transition: "all 0.2s ease",
-                      marginBottom: "var(--space-1)",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = "rgba(0, 230, 118, 0.1)";
-                      e.currentTarget.style.color = "var(--color-brand-primary)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = "transparent";
-                      e.currentTarget.style.color = "var(--color-text-secondary)";
-                    }}
-                  >
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
-                      <Icon icon={Ticket} size={16} />
-                      Meus ingressos
-                    </span>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setIsDropdownOpen(false);
-                      router.push("/configuracoes");
-                    }}
-                    style={{
-                      width: "100%",
-                      padding: "var(--space-3) var(--space-4)",
-                      textAlign: "left",
-                      background: "transparent",
-                      border: "none",
-                      color: "var(--color-text-secondary)",
-                      fontSize: "var(--text-sm)",
-                      cursor: "pointer",
-                      borderRadius: "8px",
-                      transition: "all 0.2s ease",
-                      marginBottom: "var(--space-1)",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = "rgba(0, 230, 118, 0.1)";
-                      e.currentTarget.style.color = "var(--color-brand-primary)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = "transparent";
-                      e.currentTarget.style.color = "var(--color-text-secondary)";
-                    }}
-                  >
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
-                      <Icon icon={Settings} size={16} />
-                      Configurações
-                    </span>
-                  </button>
-
-                  <button
-                    onClick={handleLogout}
-                    style={{
-                      width: "100%",
-                      padding: "var(--space-3) var(--space-4)",
-                      textAlign: "left",
-                      background: "transparent",
-                      border: "none",
-                      color: "var(--color-feedback-danger)",
-                      fontSize: "var(--text-sm)",
-                      fontWeight: 500,
-                      cursor: "pointer",
-                      borderRadius: "8px",
-                      transition: "all 0.2s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = "rgba(255, 23, 68, 0.1)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = "transparent";
-                    }}
-                  >
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
-                      <Icon icon={LogOut} size={16} />
-                      Desconectar
-                    </span>
-                  </button>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         ) : (
           <div style={{ minWidth: "120px", textAlign: "right" }}>

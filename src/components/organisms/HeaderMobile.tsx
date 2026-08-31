@@ -2,10 +2,12 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { clearCredentials } from "@/store/slices/authSlice";
 import { Icon } from "@/components/atoms/Icon";
+import { NotificationBell } from "@/components/molecules/NotificationBell";
 import { Settings, LogOut, Ticket } from "lucide-react";
 import { getRedirectPathAfterLogin, getHomeRoute } from "@/lib/auth.utils";
 
@@ -106,7 +108,7 @@ export function HeaderMobile() {
             alt="Kivo Sports"
             width={90}
             height={38}
-            style={{ width: "auto", height: "38px", objectFit: "contain" }}
+            style={{ width: "auto", height: "auto", objectFit: "contain" }}
             priority
           />
         </div>
@@ -144,6 +146,8 @@ export function HeaderMobile() {
               Fazer login
             </button>
           )}
+
+          {isAuthenticated && <NotificationBell />}
 
           {/* Hamburger Menu */}
           {isAuthenticated && (
@@ -239,27 +243,59 @@ export function HeaderMobile() {
                 >
                   <div
                     style={{
-                      padding: "var(--space-3) var(--space-4)",
+                      padding: "var(--space-3)",
                       borderBottom: "1px solid rgba(0, 230, 118, 0.2)",
                     }}
                   >
                     <div
                       style={{
-                        fontSize: "var(--text-sm)",
-                        color: "white",
-                        marginBottom: "3px",
+                        fontSize: "var(--text-xs)",
+                        color: "var(--color-text-muted)",
+                        marginBottom: "var(--space-1)",
+                        textTransform: "uppercase",
+                        letterSpacing: "1px",
                         fontWeight: 600,
                         wordBreak: "break-word",
                       }}
                     >
+                      Usuário
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "var(--text-sm)",
+                        fontWeight: 600,
+                        color: "white",
+                        wordBreak: "break-all",
+                      }}
+                    >
                       {user?.name || "Usuário"}
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      padding: "var(--space-3)",
+                      borderBottom: "1px solid rgba(0, 230, 118, 0.2)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: "var(--text-xs)",
+                        color: "var(--color-text-muted)",
+                        marginBottom: "var(--space-1)",
+                        textTransform: "uppercase",
+                        letterSpacing: "1px",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Email
                     </div>
                     <div
                       style={{
                         fontSize: "var(--text-xs)",
-                        fontWeight: 500,
                         color: "var(--color-brand-primary)",
                         wordBreak: "break-all",
+                        fontWeight: 500,
                       }}
                     >
                       {user.email}
@@ -284,6 +320,14 @@ export function HeaderMobile() {
                         borderRadius: "8px",
                         transition: "all 0.2s ease",
                         marginBottom: "var(--space-1)",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "rgba(0, 230, 118, 0.1)";
+                        e.currentTarget.style.color = "var(--color-brand-primary)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "transparent";
+                        e.currentTarget.style.color = "var(--color-text-secondary)";
                       }}
                     >
                       <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
@@ -378,7 +422,7 @@ export function HeaderMobile() {
             overflowY: "auto",
           }}
         >
-          <a
+          <Link
             href={dashboardRoute}
             onClick={() => setIsMenuOpen(false)}
             style={getNavLinkStyle(dashboardRoute)}
@@ -396,8 +440,8 @@ export function HeaderMobile() {
             }}
           >
             Dashboard
-          </a>
-          <a
+          </Link>
+          <Link
             href={homeRoute}
             onClick={() => setIsMenuOpen(false)}
             style={getNavLinkStyle(homeRoute)}
@@ -415,8 +459,8 @@ export function HeaderMobile() {
             }}
           >
             Home
-          </a>
-          <a
+          </Link>
+          <Link
             href="/times"
             onClick={() => setIsMenuOpen(false)}
             style={{
@@ -429,8 +473,8 @@ export function HeaderMobile() {
             }}
           >
             Times
-          </a>
-          <a
+          </Link>
+          <Link
             href="/campeonatos"
             onClick={() => setIsMenuOpen(false)}
             style={{
@@ -445,15 +489,15 @@ export function HeaderMobile() {
             }}
           >
             Campeonatos
-          </a>
+          </Link>
           {(user?.cargo === "OrganizadorCampeonato" || user?.cargo === "Administrador") && (
-            <a
+            <Link
               href="/organizador/portaria"
               onClick={() => setIsMenuOpen(false)}
               style={getNavLinkStyle("/organizador/portaria")}
             >
               Portaria
-            </a>
+            </Link>
           )}
         </div>
       )}
