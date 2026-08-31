@@ -117,7 +117,6 @@ export function NotificationBell() {
     refetch: refetchList,
   } = useListarMinhasNotificacoesQuery(undefined, {
     skip: !isAuthenticated,
-    refetchOnFocus: true,
   });
 
   const {
@@ -128,7 +127,6 @@ export function NotificationBell() {
   } = useObterQuantidadeNaoLidasQuery(undefined, {
     skip: !isAuthenticated,
     pollingInterval: isAuthenticated ? POLLING_INTERVAL_MS : 0,
-    refetchOnFocus: true,
   });
 
   const [marcarComoLida, { isLoading: isMarkingOne }] = useMarcarNotificacaoComoLidaMutation();
@@ -174,13 +172,11 @@ export function NotificationBell() {
   };
 
   const toggleDropdown = () => {
-    setIsOpen((current) => {
-      const next = !current;
-      if (next) {
-        refetchNotifications();
-      }
-      return next;
-    });
+    const next = !isOpen;
+    setIsOpen(next);
+    if (next) {
+      refetchNotifications();
+    }
   };
 
   const handleMarkAll = async () => {

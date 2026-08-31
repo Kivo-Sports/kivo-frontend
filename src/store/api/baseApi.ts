@@ -21,11 +21,11 @@ const rawBaseQuery = fetchBaseQuery({
   },
 });
 
-const baseQueryWithAutoLogout: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
-  args,
-  api,
-  extraOptions,
-) => {
+const baseQueryWithAutoLogout: BaseQueryFn<
+  string | FetchArgs,
+  unknown,
+  FetchBaseQueryError
+> = async (args, api, extraOptions) => {
   const result = await rawBaseQuery(args, api, extraOptions);
 
   if (result.error?.status === 401) {
@@ -37,7 +37,16 @@ const baseQueryWithAutoLogout: BaseQueryFn<string | FetchArgs, unknown, FetchBas
 
 export const baseApi = createApi({
   reducerPath: "baseApi",
-  tagTypes: ["Time", "Campeonato", "Partida", "Esporte", "Organizador", "Favorito", "Notificacao"],
+  tagTypes: [
+    "Time",
+    "Campeonato",
+    "Partida",
+    "Esporte",
+    "Organizador",
+    "Favorito",
+    "Ingresso",
+    "Notificacao",
+  ],
   baseQuery: baseQueryWithAutoLogout,
   endpoints: () => ({}),
 });
