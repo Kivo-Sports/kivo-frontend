@@ -8,31 +8,37 @@ import { Input } from "@/components/atoms/Input";
 import { useToast } from "@/components/atoms/Toast";
 import { Card } from "@/components/molecules/Card";
 import { PageHeader } from "@/components/molecules/PageHeader";
-import { validarIngressoSimulado } from "@/lib/ingresso.mock";
+import { useValidarIngressoPortariaMutation } from "@/store/api/ingressoApi";
+
+function mensagemErro(error: unknown): string {
+  if (typeof error === "object" && error && "data" in error) {
+    const data = (error as { data?: { message?: string } | string }).data;
+    if (typeof data === "string") return data;
+    if (data?.message) return data.message;
+  }
+  return "Não foi possível validar o ingresso.";
+}
 
 export default function PortariaPage() {
   const [codigo, setCodigo] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
+  const [validarIngresso, { isLoading }] = useValidarIngressoPortariaMutation();
   const confirmar = async () => {
     const valor = codigo.trim();
     if (!valor) return toast.warning("Informe ou leia o código do ingresso.");
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 650));
-    const resposta = validarIngressoSimulado(valor);
-    setIsLoading(false);
-    if (resposta.sucesso) {
-      toast.success(resposta.mensagem, "Entrada simulada liberada");
+    try {
+      const resposta = await validarIngresso(valor).unwrap();
+      toast.success(resposta.message, "Entrada liberada");
       setCodigo("");
-    } else {
-      toast.error(resposta.mensagem, "Entrada não liberada");
+    } catch (error) {
+      toast.error(mensagemErro(error), "Entrada não liberada");
     }
   };
   return (
     <main style={{ width: "100%", maxWidth: 620, margin: "0 auto" }}>
       <PageHeader
         title="Portaria"
-        subtitle="Validação local do fluxo demonstrativo de ingressos."
+        subtitle="Valide ingressos pagos, identificados e libere a entrada com segurança."
       />
       <Card padding="lg">
         <div
@@ -67,8 +73,8 @@ export default function PortariaPage() {
             margin: "12px 0 20px",
           }}
         >
-          O ingresso precisa estar pago. Após a validação, ele será marcado como utilizado e não
-          poderá ser aceito novamente.
+          O ingresso precisa estar pago e com o titular definido. Após a validação, ele será marcado
+          como utilizado e não poderá ser aceito novamente.
         </p>
         <Button fullWidth onClick={confirmar} loading={isLoading} disabled={!codigo.trim()}>
           <Icon icon={ShieldCheck} size={17} /> Validar e liberar entrada

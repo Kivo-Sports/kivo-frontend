@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { PackagePlus, Ticket, Users } from "lucide-react";
+import type { ReactNode } from "react";
+import { Minus, PackagePlus, Plus, Ticket, Users } from "lucide-react";
 import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
 import { Icon } from "@/components/atoms/Icon";
@@ -24,6 +25,228 @@ function mensagemErro(error: unknown): string {
   return "Não foi possível criar o lote de ingressos.";
 }
 
+function formatarCentavos(digitos: string): string {
+  if (!digitos) return "";
+  return (Number(digitos) / 100).toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+function formatarBRL(valor: number): string {
+  return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+const QTD_MIN = 1;
+const QTD_MAX = 100000;
+
+function StepperButton({
+  onClick,
+  disabled,
+  ariaLabel,
+  children,
+}: {
+  onClick: () => void;
+  disabled?: boolean;
+  ariaLabel: string;
+  children: ReactNode;
+}) {
+  const [hover, setHover] = useState(false);
+  const ativoHover = hover && !disabled;
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={ariaLabel}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+        width: 38,
+        height: 38,
+        padding: 0,
+        borderRadius: "var(--radius-md)",
+        border: "1px solid transparent",
+        background: disabled
+          ? "transparent"
+          : ativoHover
+            ? "color-mix(in srgb, var(--color-brand-primary) 18%, transparent)"
+            : "rgba(255,255,255,.07)",
+        color: disabled
+          ? "var(--color-text-disabled)"
+          : ativoHover
+            ? "var(--color-brand-primary)"
+            : "var(--color-text-primary)",
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? 0.45 : 1,
+        transition: "all var(--transition-fast)",
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function AtalhoChip({
+  valor,
+  ativo,
+  onClick,
+}: {
+  valor: number;
+  ativo: boolean;
+  onClick: () => void;
+}) {
+  const [hover, setHover] = useState(false);
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        padding: "7px 14px",
+        borderRadius: "var(--radius-full, 999px)",
+        fontSize: "var(--text-xs)",
+        fontWeight: 600,
+        lineHeight: 1,
+        fontVariantNumeric: "tabular-nums",
+        cursor: "pointer",
+        transition: "all var(--transition-fast)",
+        background: ativo
+          ? "color-mix(in srgb, var(--color-brand-primary) 18%, transparent)"
+          : hover
+            ? "rgba(255,255,255,.09)"
+            : "rgba(255,255,255,.05)",
+        border: ativo
+          ? "1px solid color-mix(in srgb, var(--color-brand-primary) 50%, transparent)"
+          : "1px solid transparent",
+        color: ativo ? "var(--color-brand-primary)" : "var(--color-text-secondary)",
+      }}
+    >
+      {valor.toLocaleString("pt-BR")}
+    </button>
+  );
+}
+
+function QuantidadeField({
+  value,
+  onChange,
+}: {
+  value: number;
+  onChange: (proximo: number) => void;
+}) {
+  const [focado, setFocado] = useState(false);
+
+  const ajustar = (delta: number) => {
+    onChange(Math.min(QTD_MAX, Math.max(QTD_MIN, (value || 0) + delta)));
+  };
+
+  return (
+    <div style={{ width: "100%" }}>
+      <label
+        htmlFor="lote-quantidade"
+        style={{
+          display: "block",
+          marginBottom: "var(--space-2)",
+          fontSize: "var(--text-sm)",
+          fontWeight: 600,
+          color: "var(--color-text-primary)",
+        }}
+      >
+        Quantidade de ingressos
+      </label>
+
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "var(--space-2)",
+          height: 52,
+          padding: 6,
+          background: "var(--color-bg-input)",
+          border: `1px solid ${focado ? "var(--color-border-focus)" : "var(--color-border-default)"}`,
+          borderRadius: "var(--radius-md)",
+          boxShadow: focado ? "0 0 0 2px var(--color-feedback-success-bg)" : "none",
+          transition: "all var(--transition-fast)",
+        }}
+      >
+        <StepperButton
+          onClick={() => ajustar(-1)}
+          disabled={value <= QTD_MIN}
+          ariaLabel="Diminuir quantidade"
+        >
+          <Icon icon={Minus} size={16} />
+        </StepperButton>
+
+        <input
+          id="lote-quantidade"
+          type="text"
+          inputMode="numeric"
+          name="lote-quantidade"
+          autoComplete="off"
+          data-lpignore="true"
+          data-1p-ignore
+          data-form-type="other"
+          value={value ? String(value) : ""}
+          placeholder="100"
+          onFocus={() => setFocado(true)}
+          onBlur={() => setFocado(false)}
+          onChange={(e) => {
+            const digitos = e.target.value.replace(/[^0-9]/g, "").slice(0, 6);
+            onChange(digitos ? Math.min(QTD_MAX, Number(digitos)) : 0);
+          }}
+          style={{
+            flex: 1,
+            minWidth: 0,
+            height: "100%",
+            padding: "0 var(--space-2)",
+            border: 0,
+            background: "transparent",
+            outline: "none",
+            textAlign: "center",
+            fontSize: "var(--text-lg)",
+            fontWeight: 700,
+            fontVariantNumeric: "tabular-nums",
+            color: "var(--color-text-primary)",
+          }}
+        />
+
+        <StepperButton
+          onClick={() => ajustar(1)}
+          disabled={value >= QTD_MAX}
+          ariaLabel="Aumentar quantidade"
+        >
+          <Icon icon={Plus} size={16} />
+        </StepperButton>
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "var(--space-2)",
+          marginTop: "var(--space-2)",
+        }}
+      >
+        {[50, 100, 250, 500].map((atalho) => (
+          <AtalhoChip
+            key={atalho}
+            valor={atalho}
+            ativo={value === atalho}
+            onClick={() => onChange(atalho)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function IngressoLotesManager({
   partidaId,
   partidaFinalizada,
@@ -36,18 +259,21 @@ export function IngressoLotesManager({
   const { success, error } = useToast();
   const [modalAberto, setModalAberto] = useState(false);
   const [nomeLote, setNomeLote] = useState("");
-  const [preco, setPreco] = useState("");
-  const [quantidade, setQuantidade] = useState("");
+  const [precoCentavos, setPrecoCentavos] = useState("");
+  const [quantidade, setQuantidade] = useState(0);
+
+  const valorUnitario = precoCentavos ? Number(precoCentavos) / 100 : 0;
+  const receitaPotencial = valorUnitario * quantidade;
 
   const limpar = () => {
     setNomeLote("");
-    setPreco("");
-    setQuantidade("");
+    setPrecoCentavos("");
+    setQuantidade(0);
   };
 
   const salvar = async () => {
-    const valor = Number(preco.replace(",", "."));
-    const total = Number(quantidade);
+    const valor = valorUnitario;
+    const total = quantidade;
     if (
       !nomeLote.trim() ||
       !Number.isFinite(valor) ||
@@ -175,7 +401,7 @@ export function IngressoLotesManager({
                   </span>
                 </div>
                 <strong style={{ color: "var(--color-brand-primary)", fontSize: "var(--text-lg)" }}>
-                  {lote.preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                  {formatarBRL(lote.preco)}
                 </strong>
               </div>
             );
@@ -203,6 +429,11 @@ export function IngressoLotesManager({
           <Input
             label="Nome do lote"
             placeholder="Ex.: 1º lote"
+            name="lote-nome"
+            autoComplete="off"
+            data-lpignore="true"
+            data-1p-ignore
+            data-form-type="other"
             value={nomeLote}
             onChange={(e) => setNomeLote(e.target.value)}
             maxLength={80}
@@ -210,19 +441,63 @@ export function IngressoLotesManager({
           <Input
             label="Preço por ingresso"
             placeholder="0,00"
-            inputMode="decimal"
-            value={preco}
-            onChange={(e) => setPreco(e.target.value.replace(/[^0-9,.]/g, ""))}
+            inputMode="numeric"
+            name="lote-preco"
+            autoComplete="off"
+            data-lpignore="true"
+            data-1p-ignore
+            data-form-type="other"
+            icon={<span style={{ fontSize: "var(--text-sm)", fontWeight: 600 }}>R$</span>}
+            value={formatarCentavos(precoCentavos)}
+            onChange={(e) => setPrecoCentavos(e.target.value.replace(/[^0-9]/g, "").slice(0, 9))}
           />
-          <Input
-            label="Quantidade total"
-            placeholder="100"
-            type="number"
-            min={1}
-            step={1}
-            value={quantidade}
-            onChange={(e) => setQuantidade(e.target.value)}
-          />
+          <QuantidadeField value={quantidade} onChange={setQuantidade} />
+
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "var(--space-3)",
+              padding: "var(--space-4)",
+              borderRadius: "var(--radius-lg)",
+              background: "color-mix(in srgb, var(--color-brand-primary) 10%, transparent)",
+              border: "1px solid color-mix(in srgb, var(--color-brand-primary) 28%, transparent)",
+            }}
+          >
+            <div style={{ display: "grid", gap: 4 }}>
+              <span
+                style={{
+                  fontSize: "var(--text-sm)",
+                  fontWeight: 600,
+                  color: "var(--color-text-primary)",
+                }}
+              >
+                Receita potencial
+              </span>
+              <span
+                style={{
+                  fontSize: "var(--text-xs)",
+                  color: "var(--color-text-secondary)",
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
+                {quantidade.toLocaleString("pt-BR")} ingressos × {formatarBRL(valorUnitario)}
+              </span>
+            </div>
+            <strong
+              style={{
+                color: "var(--color-brand-primary)",
+                fontSize: "var(--text-xl)",
+                lineHeight: 1.1,
+                fontVariantNumeric: "tabular-nums",
+              }}
+            >
+              {formatarBRL(receitaPotencial)}
+            </strong>
+          </div>
+
           <p
             style={{
               margin: 0,

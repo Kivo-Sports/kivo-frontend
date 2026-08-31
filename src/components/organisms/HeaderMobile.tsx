@@ -446,7 +446,7 @@ export function HeaderMobile() {
           >
             Campeonatos
           </a>
-          {(user?.cargo === "OrganizadorTime" || user?.cargo === "Administrador") && (
+          {(user?.cargo === "OrganizadorCampeonato" || user?.cargo === "Administrador") && (
             <a
               href="/organizador/portaria"
               onClick={() => setIsMenuOpen(false)}

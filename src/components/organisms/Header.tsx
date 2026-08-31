@@ -202,7 +202,7 @@ export function Header() {
             >
               Campeonatos
             </a>
-            {(user?.cargo === "OrganizadorTime" || user?.cargo === "Administrador") && (
+            {(user?.cargo === "OrganizadorCampeonato" || user?.cargo === "Administrador") && (
               <a href="/organizador/portaria" style={getNavLinkStyle("/organizador/portaria")}>
                 Portaria
               </a>

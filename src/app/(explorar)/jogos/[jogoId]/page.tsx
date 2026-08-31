@@ -338,7 +338,7 @@ export default function ExplorarJogoDetalhePage({
         </div>
       </Card>
 
-      <VendaIngressos partidaId={jogoId} partida={partida} indisponivel={partida.finalizado} />
+      <VendaIngressos partidaId={jogoId} indisponivel={partida.finalizado} />
     </motion.main>
   );
 }

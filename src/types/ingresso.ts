@@ -23,9 +23,17 @@ export interface CriarIngressoLoteRequest {
   ativo: boolean;
 }
 
+export interface ItemCompraIngresso {
+  ingressoLoteId: string;
+  quantidade: number;
+}
+
+export interface ComprarIngressosRequest {
+  itens: ItemCompraIngresso[];
+}
+
 export interface IngressoDetalhes {
   id: string;
-  usuarioId: string;
   nomeLote: string;
   nomePartida: string;
   dataPartida: string;
@@ -36,6 +44,26 @@ export interface IngressoDetalhes {
   codigoValidacao: string;
   qrCodeBase64: string;
   pixCopiaCola: string;
+  nomeTitular: string;
+  cpfTitular: string;
+}
+
+export interface CompraIngressosResponse {
+  asaasPaymentId: string;
+  valorTotal: number;
+  pixCopiaCola: string;
+  qrCodeBase64: string;
+  ingressos: IngressoDetalhes[];
+}
+
+export interface AtribuirTitularIngressoRequest {
+  ingressoId: string;
+  nome: string;
+  cpf: string;
+}
+
+export interface MensagemResponse {
+  message: string;
 }
 
 export interface PartidaComIngressos {

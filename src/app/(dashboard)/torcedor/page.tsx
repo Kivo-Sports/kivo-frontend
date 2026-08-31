@@ -22,9 +22,11 @@ import { useAppSelector } from "@/store/hooks";
 import { useListarFavoritosQuery, useObterTimelineFavoritosQuery } from "@/store/api/favoritoApi";
 import { obterStatusCampeonato } from "@/lib/campeonato.ui";
 import type { TimelineItem } from "@/types/favorito";
-import { useObterPartidasComIngressosQuery } from "@/store/api/ingressoApi";
+import {
+  useObterMeusIngressosQuery,
+  useObterPartidasComIngressosQuery,
+} from "@/store/api/ingressoApi";
 import { StatusIngresso } from "@/types/ingresso";
-import { useIngressosSimulados } from "@/lib/ingresso.mock";
 
 function formatarDataHora(iso: string | null): { dia: string; hora: string } {
   if (!iso) return { dia: "A definir", hora: "" };
@@ -426,7 +428,10 @@ export default function TorcedorDashboardPage() {
   const user = useAppSelector((state) => state.auth.user);
   const { data: favoritos, isLoading: carregandoFavoritos } = useListarFavoritosQuery();
   const { data: timeline = [], isLoading: carregandoTimeline } = useObterTimelineFavoritosQuery();
-  const { ingressos } = useIngressosSimulados(user?.id);
+  const { data: ingressos = [] } = useObterMeusIngressosQuery(undefined, {
+    pollingInterval: 15000,
+    skipPollingIfUnfocused: true,
+  });
   const { data: partidasComIngressos = [], isLoading: carregandoPartidasComIngressos } =
     useObterPartidasComIngressosQuery();
 
@@ -542,7 +547,7 @@ export default function TorcedorDashboardPage() {
                 fontSize: "var(--text-sm)",
               }}
             >
-              {`${ingressos.length} ingresso${ingressos.length === 1 ? "" : "s"} simulado${ingressos.length === 1 ? "" : "s"} · ${ingressos.filter((i) => i.status === StatusIngresso.Pago).length} válido${ingressos.filter((i) => i.status === StatusIngresso.Pago).length === 1 ? "" : "s"}`}
+              {`${ingressos.length} ingresso${ingressos.length === 1 ? "" : "s"} · ${ingressos.filter((i) => i.status === StatusIngresso.Pago).length} válido${ingressos.filter((i) => i.status === StatusIngresso.Pago).length === 1 ? "" : "s"}`}
             </p>
           </div>
           <Icon

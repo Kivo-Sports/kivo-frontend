@@ -1,5 +1,14 @@
 import { baseApi } from "@/store/api/baseApi";
-import type { CriarIngressoLoteRequest, IngressoLote, PartidaComIngressos } from "@/types/ingresso";
+import type {
+  AtribuirTitularIngressoRequest,
+  ComprarIngressosRequest,
+  CompraIngressosResponse,
+  CriarIngressoLoteRequest,
+  IngressoDetalhes,
+  IngressoLote,
+  MensagemResponse,
+  PartidaComIngressos,
+} from "@/types/ingresso";
 import type { CampeonatoResponse } from "@/types/campeonato";
 import type { ChaveamentoResponse, DetalhePartidaResponse, JogoResponse } from "@/types/partida";
 
@@ -89,6 +98,45 @@ export const ingressoApi = baseApi.injectEndpoints({
         { type: "Ingresso", id: "PARTIDAS-DISPONIVEIS" },
       ],
     }),
+    comprarIngressos: builder.mutation<CompraIngressosResponse, ComprarIngressosRequest>({
+      query: (body) => ({ url: "/api/ingresso/comprar", method: "POST", body }),
+      invalidatesTags: [{ type: "Ingresso", id: "MEUS-INGRESSOS" }],
+    }),
+    obterMeusIngressos: builder.query<IngressoDetalhes[], void>({
+      query: () => ({ url: "/api/ingresso/meus-ingressos", method: "GET" }),
+      providesTags: (result) => [
+        { type: "Ingresso", id: "MEUS-INGRESSOS" },
+        ...(result ?? []).map((ingresso) => ({
+          type: "Ingresso" as const,
+          id: ingresso.id,
+        })),
+      ],
+    }),
+    validarIngressoPortaria: builder.mutation<MensagemResponse, string>({
+      query: (codigo) => ({
+        url: `/api/ingresso/validar-portaria/${encodeURIComponent(codigo)}`,
+        method: "POST",
+      }),
+      invalidatesTags: [{ type: "Ingresso", id: "MEUS-INGRESSOS" }],
+    }),
+    confirmarPagamentoIngresso: builder.mutation<MensagemResponse, string>({
+      query: (ingressoId) => ({
+        url: `/api/ingresso/pagar/${ingressoId}`,
+        method: "POST",
+      }),
+      invalidatesTags: [{ type: "Ingresso", id: "MEUS-INGRESSOS" }],
+    }),
+    atribuirTitularIngresso: builder.mutation<MensagemResponse, AtribuirTitularIngressoRequest>({
+      query: ({ ingressoId, ...body }) => ({
+        url: `/api/ingresso/${ingressoId}/titular`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (_result, _error, { ingressoId }) => [
+        { type: "Ingresso", id: "MEUS-INGRESSOS" },
+        { type: "Ingresso", id: ingressoId },
+      ],
+    }),
   }),
 });
 
@@ -96,4 +144,10 @@ export const {
   useObterLotesPorPartidaQuery,
   useObterPartidasComIngressosQuery,
   useCriarLoteIngressoMutation,
+  useComprarIngressosMutation,
+  useObterMeusIngressosQuery,
+  useLazyObterMeusIngressosQuery,
+  useValidarIngressoPortariaMutation,
+  useConfirmarPagamentoIngressoMutation,
+  useAtribuirTitularIngressoMutation,
 } = ingressoApi;

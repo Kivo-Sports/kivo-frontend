@@ -117,8 +117,8 @@ export default function DetalheJogoOrganizadorTimePage({
   const data = partida.dataHora ? new Date(partida.dataHora) : null;
   const quantidadeTotal = lotes.reduce((total, lote) => total + lote.quantidadeTotal, 0);
   const quantidadeDisponivel = lotes.reduce((total, lote) => total + lote.quantidadeDisponivel, 0);
-  const reservasEstimadas = quantidadeTotal - quantidadeDisponivel;
-  const receitaEstimada = lotes.reduce(
+  const ingressosVendidos = quantidadeTotal - quantidadeDisponivel;
+  const receitaConfirmada = lotes.reduce(
     (total, lote) => total + (lote.quantidadeTotal - lote.quantidadeDisponivel) * lote.preco,
     0,
   );
@@ -246,7 +246,7 @@ export default function DetalheJogoOrganizadorTimePage({
             >
               <Icon icon={ReceiptText} size={18} style={{ color: "var(--color-brand-primary)" }} />
               <h2 style={{ margin: 0, color: "white", fontSize: "var(--text-lg)" }}>
-                Resumo estimado dos lotes
+                Resumo de vendas
               </h2>
             </div>
             <p
@@ -256,7 +256,7 @@ export default function DetalheJogoOrganizadorTimePage({
                 fontSize: "var(--text-xs)",
               }}
             >
-              Estimativa calculada pelo estoque dos lotes. Não representa pagamentos confirmados.
+              Valores calculados após a confirmação dos pagamentos e a atualização do estoque.
             </p>
             {carregandoResumo ? (
               <div style={{ display: "flex", justifyContent: "center", padding: 30 }}>
@@ -274,8 +274,8 @@ export default function DetalheJogoOrganizadorTimePage({
                 >
                   <Metrica
                     icon={CircleDollarSign}
-                    label="Receita potencial"
-                    valor={receitaEstimada.toLocaleString("pt-BR", {
+                    label="Receita confirmada"
+                    valor={receitaConfirmada.toLocaleString("pt-BR", {
                       style: "currency",
                       currency: "BRL",
                     })}
@@ -283,8 +283,8 @@ export default function DetalheJogoOrganizadorTimePage({
                   />
                   <Metrica
                     icon={Ticket}
-                    label="Reservas estimadas"
-                    valor={String(reservasEstimadas)}
+                    label="Ingressos vendidos"
+                    valor={String(ingressosVendidos)}
                   />
                   <Metrica icon={Users} label="Capacidade total" valor={String(quantidadeTotal)} />
                   <Metrica
@@ -338,7 +338,7 @@ export default function DetalheJogoOrganizadorTimePage({
                             }}
                           >
                             <Icon icon={Users} size={12} style={{ display: "inline" }} />{" "}
-                            {lote.quantidadeTotal - lote.quantidadeDisponivel} reservados
+                            {lote.quantidadeTotal - lote.quantidadeDisponivel} vendidos
                           </span>
                           <span
                             style={{
