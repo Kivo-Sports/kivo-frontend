@@ -22,10 +22,23 @@ vi.mock("next/navigation", () => ({
   notFound: vi.fn(),
 }));
 
+// ─── @iconify/react ──────────────────────────────────────────────────────────
+// A versao real busca dados de icone via rede (api.iconify.design) e faz retry
+// com setTimeout; como isso escapa do MSW e do ciclo de vida do teste, o timer
+// as vezes dispara depois do jsdom ja ter sido desmontado ("window is not
+// defined"). O nome do icone nao importa para os testes, entao trocamos por um
+// span estatico.
+vi.mock("@iconify/react", async () => {
+  const { createElement } = await import("react");
+  return {
+    Icon: ({ icon }: { icon: string }) => createElement("span", { "data-iconify-icon": icon }),
+  };
+});
+
 // ─── MSW ─────────────────────────────────────────────────────────────────────
 
 beforeAll(() => {
-  server.listen({ onUnhandledRequest: "warn" });
+  server.listen({ onUnhandledRequest: "error" });
 });
 
 afterEach(() => {
