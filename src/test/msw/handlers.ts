@@ -97,8 +97,20 @@ export const notificationHandlers: HttpHandler[] = [
   http.put(url("/api/Notificacao/ler-todas"), () => new HttpResponse(null, { status: 204 })),
 ];
 
+/** Perfil generico devolvido para qualquer id pedido via useGetPerfilUsuarioQuery. */
+export const perfilUsuarioHandler = http.get(url("/api/Usuario/:id"), ({ params }) =>
+  HttpResponse.json({
+    id: String(params.id),
+    nome: "Usuário QA",
+    email: "usuario.qa@kivo.local",
+    cpf: "00000000000",
+    cargo: "Torcedor",
+  }),
+);
+
 export const defaultHandlers: HttpHandler[] = [
   ...notificationHandlers,
+  perfilUsuarioHandler,
   http.get(url("/api/time"), () => HttpResponse.json([timeFixture])),
   http.get(url("/api/campeonato"), () => HttpResponse.json([campeonatoFixture])),
   http.get(url("/api/esporte"), () =>
