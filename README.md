@@ -88,7 +88,7 @@ npm install
 cp .env.example .env.local
 
 # Rode o servidor de desenvolvimento
-npm run dev
+
 ```
 
 Acesse [http://localhost:3000](http://localhost:3000)

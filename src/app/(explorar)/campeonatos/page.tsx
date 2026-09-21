@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Avatar } from "@/components/atoms/Avatar";
 import { Card } from "@/components/molecules/Card";
+import { ErrorState } from "@/components/molecules/ErrorState";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Icon } from "@/components/atoms/Icon";
 import { Icon as IconifyIcon } from "@iconify/react";
@@ -256,7 +257,7 @@ function CampeonatoCard({ camp }: { camp: CampeonatoResponse }) {
 // ─── Página ───────────────────────────────────────────────────────────────────
 
 export default function ExplorarCampeonatosPage() {
-  const { data: campeonatos = [], isLoading } = useListarCampeonatosQuery();
+  const { data: campeonatos = [], isLoading, isError, refetch } = useListarCampeonatosQuery();
   const [busca, setBusca] = useState("");
   const [filtro, setFiltro] = useState("todos");
   const [esporteFiltro, setEsporteFiltro] = useState("todos");
@@ -424,6 +425,12 @@ export default function ExplorarCampeonatosPage() {
         <div style={{ display: "flex", justifyContent: "center", padding: "var(--space-8)" }}>
           <Spinner size="lg" ariaLabel="Carregando campeonatos" />
         </div>
+      ) : isError ? (
+        <ErrorState
+          title="Não foi possível carregar os campeonatos"
+          message="Houve uma falha de conexão com o servidor. Isso não significa que não existam campeonatos."
+          onRetry={() => refetch()}
+        />
       ) : filtrados.length === 0 ? (
         <Card padding="lg" style={{ textAlign: "center" }}>
           <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto var(--space-3)" }}>

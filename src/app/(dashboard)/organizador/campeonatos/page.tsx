@@ -9,6 +9,7 @@ import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Card } from "@/components/molecules/Card";
+import { ErrorState } from "@/components/molecules/ErrorState";
 import { PageHeader } from "@/components/molecules/PageHeader";
 import { Icon } from "@/components/atoms/Icon";
 import { Icon as IconifyIcon } from "@iconify/react";
@@ -229,7 +230,7 @@ export default function OrganizadorCampeonatoPage() {
   const [search, setSearch]             = useState("");
 
   const { data: perfil }                                           = useGetPerfilUsuarioQuery(user?.id ?? "", { skip: !user?.id });
-  const { data: todosCampeonatos = [], isLoading, isFetching }     = useListarCampeonatosQuery();
+  const { data: todosCampeonatos = [], isLoading, isFetching, isError, refetch } = useListarCampeonatosQuery();
 
   const campeonatos = perfil?.organizadorCampeonatoId
     ? todosCampeonatos.filter((c) => c.organizadorCampeonatoId === perfil.organizadorCampeonatoId)
@@ -260,6 +261,18 @@ export default function OrganizadorCampeonatoPage() {
             Preparando sua central de campeonatos...
           </p>
         </div>
+      </main>
+    );
+  }
+
+  if (isError) {
+    return (
+      <main style={{ width: "100%", maxWidth: "48rem", margin: "0 auto", padding: "var(--space-6) 0" }}>
+        <ErrorState
+          title="Não foi possível carregar seus campeonatos"
+          message="Houve uma falha de conexão com o servidor. Seus campeonatos não foram perdidos."
+          onRetry={() => refetch()}
+        />
       </main>
     );
   }

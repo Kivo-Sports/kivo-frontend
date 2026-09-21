@@ -7,6 +7,8 @@
 
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/molecules/Card";
+import { ErrorState } from "@/components/molecules/ErrorState";
+import { Spinner } from "@/components/atoms/Spinner";
 import { Icon } from "@/components/atoms/Icon";
 import { Trophy, Shield, Medal, ScrollText, ChevronRight, UserCog } from "lucide-react";
 import { useListarCampeonatosQuery } from "@/store/api/campeonatoApi";
@@ -15,9 +17,34 @@ import { useListarEsportesQuery } from "@/store/api/esporteApi";
 
 export default function AdminOverviewPage() {
   const router = useRouter();
-  const { data: campeonatos = [] } = useListarCampeonatosQuery();
-  const { data: times = [] } = useListarTodosTimesQuery();
-  const { data: esportes = [] } = useListarEsportesQuery();
+  const {
+    data: campeonatos = [],
+    isLoading: carregandoCampeonatos,
+    isError: erroCampeonatos,
+    refetch: refetchCampeonatos,
+  } = useListarCampeonatosQuery();
+  const {
+    data: times = [],
+    isLoading: carregandoTimes,
+    isError: erroTimes,
+    refetch: refetchTimes,
+  } = useListarTodosTimesQuery();
+  const {
+    data: esportes = [],
+    isLoading: carregandoEsportes,
+    isError: erroEsportes,
+    refetch: refetchEsportes,
+  } = useListarEsportesQuery();
+
+  // Estados de carregamento/erro precisam ser distintos das metricas zeradas (BUG-001).
+  const carregandoMetricas = carregandoCampeonatos || carregandoTimes || carregandoEsportes;
+  const erroMetricas = erroCampeonatos || erroTimes || erroEsportes;
+
+  const recarregarMetricas = () => {
+    refetchCampeonatos();
+    refetchTimes();
+    refetchEsportes();
+  };
 
   const emAndamento = campeonatos.filter((c) => c.status === "EmAndamento").length;
   const cancelados = campeonatos.filter((c) => c.status === "Cancelado").length;
@@ -39,6 +66,27 @@ export default function AdminOverviewPage() {
   return (
     <div>
       {/* Estatísticas */}
+      {carregandoMetricas ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            padding: "var(--space-8)",
+            marginBottom: "var(--space-8)",
+          }}
+          aria-busy="true"
+        >
+          <Spinner size="lg" ariaLabel="Carregando métricas" />
+        </div>
+      ) : erroMetricas ? (
+        <div style={{ marginBottom: "var(--space-8)" }}>
+          <ErrorState
+            title="Não foi possível carregar as métricas"
+            message="Houve uma falha de conexão com o servidor. Os números abaixo não representam zero de verdade."
+            onRetry={recarregarMetricas}
+          />
+        </div>
+      ) : (
       <div
         style={{
           display: "grid",
@@ -80,6 +128,7 @@ export default function AdminOverviewPage() {
           </Card>
         ))}
       </div>
+      )}
     </div>
   );
 }

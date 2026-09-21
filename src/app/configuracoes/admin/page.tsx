@@ -17,9 +17,13 @@ import { SettingsSidebar } from '@/components/organisms/SettingsSidebar';
 import { AdminList } from '@/components/molecules/AdminList/AdminList';
 import { AdminFormModal } from '@/components/molecules/AdminFormModal/AdminFormModal';
 import { AppLayout } from '@/components/templates/AppLayout';
+import { Spinner } from '@/components/atoms/Spinner';
 
 // Store
 import type { RootState } from '@/store';
+
+// Lib
+import { normalizeCargo } from '@/lib/auth.utils';
 
 // Services
 import { AdminData } from '@/services/admin.service';
@@ -34,19 +38,32 @@ export default function AdminPage() {
   // Estado
   const user = useSelector((state: RootState) => state.auth.user);
   const token = useSelector((state: RootState) => state.auth.token);
+  const isHydrated = useSelector((state: RootState) => state.auth.isHydrated);
 
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState<AdminData | undefined>(undefined);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  // Verificar se é admin
+  const isAdmin = normalizeCargo(user?.cargo) === 'administrador';
+
+  // Verificar se é admin - só depois que a sessão terminar de hidratar do localStorage
   useEffect(() => {
-    if (user?.cargo !== 'Administrador') {
+    if (isHydrated && (!user || !isAdmin)) {
       router.push('/configuracoes');
     }
-  }, [user, router]);
+  }, [isHydrated, user, isAdmin, router]);
 
-  if (!user || user.cargo !== 'Administrador' || !token) {
+  if (!isHydrated) {
+    return (
+      <AppLayout>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 'var(--space-8)' }}>
+          <Spinner size="lg" ariaLabel="Verificando permissões" />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (!user || !isAdmin || !token) {
     return null;
   }
 

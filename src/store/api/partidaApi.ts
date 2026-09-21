@@ -6,12 +6,15 @@ import type {
   DetalhePartidaResponse,
   AtualizarPlacarRequest,
   AgendarPartidaRequest,
+  JogoOrganizadorTime,
 } from "@/types/partida";
 import type {
   CriarPartidaAdminRequest,
   EditarPartidaAdminRequest,
   AtualizarPlacarAdminRequest,
 } from "@/types/admin";
+import type { CampeonatoResponse } from "@/types/campeonato";
+import type { TimeResponse } from "@/types/time";
 
 export const partidaApi = baseApi.injectEndpoints({
   overrideExisting: true,
@@ -41,6 +44,106 @@ export const partidaApi = baseApi.injectEndpoints({
     }),
     obterPartida: builder.query<DetalhePartidaResponse, string>({
       query: (partidaId) => ({ url: `/api/partida/${partidaId}`, method: "GET" }),
+      providesTags: ["Partida"],
+    }),
+    listarJogosOrganizadorTime: builder.query<JogoOrganizadorTime[], void>({
+      async queryFn(_arg, _api, _extraOptions, fetchWithBQ) {
+        const [timesResult, campeonatosResult] = await Promise.all([
+          fetchWithBQ("/api/time/organizador"),
+          fetchWithBQ("/api/campeonato"),
+        ]);
+        if (timesResult.error) return { error: timesResult.error };
+        if (campeonatosResult.error) return { error: campeonatosResult.error };
+
+        const times = timesResult.data as TimeResponse[];
+        const campeonatos = campeonatosResult.data as CampeonatoResponse[];
+        const nomesTimes = new Set(
+          times.map((time) => time.nome.trim().toLocaleLowerCase("pt-BR")),
+        );
+        const candidatos: Array<{ id: string; campeonatoId: string; nomeCampeonato: string }> = [];
+
+        const resultados = await Promise.all(
+          campeonatos.map(async (campeonato) => {
+            const requests: Array<ReturnType<typeof fetchWithBQ>> = [];
+            if (
+              campeonato.formatoCampeonato === "PontosCorridos" ||
+              campeonato.formatoCampeonato === "Hibrido"
+            ) {
+              requests.push(fetchWithBQ(`/api/partida/jogos/${campeonato.id}`));
+            }
+            if (
+              campeonato.formatoCampeonato === "MataMata" ||
+              campeonato.formatoCampeonato === "Hibrido"
+            ) {
+              requests.push(fetchWithBQ(`/api/partida/chaveamento/${campeonato.id}`));
+            }
+            return { campeonato, respostas: await Promise.all(requests) };
+          }),
+        );
+
+        resultados.forEach(({ campeonato, respostas }) => {
+          respostas.forEach((resposta) => {
+            if (resposta.error || !Array.isArray(resposta.data)) return;
+            const dados = resposta.data as Array<JogoResponse | ChaveamentoResponse>;
+            dados.forEach((item) => {
+              if ("partidas" in item) {
+                item.partidas.forEach((partida) =>
+                  candidatos.push({
+                    id: partida.id,
+                    campeonatoId: campeonato.id,
+                    nomeCampeonato: campeonato.nome,
+                  }),
+                );
+              } else {
+                candidatos.push({
+                  id: item.id,
+                  campeonatoId: campeonato.id,
+                  nomeCampeonato: campeonato.nome,
+                });
+              }
+            });
+          });
+        });
+
+        const detalhes = await Promise.all(
+          [...new Map(candidatos.map((item) => [item.id, item])).values()].map(async (item) => ({
+            ...item,
+            resposta: await fetchWithBQ(`/api/partida/${item.id}`),
+          })),
+        );
+
+        const jogos = detalhes.flatMap(({ campeonatoId, nomeCampeonato, resposta }) => {
+          if (resposta.error || !resposta.data) return [];
+          const partida = resposta.data as DetalhePartidaResponse;
+          const casaDoOrganizador = nomesTimes.has(
+            partida.nomeTimeCasa.trim().toLocaleLowerCase("pt-BR"),
+          );
+          const visitanteDoOrganizador = nomesTimes.has(
+            partida.nomeTimeVisitante.trim().toLocaleLowerCase("pt-BR"),
+          );
+          if (!casaDoOrganizador && !visitanteDoOrganizador) return [];
+          return [
+            {
+              id: partida.id,
+              campeonatoId,
+              nomeCampeonato,
+              timeCasaId: partida.timeCasaId ?? null,
+              nomeTimeCasa: partida.nomeTimeCasa,
+              logoTimeCasa: partida.logoTimeCasa,
+              timeVisitanteId: partida.timeVisitanteId ?? null,
+              nomeTimeVisitante: partida.nomeTimeVisitante,
+              logoTimeVisitante: partida.logoTimeVisitante,
+              dataHora: partida.dataHora,
+              local: partida.local || "Local a definir",
+              golsTimeCasa: partida.golsTimeCasa,
+              golsTimeVisitante: partida.golsTimeVisitante,
+              finalizado: partida.finalizado,
+              ehMandante: casaDoOrganizador,
+            },
+          ];
+        });
+        return { data: jogos };
+      },
       providesTags: ["Partida"],
     }),
     obterClassificacao: builder.query<TabelaClassificacaoResponse[], string>({
@@ -85,6 +188,7 @@ export const {
   useAtualizarPlacarMutation,
   useAgendarPartidaMutation,
   useObterPartidaQuery,
+  useListarJogosOrganizadorTimeQuery,
   useObterClassificacaoQuery,
   useObterChaveamentoQuery,
   useListarJogosQuery,

@@ -10,6 +10,7 @@ import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/molecules/Card";
 import { ContagemRegressivaJogo } from "@/components/molecules/ContagemRegressivaJogo";
+import { IngressoLotesManager } from "@/components/organisms/IngressoLotesManager";
 import { DateInput } from "@/components/atoms/DateInput";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Icon } from "@/components/atoms/Icon";
@@ -49,7 +50,6 @@ function extrairMensagemErro(err: unknown, fallback: string): string {
   }
   return fallback;
 }
-
 export default function DetalheJogoPage({ params }: { params: Promise<{ id: string; jogoId: string }> }) {
   const { id, jogoId } = use(params);
   const { success: toastSuccess, error: toastError } = useToast();
@@ -349,6 +349,10 @@ export default function DetalheJogoPage({ params }: { params: Promise<{ id: stri
           </>
         )}
       </Card>
+
+      <div style={{ marginTop: "var(--space-5)" }}>
+        <IngressoLotesManager partidaId={jogoId} partidaFinalizada={partida.finalizado} />
+      </div>
 
       {/* Modal de confirmação do placar */}
       <AnimatePresence>

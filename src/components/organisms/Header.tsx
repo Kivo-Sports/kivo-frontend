@@ -2,12 +2,13 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { clearCredentials } from "@/store/slices/authSlice";
 import { Icon } from "@/components/atoms/Icon";
 import { NotificationBell } from "@/components/molecules/NotificationBell";
-import { LogOut, Settings } from "lucide-react";
+import { LogOut, Settings, Ticket } from "lucide-react";
 import { getRedirectPathAfterLogin, getHomeRoute } from "@/lib/auth.utils";
 
 export function Header() {
@@ -105,7 +106,9 @@ export function Header() {
             alt="Kivo Sports"
             width={120}
             height={40}
-            style={{ objectFit: "contain" }}
+            // width/height "auto" preserva a proporção junto do `img { max-width: 100% }`
+            // global e elimina o warning do next/image.
+            style={{ width: "auto", height: "auto", objectFit: "contain" }}
             priority
           />
         </div>
@@ -121,7 +124,7 @@ export function Header() {
               justifyContent: "center",
             }}
           >
-            <a
+            <Link
               href={dashboardRoute}
               style={getNavLinkStyle(dashboardRoute)}
               onMouseEnter={(e) => {
@@ -136,8 +139,8 @@ export function Header() {
               }}
             >
               Dashboard
-            </a>
-            <a
+            </Link>
+            <Link
               href={homeRoute}
               style={getNavLinkStyle(homeRoute)}
               onMouseEnter={(e) => {
@@ -152,8 +155,8 @@ export function Header() {
               }}
             >
               Home
-            </a>
-            <a
+            </Link>
+            <Link
               href="/times"
               style={{
                 ...getNavLinkStyle("/times"),
@@ -177,8 +180,8 @@ export function Header() {
               }}
             >
               Times
-            </a>
-            <a
+            </Link>
+            <Link
               href="/campeonatos"
               style={{
                 ...getNavLinkStyle("/campeonatos"),
@@ -202,7 +205,12 @@ export function Header() {
               }}
             >
               Campeonatos
-            </a>
+            </Link>
+            {(user?.cargo === "OrganizadorCampeonato" || user?.cargo === "Administrador") && (
+              <Link href="/organizador/portaria" style={getNavLinkStyle("/organizador/portaria")}>
+                Portaria
+              </Link>
+            )}
           </nav>
         )}
 
@@ -329,6 +337,39 @@ export function Header() {
                   </div>
 
                   <div style={{ padding: "var(--space-2)" }}>
+                    <button
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        router.push("/meus-ingressos");
+                      }}
+                      style={{
+                        width: "100%",
+                        padding: "var(--space-3) var(--space-4)",
+                        textAlign: "left",
+                        background: "transparent",
+                        border: "none",
+                        color: "var(--color-text-secondary)",
+                        fontSize: "var(--text-sm)",
+                        cursor: "pointer",
+                        borderRadius: "8px",
+                        transition: "all 0.2s ease",
+                        marginBottom: "var(--space-1)",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "rgba(0, 230, 118, 0.1)";
+                        e.currentTarget.style.color = "var(--color-brand-primary)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "transparent";
+                        e.currentTarget.style.color = "var(--color-text-secondary)";
+                      }}
+                    >
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+                        <Icon icon={Ticket} size={16} />
+                        Meus ingressos
+                      </span>
+                    </button>
+
                     <button
                       onClick={() => {
                         setIsDropdownOpen(false);
