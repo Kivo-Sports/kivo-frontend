@@ -10,6 +10,7 @@
 import { http, HttpResponse, type HttpHandler } from "msw";
 
 import { EnumTipoNotificacao, type Notificacao } from "@/types/notificacao";
+import type { RelatorioAdministrativo } from "@/types/relatorio";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5211";
 
@@ -60,10 +61,44 @@ export const campeonatoFixture = {
   organizadorCampeonatoId: "dddddddd-dddd-dddd-dddd-dddddddddddd",
 };
 
+export const relatorioAdministrativoFixture: RelatorioAdministrativo = {
+  inicio: null,
+  fim: null,
+  esporteId: null,
+  usuariosTotais: 42,
+  novosUsuarios: 7,
+  campeonatosTotais: 5,
+  campeonatosEmAndamento: 2,
+  partidasRealizadas: 11,
+  timesAtivos: 9,
+  resumoFinanceiro: {
+    receitaConfirmada: 1250.5,
+    ingressosPagos: 25,
+    receitaSemDataPagamento: 0,
+    ingressosSemDataPagamento: 0,
+    ingressosEmitidos: 30,
+    ingressosEmitidosConfirmados: 25,
+    ingressosPendentes: 4,
+    ingressosCancelados: 1,
+    checkIns: 20,
+    ingressosElegiveisCheckIn: 25,
+    taxaComparecimento: 80,
+  },
+  vendasPorDia: [
+    { data: "2026-10-01T00:00:00", quantidade: 10, receita: 500 },
+    { data: "2026-10-03T00:00:00", quantidade: 15, receita: 750.5 },
+  ],
+  usuariosPorPerfil: [
+    { nome: "Administrador", quantidade: 2 },
+    { nome: "Torcedor", quantidade: 30 },
+  ],
+  campeonatosPorEsporte: [{ nome: "Futebol", quantidade: 5 }],
+};
+
 // ─── Cenarios genericos ──────────────────────────────────────────────────────
 
 /** 200 com corpo arbitrario. */
-export const okJson = <T,>(path: string, body: T): HttpHandler =>
+export const okJson = <T>(path: string, body: T): HttpHandler =>
   http.get(url(path), () => HttpResponse.json(body as never));
 
 /** 200 com lista vazia (estado vazio LEGITIMO). */
@@ -120,4 +155,7 @@ export const defaultHandlers: HttpHandler[] = [
   http.get(url("/api/favorito/timeline"), () => HttpResponse.json([])),
   http.get(url("/api/time/organizador"), () => HttpResponse.json([timeFixture])),
   http.get(url("/api/ingresso/meus-ingressos"), () => HttpResponse.json([])),
+  http.get(url("/api/relatorios/administrativo"), () =>
+    HttpResponse.json(relatorioAdministrativoFixture),
+  ),
 ];
