@@ -1,8 +1,10 @@
 import { baseApi } from "@/store/api/baseApi";
 import type { CriarTimeRequest, AtualizarTimeRequest, TimeResponse } from "@/types/time";
+import type { ReatribuirTimeRequest } from "@/types/admin";
 
 function buildTimeFormData(body: {
   organizadorTimeId?: string;
+  esporteId?: string;
   nome: string;
   cidade: string;
   estado: string;
@@ -12,6 +14,10 @@ function buildTimeFormData(body: {
 
   if (body.organizadorTimeId) {
     formData.append("OrganizadorTimeId", body.organizadorTimeId);
+  }
+
+  if (body.esporteId) {
+    formData.append("EsporteId", body.esporteId);
   }
 
   formData.append("Nome", body.nome);
@@ -60,6 +66,19 @@ export const timeApi = baseApi.injectEndpoints({
       query: (id) => ({ url: `/api/time/${id}`, method: "DELETE" }),
       invalidatesTags: ["Time"],
     }),
+    // --- Admin ---
+    listarTodosTimes: builder.query<TimeResponse[], void>({
+      query: () => ({ url: "/api/time", method: "GET" }),
+      providesTags: ["Time"],
+    }),
+    reatribuirTime: builder.mutation<TimeResponse, ReatribuirTimeRequest>({
+      query: ({ id, novoOrganizadorTimeId }) => ({
+        url: `/api/time/${id}/reatribuir`,
+        method: "PATCH",
+        body: { novoOrganizadorTimeId },
+      }),
+      invalidatesTags: (_result, _error, { id }) => ["Time", { type: "Time", id }],
+    }),
   }),
 });
 
@@ -70,4 +89,6 @@ export const {
   useAtualizarTimeMutation,
   useToggleStatusTimeMutation,
   useRemoverTimeMutation,
+  useListarTodosTimesQuery,
+  useReatribuirTimeMutation,
 } = timeApi;

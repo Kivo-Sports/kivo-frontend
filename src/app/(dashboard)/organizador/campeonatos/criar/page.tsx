@@ -1,25 +1,36 @@
 "use client";
 
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type Resolver } from "react-hook-form";
-import { Trophy, Calendar, Star, CheckCircle, ArrowLeft, Loader2 } from "lucide-react";
+import { Trophy, Calendar, Star, CheckCircle, Loader2, ImageIcon } from "lucide-react";
+import { BotaoVoltar } from "@/components/molecules/BotaoVoltar";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/molecules/Card";
 import { FormField } from "@/components/molecules/FormField";
+import { EsporteSelect } from "@/components/molecules/EsporteSelect";
+import { DateInput } from "@/components/atoms/DateInput";
 import { useToast } from "@/components/atoms/Toast";
 import { fadeInUp, getFadeTransition } from "@/lib/motion";
 import { useCriarCampeonatoMutation } from "@/store/api/campeonatoApi";
 import { useGetPerfilUsuarioQuery } from "@/store/api/userApi";
 import { useAppSelector } from "@/store/hooks";
 import { Icon } from "@/components/atoms/Icon";
-import type { CampeonatoFormValues } from "@/types/campeonato";
+import { FORMATO_CAMPEONATO, type CampeonatoFormValues, type FormatoCampeonato } from "@/types/campeonato";
+
+// Valida potência de 2 (2, 4, 8, 16…) — exigido para a fase de mata-mata
+function ehPotenciaDeDois(n: number): boolean {
+  return Number.isInteger(n) && n >= 2 && (n & (n - 1)) === 0;
+}
 
 const CHAMPIONSHIP_NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9' .-]+$/;
+
+const MAX_LOGO_SIZE_BYTES = 5 * 1024 * 1024;
 
 function parseLocalDate(value: string): Date {
   const [year, month, day] = value.split("-").map(Number);
@@ -63,6 +74,7 @@ const criarCampeonatoSchema = z
     pontosVitoria: pontuacaoSchema,
     pontosDerrota: pontuacaoSchema,
     pontosEmpate:  pontuacaoSchema,
+    esporteId: z.string().uuid("Selecione um esporte"),
   })
   .refine((d) => parseLocalDate(d.dataFim) > parseLocalDate(d.dataInicio), {
     message: "A data de fim deve ser posterior à de início",
@@ -84,6 +96,15 @@ export default function CriarCampeonatoPage() {
   const { user } = useAppSelector((state) => state.auth);
   const [criarCampeonato, { isLoading }] = useCriarCampeonatoMutation();
 
+  const [formato, setFormato] = useState<FormatoCampeonato>("PontosCorridos");
+  const [classificam, setClassificam] = useState("4");
+  const [classificamError, setClassificamError] = useState<string | null>(null);
+
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoError, setLogoError] = useState<string | null>(null);
+  const [isDragOverLogo, setIsDragOverLogo] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement | null>(null);
+
   const { data: perfil, isLoading: isLoadingPerfil, isError: isErrorPerfil } = useGetPerfilUsuarioQuery(
     user?.id ?? "",
     { skip: !user?.id }
@@ -93,6 +114,7 @@ export default function CriarCampeonatoPage() {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isValid },
   } = useForm<CampeonatoFormValues>({
     resolver: zodResolver(criarCampeonatoSchema) as Resolver<CampeonatoFormValues>,
@@ -103,13 +125,64 @@ export default function CriarCampeonatoPage() {
       pontosVitoria: 3,
       pontosDerrota: 0,
       pontosEmpate:  1,
+      esporteId:     "",
     },
     mode: "onChange",
   });
 
   const nomeValue = watch("nome");
+  const esporteValue = watch("esporteId");
   const dataInicioValue = watch("dataInicio");
   const dataFimValue = watch("dataFim");
+
+  // Pontuação só se aplica a formatos com fase de pontos corridos
+  const usaPontuacao = formato === "PontosCorridos" || formato === "Hibrido";
+
+  const selecionarFormato = (key: FormatoCampeonato): void => {
+    setFormato(key);
+    // Mata-mata não usa pontuação: zera os campos para não bloquear o submit com erros ocultos
+    if (key === "MataMata") {
+      setValue("pontosVitoria", 0, { shouldValidate: true });
+      setValue("pontosEmpate", 0, { shouldValidate: true });
+      setValue("pontosDerrota", 0, { shouldValidate: true });
+    }
+  };
+
+  const formatarTamanhoArquivo = (bytes: number): string => {
+    if (bytes < 1024) return `${bytes} B`;
+    const kb = bytes / 1024;
+    if (kb < 1024) return `${kb.toFixed(1)} KB`;
+    return `${(kb / 1024).toFixed(1)} MB`;
+  };
+
+  const validarLogo = (arquivo: File): string | null => {
+    const tiposPermitidos = ["image/png", "image/jpeg", "image/webp", "image/jpg"];
+    if (!tiposPermitidos.includes(arquivo.type)) return "Formato inválido. Use PNG, JPG/JPEG ou WEBP.";
+    if (arquivo.size > MAX_LOGO_SIZE_BYTES) return "Logo deve ter no máximo 5 MB.";
+    return null;
+  };
+
+  const selecionarLogo = (arquivo: File | null): void => {
+    if (!arquivo) return;
+    const erroValidacao = validarLogo(arquivo);
+    if (erroValidacao) {
+      setLogoFile(null);
+      setLogoError(erroValidacao);
+      return;
+    }
+    setLogoFile(arquivo);
+    setLogoError(null);
+  };
+
+  const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    selecionarLogo(event.target.files?.[0] ?? null);
+  };
+
+  const handleLogoDrop = (event: React.DragEvent<HTMLDivElement>): void => {
+    event.preventDefault();
+    setIsDragOverLogo(false);
+    selecionarLogo(event.dataTransfer.files?.[0] ?? null);
+  };
 
   const onSubmit = async (values: CampeonatoFormValues): Promise<void> => {
     if (!perfil?.organizadorCampeonatoId) {
@@ -117,15 +190,26 @@ export default function CriarCampeonatoPage() {
       return;
     }
 
+    const qtdClassificam = Number(classificam);
+    if (formato === "Hibrido" && !ehPotenciaDeDois(qtdClassificam)) {
+      setClassificamError("Informe uma potência de 2 (2, 4, 8, 16…).");
+      return;
+    }
+    setClassificamError(null);
+
     try {
       await criarCampeonato({
         organizadorCampeonatoId: perfil.organizadorCampeonatoId,
+        esporteId:     values.esporteId,
         nome:          values.nome,
         dataInicio:    new Date(values.dataInicio).toISOString(),
         dataFim:       new Date(values.dataFim).toISOString(),
-        pontosVitoria: values.pontosVitoria,
-        pontosDerrota: values.pontosDerrota,
-        pontosEmpate:  values.pontosEmpate,
+        pontosVitoria: usaPontuacao ? values.pontosVitoria : 0,
+        pontosDerrota: usaPontuacao ? values.pontosDerrota : 0,
+        pontosEmpate:  usaPontuacao ? values.pontosEmpate : 0,
+        formatoCampeonato: FORMATO_CAMPEONATO[formato].valor,
+        quantidadeTimesClassificam: formato === "Hibrido" ? qtdClassificam : 0,
+        logo: logoFile ?? undefined,
       }).unwrap();
 
       toastSuccess("Campeonato criado com sucesso!");
@@ -136,7 +220,7 @@ export default function CriarCampeonatoPage() {
   };
 
   const isPerfilReady = !isLoadingPerfil && !!perfil?.organizadorCampeonatoId;
-  const canSubmit = isPerfilReady && !isLoading;
+  const canSubmit = isPerfilReady && !isLoading && !logoError;
 
   return (
     <motion.main
@@ -154,21 +238,7 @@ export default function CriarCampeonatoPage() {
         transition={{ duration: 0.3 }}
         style={{ marginBottom: "var(--space-5)" }}
       >
-        <Link
-          href="/organizador/campeonatos"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "var(--space-2)",
-            color: "var(--color-text-muted)",
-            textDecoration: "none",
-            fontSize: "var(--text-sm)",
-            transition: "color 0.15s",
-          }}
-        >
-          <Icon icon={ArrowLeft} size={14} />
-          Voltar para campeonatos
-        </Link>
+        <BotaoVoltar fallbackHref="/organizador/campeonatos" label="Voltar para campeonatos" />
       </motion.div>
 
       <div data-criar-grid style={{ display: "grid", gridTemplateColumns: "minmax(0, 5fr) minmax(0, 7fr)", gap: "var(--space-6)", alignItems: "start" }}>
@@ -324,14 +394,20 @@ export default function CriarCampeonatoPage() {
                 {...register("nome")}
               />
 
+              <EsporteSelect
+                value={esporteValue}
+                onChange={(id) => setValue("esporteId", id, { shouldValidate: true })}
+                error={errors.esporteId?.message}
+              />
+
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
-                <FormField
+                <DateInput
                   label="Data de início"
                   type="date"
                   error={errors.dataInicio?.message}
                   {...register("dataInicio")}
                 />
-                <FormField
+                <DateInput
                   label="Data de fim"
                   type="date"
                   error={errors.dataFim?.message}
@@ -339,44 +415,176 @@ export default function CriarCampeonatoPage() {
                 />
               </div>
 
-              {/* Pontuação */}
+              {/* Formato do campeonato */}
               <div>
                 <p style={{ margin: "0 0 var(--space-2)", fontSize: "var(--text-sm)", fontWeight: 500, color: "var(--color-text-secondary)" }}>
-                  Sistema de pontuação
+                  Formato do campeonato
                 </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+                  {(Object.keys(FORMATO_CAMPEONATO) as FormatoCampeonato[]).map((key) => {
+                    const opcao = FORMATO_CAMPEONATO[key];
+                    const ativo = formato === key;
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        onClick={() => selecionarFormato(key)}
+                        style={{
+                          textAlign: "left",
+                          padding: "var(--space-3)",
+                          borderRadius: "var(--radius-lg)",
+                          background: ativo ? "rgba(0,230,118,0.08)" : "rgba(255,255,255,0.02)",
+                          border: `1px solid ${ativo ? "rgba(0,230,118,0.4)" : "rgba(255,255,255,0.07)"}`,
+                          cursor: "pointer",
+                          transition: "all 0.15s",
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+                          <span
+                            style={{
+                              width: "14px", height: "14px", borderRadius: "50%", flexShrink: 0,
+                              border: `2px solid ${ativo ? "var(--color-brand-primary)" : "rgba(255,255,255,0.2)"}`,
+                              background: ativo ? "var(--color-brand-primary)" : "transparent",
+                            }}
+                          />
+                          <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>
+                            {opcao.label}
+                          </span>
+                        </div>
+                        <p style={{ margin: "var(--space-1) 0 0 calc(14px + var(--space-2))", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", lineHeight: 1.5 }}>
+                          {opcao.desc}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {formato === "Hibrido" && (
+                  <div style={{ marginTop: "var(--space-3)" }}>
+                    <FormField
+                      label="Times que classificam para o mata-mata"
+                      type="number"
+                      min={2}
+                      value={classificam}
+                      onChange={(e) => setClassificam(e.target.value)}
+                      error={classificamError ?? undefined}
+                    />
+                    <p style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
+                      Deve ser uma potência de 2 (2, 4, 8, 16…) para formar o chaveamento.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Pontuação — apenas para formatos com fase de pontos corridos */}
+              {usaPontuacao && (
+                <div>
+                  <p style={{ margin: "0 0 var(--space-2)", fontSize: "var(--text-sm)", fontWeight: 500, color: "var(--color-text-secondary)" }}>
+                    Sistema de pontuação
+                  </p>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr 1fr",
+                      gap: "var(--space-3)",
+                      padding: "var(--space-3)",
+                      borderRadius: "var(--radius-lg)",
+                      background: "rgba(255,255,255,0.02)",
+                      border: "1px solid rgba(255,255,255,0.05)",
+                    }}
+                  >
+                    <FormField
+                      label="Vitória"
+                      type="number"
+                      min={0}
+                      error={errors.pontosVitoria?.message}
+                      {...register("pontosVitoria")}
+                    />
+                    <FormField
+                      label="Empate"
+                      type="number"
+                      min={0}
+                      error={errors.pontosEmpate?.message}
+                      {...register("pontosEmpate")}
+                    />
+                    <FormField
+                      label="Derrota"
+                      type="number"
+                      min={0}
+                      error={errors.pontosDerrota?.message}
+                      {...register("pontosDerrota")}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Upload de logo */}
+              <div>
+                <label
+                  htmlFor="logo"
+                  style={{ margin: "0 0 var(--space-2)", display: "inline-flex", alignItems: "center", gap: "var(--space-2)", fontSize: "var(--text-sm)", fontWeight: 500, color: "var(--color-text-secondary)" }}
+                >
+                  <Icon icon={ImageIcon} size={14} style={{ color: "var(--color-text-muted)" }} />
+                  Logo do campeonato <span style={{ fontWeight: 400, color: "var(--color-text-muted)" }}>(opcional)</span>
+                </label>
+                <input
+                  ref={logoInputRef}
+                  id="logo"
+                  name="logo"
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  onChange={handleLogoChange}
+                  style={{ display: "none" }}
+                />
                 <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => logoInputRef.current?.click()}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      logoInputRef.current?.click();
+                    }
+                  }}
+                  onDragOver={(event) => { event.preventDefault(); setIsDragOverLogo(true); }}
+                  onDragLeave={(event) => { event.preventDefault(); setIsDragOverLogo(false); }}
+                  onDrop={handleLogoDrop}
+                  aria-invalid={Boolean(logoError)}
                   style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr 1fr",
-                    gap: "var(--space-3)",
-                    padding: "var(--space-3)",
                     borderRadius: "var(--radius-lg)",
-                    background: "rgba(255,255,255,0.02)",
-                    border: "1px solid rgba(255,255,255,0.05)",
+                    border: logoError
+                      ? "1px dashed var(--color-feedback-danger)"
+                      : isDragOverLogo
+                        ? "1px dashed var(--color-brand-primary)"
+                        : "1px dashed var(--color-border-default)",
+                    background: isDragOverLogo
+                      ? "rgba(0, 230, 118, 0.08)"
+                      : "linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))",
+                    padding: "var(--space-4)",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                    outline: "none",
+                    display: "grid",
+                    gap: "var(--space-2)",
                   }}
                 >
-                  <FormField
-                    label="Vitória"
-                    type="number"
-                    min={0}
-                    error={errors.pontosVitoria?.message}
-                    {...register("pontosVitoria")}
-                  />
-                  <FormField
-                    label="Empate"
-                    type="number"
-                    min={0}
-                    error={errors.pontosEmpate?.message}
-                    {...register("pontosEmpate")}
-                  />
-                  <FormField
-                    label="Derrota"
-                    type="number"
-                    min={0}
-                    error={errors.pontosDerrota?.message}
-                    {...register("pontosDerrota")}
-                  />
+                  <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>
+                    {logoFile ? "Arquivo selecionado" : "Clique ou arraste a logo aqui"}
+                  </p>
+                  <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
+                    {logoFile
+                      ? `${logoFile.name} (${formatarTamanhoArquivo(logoFile.size)})`
+                      : "PNG, JPG/JPEG ou WEBP até 5 MB"}
+                  </p>
                 </div>
+                {logoError && (
+                  <p
+                    role="alert"
+                    style={{ marginTop: "var(--space-2)", marginBottom: 0, fontSize: "var(--text-sm)", color: "var(--color-feedback-danger)" }}
+                  >
+                    {logoError}
+                  </p>
+                )}
               </div>
 
               {/* Ações */}

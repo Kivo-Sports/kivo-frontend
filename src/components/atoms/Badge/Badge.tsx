@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
 
-type BadgeVariant = "success" | "warning" | "danger" | "info" | "default";
+export type BadgeVariant = "success" | "warning" | "danger" | "info" | "default";
 type BadgeSize = "sm" | "md";
 
 export interface BadgeProps {

@@ -1,5 +1,6 @@
 export interface CriarTimeRequest {
   organizadorTimeId: string;
+  esporteId: string;
   nome: string;
   cidade: string;
   estado: string;
@@ -9,16 +10,20 @@ export interface CriarTimeRequest {
 export interface TimeResponse {
   id: string;
   organizadorTimeId: string;
+  esporteId: string;
+  esporteNome?: string | null;
+  esporteIcone?: string | null;
   nome: string;
   cidade: string;
   estado: string;
-  logoUrl: string;
+  logoUrl: string | null;
   ativo: boolean;
   criadoEm: string;
 }
 
 export interface AtualizarTimeRequest {
   id: string;
+  esporteId: string;
   nome: string;
   cidade: string;
   estado: string;
@@ -29,4 +34,5 @@ export interface TimeFormValues {
   nome: string;
   cidade: string;
   estado: string;
+  esporteId: string;
 }
