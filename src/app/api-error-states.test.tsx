@@ -7,10 +7,16 @@
  *   - 200 []         -> UI de VAZIO legitima (e NAO a de erro)
  */
 
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { emptyList, networkError, serverError } from "@/test/msw/handlers";
+import {
+  emptyList,
+  networkError,
+  okJson,
+  relatorioAdministrativoFixture,
+  serverError,
+} from "@/test/msw/handlers";
 import { server } from "@/test/msw/server";
 import { authenticatedAs, renderWithProviders } from "@/test/renderWithProviders";
 
@@ -83,28 +89,52 @@ describe("BUG-001: /campeonatos", () => {
 
 describe("BUG-001: /admin (metricas)", () => {
   it("mostra estado de ERRO em vez de metricas zeradas quando a API falha", async () => {
-    server.use(
-      networkError("/api/campeonato"),
-      networkError("/api/time"),
-      networkError("/api/esporte"),
-    );
+    server.use(networkError("/api/relatorios/administrativo"));
     renderWithProviders(<AdminOverviewPage />, { auth: authenticatedAs("administrador") });
 
     expect(await findErrorState()).toBeInTheDocument();
     // "0" zerado nao pode aparecer como se fosse dado real.
-    expect(screen.queryByText("Campeonatos")).not.toBeInTheDocument();
+    expect(screen.queryByText("Receita confirmada")).not.toBeInTheDocument();
   });
 
-  it("mostra metricas zeradas legitimas quando a API responde 200 []", async () => {
+  it("mostra metricas zeradas legitimas quando a API responde um relatorio sem movimento", async () => {
     server.use(
-      emptyList("/api/campeonato"),
-      emptyList("/api/time"),
-      emptyList("/api/esporte"),
+      okJson("/api/relatorios/administrativo", {
+        ...relatorioAdministrativoFixture,
+        novosUsuarios: 0,
+        resumoFinanceiro: {
+          receitaConfirmada: 0,
+          ingressosPagos: 0,
+          receitaSemDataPagamento: 0,
+          ingressosSemDataPagamento: 0,
+          ingressosEmitidos: 0,
+          ingressosEmitidosConfirmados: 0,
+          ingressosPendentes: 0,
+          ingressosCancelados: 0,
+          checkIns: 0,
+          ingressosElegiveisCheckIn: 0,
+          taxaComparecimento: 0,
+        },
+        vendasPorDia: [],
+      }),
     );
     renderWithProviders(<AdminOverviewPage />, { auth: authenticatedAs("administrador") });
 
-    expect(await screen.findByText("Campeonatos")).toBeInTheDocument();
+    expect(await screen.findByText("Receita confirmada")).toBeInTheDocument();
     expect(errorState()).not.toBeInTheDocument();
+  });
+});
+
+// BUG-007: os atalhos declarados na visao geral do admin nunca eram renderizados.
+describe("BUG-007: /admin (atalhos)", () => {
+  it("renderiza os 4 atalhos de gestao", async () => {
+    server.use(emptyList("/api/esporte"));
+    renderWithProviders(<AdminOverviewPage />, { auth: authenticatedAs("administrador") });
+
+    const atalhos = await screen.findByRole("navigation", { name: "Atalhos de gestão" });
+    for (const titulo of ["Campeonatos", "Times", "Esportes", "Gerenciar Admins"]) {
+      expect(within(atalhos).getByText(titulo)).toBeInTheDocument();
+    }
   });
 });
 

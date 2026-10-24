@@ -1,7 +1,7 @@
 import type { IngressoDetalhes } from "@/types/ingresso";
 import { StatusIngresso } from "@/types/ingresso";
 
-function nomeArquivoSeguro(valor: string): string {
+export function nomeArquivoSeguro(valor: string): string {
   return valor
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
@@ -19,7 +19,7 @@ function lerImagemComoDataUrl(blob: Blob): Promise<string> {
   });
 }
 
-async function carregarLogo(): Promise<string | null> {
+export async function carregarLogo(): Promise<string | null> {
   try {
     const resposta = await fetch("/LogoKivoSportsSFundoBranca.png");
     if (!resposta.ok) return null;
