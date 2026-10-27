@@ -46,6 +46,13 @@ export interface IngressoDetalhes {
   pixCopiaCola: string;
   nomeTitular: string;
   cpfTitular: string;
+  tipoDeficienciaId: string;
+  tipoDeficienciaDescricao: string;
+}
+
+export interface TipoDeficiencia {
+  id: string;
+  descricao: string;
 }
 
 export interface CompraIngressosResponse {
@@ -60,6 +67,7 @@ export interface AtribuirTitularIngressoRequest {
   ingressoId: string;
   nome: string;
   cpf: string;
+  tipoDeficienciaId: string;
 }
 
 export interface MensagemResponse {
