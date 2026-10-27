@@ -47,6 +47,7 @@ export const baseApi = createApi({
     "Ingresso",
     "Notificacao",
     "Post",
+    "TipoDeficiencia",
   ],
   baseQuery: baseQueryWithAutoLogout,
   endpoints: () => ({}),
