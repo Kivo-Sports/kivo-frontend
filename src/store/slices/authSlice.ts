@@ -56,7 +56,7 @@ const authSlice = createSlice({
       }
     },
     clearCredentials: (state) => {
-      // TODO: adicionar limpeza de cache de endpoints privados apos logout
+      // O chamador limpa o cache privado junto das credenciais.
       state.token = null;
       state.user = null;
       state.isAuthenticated = false;
@@ -80,7 +80,7 @@ const authSlice = createSlice({
             const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
             const isExpired = typeof payload.exp === 'number' && payload.exp * 1000 < Date.now();
 
-            if (isExpired) {
+            if (isExpired || !Number.isInteger(Number(payload.VersaoSessao)) || Number(payload.VersaoSessao) < 1) {
               localStorage.removeItem('auth_token');
               localStorage.removeItem('auth_user');
             } else {

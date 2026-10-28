@@ -11,6 +11,7 @@ export interface LoginResponse {
 }
 
 export interface LoginErrorResponse {
+  code?: string;
   message: string;
   errors?: Record<string, string[]>;
 }
@@ -170,6 +171,9 @@ export async function loginUser(
         errorData = null;
       }
 
+      if (errorData?.code === 'account_restricted') {
+        return { success: false, error: errorData.message, errorTitle: 'Conta restrita', errorType: 'account-restricted' };
+      }
       if (errorData && errorData.message) {
         const errorType = detectErrorType(errorData.message);
         const { title, message } = getErrorMessages(errorType, errorData.message);

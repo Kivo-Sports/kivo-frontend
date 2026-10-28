@@ -26,10 +26,13 @@ const baseQueryWithAutoLogout: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
+  const token = (api.getState() as RootStateForApi).auth.token;
   const result = await rawBaseQuery(args, api, extraOptions);
 
-  if (result.error?.status === 401) {
+  if (result.error?.status === 401 && token === (api.getState() as RootStateForApi).auth.token) {
     api.dispatch(clearCredentials());
+    api.dispatch(baseApi.util.resetApiState());
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("kivo:session-invalid"));
   }
 
   return result;
