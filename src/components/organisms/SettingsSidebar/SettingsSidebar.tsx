@@ -22,6 +22,7 @@ interface SettingsItem {
 }
 
 const settingsItems: SettingsItem[] = [
+  { id: 'manage-users', label: 'Gerenciar Usuários', href: '/configuracoes/usuarios', icon: <Icon icon={UserStar} size={30} color="var(--color-brand-primary)" />, adminOnly: true },
   {
     id: 'account',
     label: 'Minha Conta',
