@@ -25,6 +25,7 @@ import { Spinner } from "@/components/atoms/Spinner";
 import { useToast } from "@/components/atoms/Toast";
 import { Card } from "@/components/molecules/Card";
 import { Modal } from "@/components/molecules/Modal";
+import { Select } from "@/components/atoms/Select";
 import { gerarPdfIngressos } from "@/lib/ingresso.pdf";
 import {
   removerPagamentosIngressos,
@@ -36,6 +37,7 @@ import {
   useConfirmarPagamentoIngressoMutation,
   useObterMeusIngressosQuery,
 } from "@/store/api/ingressoApi";
+import { useListarTiposDeficienciaQuery } from "@/store/api/tipoDeficienciaApi";
 import type { IngressoDetalhes } from "@/types/ingresso";
 import { StatusIngresso } from "@/types/ingresso";
 
@@ -301,6 +303,19 @@ function CartaoIngresso({
             <span style={{ color: "var(--color-text-muted)", fontSize: 10 }}>
               CPF {mascararCpf(ingresso.cpfTitular)}
             </span>
+            {ingresso.tipoDeficienciaDescricao &&
+              ingresso.tipoDeficienciaDescricao !== "Nenhuma" && (
+                <span
+                  style={{
+                    display: "block",
+                    color: "var(--color-brand-primary)",
+                    fontSize: 10,
+                    marginTop: 2,
+                  }}
+                >
+                  Acessibilidade: {ingresso.tipoDeficienciaDescricao}
+                </span>
+              )}
           </div>
         </div>
       )}
@@ -791,6 +806,8 @@ export function CarteiraIngressos() {
   const [ingressoTitular, setIngressoTitular] = useState<IngressoDetalhes | null>(null);
   const [nomeTitular, setNomeTitular] = useState("");
   const [cpfTitular, setCpfTitular] = useState("");
+  const [tipoDeficienciaId, setTipoDeficienciaId] = useState("");
+  const { data: opcoesDeficiencia = [] } = useListarTiposDeficienciaQuery();
 
   useEffect(() => {
     const finalizados = ingressos
@@ -880,6 +897,7 @@ export function CarteiraIngressos() {
     setIngressoTitular(ingresso);
     setNomeTitular("");
     setCpfTitular("");
+    setTipoDeficienciaId(opcoesDeficiencia[0]?.id ?? "");
   };
 
   const salvarTitular = async () => {
@@ -889,11 +907,16 @@ export function CarteiraIngressos() {
       toast.warning("Informe o nome completo e um CPF com 11 dígitos.", "Dados inválidos");
       return;
     }
+    if (!tipoDeficienciaId) {
+      toast.warning("Selecione uma opção de acessibilidade.", "Dados inválidos");
+      return;
+    }
     try {
       await atribuirTitular({
         ingressoId: ingressoTitular.id,
         nome: nomeTitular.trim(),
         cpf: cpfLimpo,
+        tipoDeficienciaId,
       }).unwrap();
       await refetch();
       setIngressoTitular(null);
@@ -1151,6 +1174,16 @@ export function CarteiraIngressos() {
             value={cpfTitular}
             onChange={(event) => setCpfTitular(formatarCpf(event.target.value))}
             maxLength={14}
+          />
+          <Select
+            label="Necessidade de acessibilidade"
+            placeholder="Selecione uma opção"
+            value={tipoDeficienciaId}
+            onChange={setTipoDeficienciaId}
+            options={opcoesDeficiencia.map((opcao) => ({
+              value: opcao.id,
+              label: opcao.descricao,
+            }))}
           />
           <p
             style={{
