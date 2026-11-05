@@ -14,7 +14,7 @@ function base64url(json: object): string {
 }
 
 function makeJwt(payload: Record<string, unknown>): string {
-  return `${base64url({ alg: "HS256" })}.${base64url(payload)}.signature`;
+  return `${base64url({ alg: "HS256" })}.${base64url({ VersaoSessao: 1, ...payload })}.signature`;
 }
 
 const user: AuthenticatedUser = {
@@ -115,6 +115,15 @@ describe("authSlice: restoreAuth (hidratacao)", () => {
     expect(state.isAuthenticated).toBe(true);
     expect(state.token).toBe(token);
     expect(state.user).toEqual(user);
+  });
+
+  it("descarta JWT legado sem versao de sessao", () => {
+    const token = makeJwt({ exp: Math.floor(Date.now() / 1000) + 3600, VersaoSessao: undefined });
+    localStorage.setItem("auth_token", token);
+    localStorage.setItem("auth_user", JSON.stringify(user));
+    const state = authReducer(undefined, restoreAuth());
+    expect(state.isAuthenticated).toBe(false);
+    expect(localStorage.getItem("auth_token")).toBeNull();
   });
 
   it("descarta sessao com JWT expirado", () => {

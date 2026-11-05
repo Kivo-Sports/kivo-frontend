@@ -1,3 +1,4 @@
+import { tratarSessaoInvalida } from "./usuario.service";
 /**
  * @file admin.service.ts
  * @description Serviço para gerenciar admins (CRUD)
@@ -50,6 +51,7 @@ export async function listarAdmins(token: string): Promise<{
       },
     });
 
+    tratarSessaoInvalida(response, token);
     const data = await response.json().catch(() => ({}));
 
     if (response.ok) {
@@ -95,6 +97,7 @@ export async function criarAdmin(
       body: JSON.stringify(payload),
     });
 
+    tratarSessaoInvalida(response, token);
     const data = await response.json().catch(() => ({}));
 
     if (response.ok) {
@@ -142,6 +145,7 @@ export async function editarAdmin(
       body: JSON.stringify(payload),
     });
 
+    tratarSessaoInvalida(response, token);
     const data = await response.json().catch(() => ({}));
 
     if (response.ok) {
@@ -186,6 +190,7 @@ export async function ativarAdmin(
       },
     });
 
+    tratarSessaoInvalida(response, token);
     const data = await response.json().catch(() => ({}));
 
     if (response.ok) {
@@ -228,6 +233,7 @@ export async function desativarAdmin(
       },
     });
 
+    tratarSessaoInvalida(response, token);
     const data = await response.json().catch(() => ({}));
 
     if (response.ok) {
