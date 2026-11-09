@@ -12,6 +12,7 @@ import "./globals.css";
 import { StoreProvider } from "@/store/StoreProvider";
 import { ToastProvider } from "@/components/atoms/Toast";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { TextScaleProvider } from "@/components/providers/TextScaleProvider";
 
 // - Componentes
 import { PageTransition } from "@/components/atoms/PageTransition";
@@ -61,10 +62,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <body className="antialiased">
         <StoreProvider>
           <ThemeProvider>
-            <ToastProvider>
-              <PageTransition>{children}</PageTransition>
-              <RootLayoutClient />
-            </ToastProvider>
+            <TextScaleProvider>
+              <ToastProvider>
+                <PageTransition>{children}</PageTransition>
+                <RootLayoutClient />
+              </ToastProvider>
+            </TextScaleProvider>
           </ThemeProvider>
         </StoreProvider>
       </body>

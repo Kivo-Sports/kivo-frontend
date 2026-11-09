@@ -22,6 +22,7 @@ import { AppLayout } from '@/components/templates/AppLayout';
 import { Icon } from "@/components/atoms/Icon";
 import { SquarePen  } from "lucide-react";
 import { ThemeSelector } from '@/components/molecules/ThemeSelector/ThemeSelector';
+import { TextScaleSelector } from '@/components/molecules/TextScaleSelector/TextScaleSelector';
 
 // Store
 import type { RootState } from '@/store';
@@ -196,12 +197,16 @@ export default function ConfiguracoesPage() {
             </div>
 
             <Card padding="lg" style={{ marginBottom: 'var(--space-6)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-4)', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
                 <div>
                   <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--color-text-primary)' }}>Aparência</h2>
-                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)', marginTop: 'var(--space-1)' }}>Escolha o tema desta conta neste navegador.</p>
+                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)', marginTop: 'var(--space-1)' }}>Escolha o tema e o tamanho do texto desta conta neste navegador.</p>
                 </div>
                 <ThemeSelector />
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-4)', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--color-text-primary)' }}>Tamanho do texto</span>
+                  <TextScaleSelector />
+                </div>
               </div>
             </Card>
 
