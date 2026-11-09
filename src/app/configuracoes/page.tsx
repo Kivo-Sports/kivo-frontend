@@ -435,7 +435,7 @@ export default function ConfiguracoesPage() {
                         {userData.endereco.cep}
                       </p>
                     </div>
-                    <div style={{ gridColumn: 'span 2' }}>
+                    <div style={{ gridColumn: '1 / -1' }}>
                       <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginBottom: 'var(--space-1)' }}>Rua</p>
                       <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-primary)', fontWeight: 500 }}>
                         {userData.endereco.rua}
@@ -522,7 +522,7 @@ export default function ConfiguracoesPage() {
                         {userData.dadosBancarios.tipoConta}
                       </p>
                     </div>
-                    <div style={{ gridColumn: 'span 2' }}>
+                    <div style={{ gridColumn: '1 / -1' }}>
                       <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginBottom: 'var(--space-1)' }}>Nome do Titular</p>
                       <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-primary)', fontWeight: 500 }}>
                         {userData.dadosBancarios.nomeTitular}
