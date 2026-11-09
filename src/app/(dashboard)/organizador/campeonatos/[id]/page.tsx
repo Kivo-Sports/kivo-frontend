@@ -1327,7 +1327,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                       <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, color: grupo.color, letterSpacing: "0.1em", textTransform: "uppercase" }}>
                         {grupo.label}
                       </span>
-                      <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--color-text-muted)", background: "rgba(255,255,255,0.06)", padding: "1px 8px", borderRadius: "var(--radius-full)", lineHeight: 1.7 }}>
+                      <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, color: "var(--color-text-muted)", background: "rgba(255,255,255,0.06)", padding: "1px 8px", borderRadius: "var(--radius-full)", lineHeight: 1.7 }}>
                         {grupo.items.length}
                       </span>
                       <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.05)" }} />
@@ -1483,7 +1483,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                         onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,230,118,0.06)"; e.currentTarget.style.borderColor = "rgba(0,230,118,0.25)"; }}
                         onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.025)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; }}
                       >
-                        <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--color-text-muted)", background: "rgba(255,255,255,0.06)", padding: "2px 8px", borderRadius: "var(--radius-full)", flexShrink: 0 }}>
+                        <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, color: "var(--color-text-muted)", background: "rgba(255,255,255,0.06)", padding: "2px 8px", borderRadius: "var(--radius-full)", flexShrink: 0 }}>
                           {j.etiqueta}
                         </span>
                         <span style={{ flex: 1, textAlign: "right", fontSize: "var(--text-sm)", fontWeight: 600, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{j.casa}</span>
@@ -1532,7 +1532,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
               <span style={{ flex: 1, fontSize: "var(--text-xs)", fontWeight: 600, color: "var(--color-text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {feat.title}
               </span>
-              <span style={{ fontSize: "9px", background: "rgba(255,255,255,0.06)", padding: "2px 6px", borderRadius: "var(--radius-full)", color: "var(--color-text-muted)", letterSpacing: "0.06em", textTransform: "uppercase", flexShrink: 0 }}>
+              <span style={{ fontSize: "var(--text-xs)", background: "rgba(255,255,255,0.06)", padding: "2px 6px", borderRadius: "var(--radius-full)", color: "var(--color-text-muted)", letterSpacing: "0.06em", textTransform: "uppercase", flexShrink: 0 }}>
                 Em breve
               </span>
             </div>

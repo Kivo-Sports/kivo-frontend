@@ -70,7 +70,7 @@ function StatCard({ icon, valor, label, cor }: { icon: typeof Trophy; valor: num
         <p style={{ margin: 0, fontSize: "var(--text-lg)", fontWeight: 700, color: "var(--color-text-primary)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
           {valor}
         </p>
-        <p style={{ margin: "2px 0 0", fontSize: "10px", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>
+        <p style={{ margin: "2px 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>
           {label}
         </p>
       </div>
@@ -98,7 +98,7 @@ function StatusPill({ status }: { status: string }) {
         borderRadius: "var(--radius-full)",
         background: "var(--color-bg-surface)",
         border: `1px solid color-mix(in srgb, ${cor} 42%, var(--color-border-default))`,
-        fontSize: "10px",
+        fontSize: "var(--text-xs)",
         fontWeight: 700,
         color: cor,
         textTransform: "uppercase",
@@ -182,7 +182,7 @@ function CampeonatoCard({ camp }: { camp: CampeonatoResponse }) {
                   borderRadius: "var(--radius-full)",
                   background: "var(--color-bg-input)",
                   border: "1px solid var(--color-border-default)",
-                  fontSize: "10px",
+                  fontSize: "var(--text-xs)",
                   fontWeight: 600,
                   color: "var(--color-text-muted)",
                   textTransform: "uppercase",
@@ -240,7 +240,7 @@ function CampeonatoCard({ camp }: { camp: CampeonatoResponse }) {
             <Icon icon={Crown} size={14} style={{ color: "var(--color-brand-accent)", flexShrink: 0 }} />
             <Avatar name={camp.vencedorTimeNome ?? "?"} src={camp.vencedorTimeLogo || undefined} size="sm" />
             <div style={{ minWidth: 0, flex: 1 }}>
-              <p style={{ margin: 0, fontSize: "9px", color: "var(--color-brand-accent)", textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, lineHeight: 1 }}>
+              <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-brand-accent)", textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, lineHeight: 1 }}>
                 Campeão
               </p>
               <p style={{ margin: "2px 0 0", fontSize: "var(--text-sm)", fontWeight: 700, color: "var(--color-text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>

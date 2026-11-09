@@ -318,7 +318,7 @@ export function VendaIngressos({
                     </button>
                     <div style={{ minWidth: 66, textAlign: "center" }}>
                       <strong style={{ display: "block", color: "var(--color-text-primary)" }}>{quantidade}</strong>
-                      <span style={{ color: "var(--color-text-muted)", fontSize: 10 }}>
+                      <span style={{ color: "var(--color-text-muted)", fontSize: "var(--text-xs)" }}>
                         {formatarMoeda(lote.preco * quantidade)}
                       </span>
                     </div>

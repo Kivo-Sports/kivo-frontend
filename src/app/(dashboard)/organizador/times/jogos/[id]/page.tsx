@@ -156,7 +156,7 @@ export default function DetalheJogoOrganizadorTimePage({
             <span
               style={{
                 color: "var(--color-text-muted)",
-                fontSize: "10px",
+                fontSize: "var(--text-xs)",
                 textTransform: "uppercase",
               }}
             >
@@ -183,7 +183,7 @@ export default function DetalheJogoOrganizadorTimePage({
             <span
               style={{
                 color: "var(--color-text-muted)",
-                fontSize: "10px",
+                fontSize: "var(--text-xs)",
                 textTransform: "uppercase",
               }}
             >

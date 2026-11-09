@@ -272,7 +272,7 @@ export function EsporteFormModal({ isOpen, onClose, esporte }: EsporteFormModalP
                               onMouseLeave={(e) => { if (!selecionado) e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
                             >
                               <IconifyIcon icon={item.name} width={26} height={26} />
-                              <span style={{ fontSize: '9px', color: 'var(--color-text-muted)', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>
+                              <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>
                                 {item.label}
                               </span>
                             </button>

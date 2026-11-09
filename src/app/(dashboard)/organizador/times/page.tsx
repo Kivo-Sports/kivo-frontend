@@ -426,7 +426,7 @@ function ConvitesPainel({ organizadorTimeId, times }: ConvitesPainelProps) {
                       borderRadius: "var(--radius-full)",
                       background: "rgba(0,230,118,0.12)",
                       color: "var(--color-brand-primary)",
-                      fontSize: "10px",
+                      fontSize: "var(--text-xs)",
                       fontWeight: 700,
                     }}
                   >

@@ -156,7 +156,7 @@ export default function ExplorarJogoDetalhePage({
             </span>
             <span
               style={{
-                fontSize: "10px",
+                fontSize: "var(--text-xs)",
                 color: "var(--color-text-muted)",
                 textTransform: "uppercase",
                 letterSpacing: "0.08em",
@@ -232,7 +232,7 @@ export default function ExplorarJogoDetalhePage({
             </span>
             <span
               style={{
-                fontSize: "10px",
+                fontSize: "var(--text-xs)",
                 color: "var(--color-text-muted)",
                 textTransform: "uppercase",
                 letterSpacing: "0.08em",

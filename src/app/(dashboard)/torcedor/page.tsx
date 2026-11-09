@@ -160,7 +160,7 @@ function TimelineRow({ jogo }: { jogo: TimelineItem }) {
           >
             {dia}
           </div>
-          {hora && <div style={{ fontSize: "10px", color: "var(--color-text-muted)" }}>{hora}</div>}
+          {hora && <div style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>{hora}</div>}
         </div>
 
         {/* Confronto */}
@@ -194,7 +194,7 @@ function TimelineRow({ jogo }: { jogo: TimelineItem }) {
             </span>
             <span
               style={{
-                fontSize: "10px",
+                fontSize: "var(--text-xs)",
                 color: "var(--color-brand-primary)",
                 background: "rgba(0,230,118,0.1)",
                 borderRadius: "var(--radius-full)",
@@ -209,7 +209,7 @@ function TimelineRow({ jogo }: { jogo: TimelineItem }) {
                   display: "inline-flex",
                   alignItems: "center",
                   gap: "3px",
-                  fontSize: "10px",
+                  fontSize: "var(--text-xs)",
                   color: "var(--color-text-muted)",
                 }}
               >
@@ -716,7 +716,7 @@ export default function TorcedorDashboardPage() {
                           style={{
                             display: "block",
                             color: "var(--color-text-muted)",
-                            fontSize: "10px",
+                            fontSize: "var(--text-xs)",
                           }}
                         >
                           A partir de

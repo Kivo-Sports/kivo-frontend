@@ -76,7 +76,7 @@ function JogoRow({ jogo }: { jogo: JogoView }) {
             {jogo.finalizado ? `${jogo.golsCasa} × ${jogo.golsVisitante}` : "×"}
           </span>
           {dataFormatada && (
-            <span style={{ fontSize: "10px", color: "var(--color-text-muted)", whiteSpace: "nowrap" }}>{dataFormatada}</span>
+            <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)", whiteSpace: "nowrap" }}>{dataFormatada}</span>
           )}
         </div>
 
