@@ -21,6 +21,7 @@ import { AccountTypeBadge } from '@/components/atoms/AccountTypeBadge';
 import { AppLayout } from '@/components/templates/AppLayout';
 import { Icon } from "@/components/atoms/Icon";
 import { SquarePen  } from "lucide-react";
+import { ThemeSelector } from '@/components/molecules/ThemeSelector/ThemeSelector';
 
 // Store
 import type { RootState } from '@/store';
@@ -194,6 +195,16 @@ export default function ConfiguracoesPage() {
               </p>
             </div>
 
+            <Card padding="lg" style={{ marginBottom: 'var(--space-6)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-4)', flexWrap: 'wrap' }}>
+                <div>
+                  <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--color-text-primary)' }}>Aparência</h2>
+                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)', marginTop: 'var(--space-1)' }}>Escolha o tema desta conta neste navegador.</p>
+                </div>
+                <ThemeSelector />
+              </div>
+            </Card>
+
             {/* Seção: Informações Pessoais */}
             <Card padding="lg" style={{ marginBottom: 'var(--space-6)' }}>
               <div
@@ -214,7 +225,7 @@ export default function ConfiguracoesPage() {
                   Informações Pessoais
                 </h2>
                 <Button
-                  variant="secondary"
+                  variant="primary"
                   size="sm"
                   onClick={() => setIsEditUserDataOpen(true)}
                   disabled={isLoadingUserData || !userData}

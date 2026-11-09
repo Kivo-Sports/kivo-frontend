@@ -87,7 +87,7 @@ export function Modal({
                   }}
                 >
                   {title ? (
-                    <h3 style={{ margin: 0, fontSize: "var(--text-md)", fontWeight: 700, color: "white" }}>{title}</h3>
+                    <h3 style={{ margin: 0, fontSize: "var(--text-md)", fontWeight: 700, color: "var(--color-text-primary)" }}>{title}</h3>
                   ) : (
                     <span />
                   )}

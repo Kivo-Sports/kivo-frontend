@@ -142,9 +142,9 @@ export function EsporteCarrossel({ value, onChange }: EsporteCarrosselProps) {
                   alignItems: 'center',
                   justifyContent: 'center',
                   background: selecionado
-                    ? 'radial-gradient(circle at 30% 25%, rgba(0,230,118,0.4), rgba(0,230,118,0.08))'
-                    : 'linear-gradient(150deg, rgba(30,30,30,0.95), rgba(14,14,14,0.95))',
-                  border: `2px solid ${selecionado ? 'var(--color-brand-primary)' : 'rgba(255,255,255,0.1)'}`,
+                    ? 'color-mix(in srgb, var(--color-brand-primary), var(--color-bg-surface) 88%)'
+                    : 'var(--color-bg-surface)',
+                  border: `2px solid ${selecionado ? 'var(--color-brand-primary)' : 'var(--color-border-strong)'}`,
                   color: selecionado ? 'var(--color-brand-primary)' : 'var(--color-text-secondary)',
                   boxShadow: selecionado
                     ? '0 10px 30px rgba(0,230,118,0.3), inset 0 1px 0 rgba(255,255,255,0.1)'

@@ -78,7 +78,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <p style={{ margin: 0, fontSize: "var(--text-xs)", letterSpacing: "0.25em", textTransform: "uppercase", color: "var(--color-brand-primary)" }}>
               Modo Administrador
             </p>
-            <h1 style={{ margin: "2px 0 0", fontSize: "clamp(22px, 4vw, 32px)", fontWeight: 700, color: "white", lineHeight: 1.1 }}>
+            <h1 style={{ margin: "2px 0 0", fontSize: "clamp(22px, 4vw, 32px)", fontWeight: 700, color: "var(--color-text-primary)", lineHeight: 1.1 }}>
               Painel Administrativo
             </h1>
           </div>

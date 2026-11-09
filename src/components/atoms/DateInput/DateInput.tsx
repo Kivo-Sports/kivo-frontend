@@ -9,6 +9,7 @@
 
 import { forwardRef } from "react";
 import type { CSSProperties, InputHTMLAttributes } from "react";
+import { useThemeOptional } from "@/hooks/useTheme";
 
 export interface DateInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -25,9 +26,10 @@ const labelStyle: CSSProperties = {
 };
 
 export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function DateInput(
-  { label, error, type = "date", id, style, disabled, "aria-invalid": ariaInvalid, ...props },
+  { label, error, type = "date", id, style, disabled, className, "aria-invalid": ariaInvalid, ...props },
   ref,
 ) {
+  const { theme } = useThemeOptional();
   const invalido = Boolean(error) || ariaInvalid === true || ariaInvalid === "true";
 
   return (
@@ -41,6 +43,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
         ref={ref}
         id={id}
         type={type}
+        className={`kivo-date-input ${className ?? ""}`.trim()}
         disabled={disabled}
         aria-invalid={ariaInvalid}
         style={{
@@ -52,8 +55,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
           background: "var(--color-bg-input)",
           color: "var(--color-text-primary)",
           fontSize: "var(--text-sm)",
-          // Faz o ícone do calendário/relógio e o popup nativos renderizarem no tema escuro
-          colorScheme: "dark",
+          colorScheme: theme,
           accentColor: "var(--color-brand-primary)",
           outline: "none",
           opacity: disabled ? 0.6 : 1,

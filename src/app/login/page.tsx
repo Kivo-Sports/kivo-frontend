@@ -35,6 +35,8 @@ import { Card } from "@/components/molecules/Card";
 import { FadeIn } from "@/components/atoms/FadeIn";
 import { Spinner } from "@/components/atoms/Spinner";
 import { InactiveAccountModal } from "@/components/molecules/InactiveAccountModal/InactiveAccountModal";
+import { ThemeSelector } from "@/components/molecules/ThemeSelector/ThemeSelector";
+import { useTheme } from "@/hooks/useTheme";
 
 // - Utils
 import {
@@ -56,6 +58,7 @@ interface LoginFormErrors {
 
 export default function LoginPage() {
   const router = useRouter();
+  const { theme } = useTheme();
   const dispatch = useDispatch();
   const { isAuthenticated, isHydrated, user } = useAppSelector((state) => state.auth);
   const hadManualRedirect = useRef(false);
@@ -207,13 +210,14 @@ export default function LoginPage() {
           "radial-gradient(circle at 8% 12%, rgba(0, 230, 118, 0.18), transparent 35%), radial-gradient(circle at 100% 0%, rgba(255, 214, 0, 0.1), transparent 32%), linear-gradient(145deg, var(--color-bg-base), color-mix(in srgb, var(--color-bg-base), #000 10%))",
       }}
     >
+      <div style={{ position: "absolute", top: 16, right: 16 }}><ThemeSelector /></div>
       {/* Logo acima do card */}
       <FadeIn delay={0} direction="down">
         <div style={{ marginBottom: "var(--space-6)", textAlign: "center" }}>
           <Image
-            src="/LogoKivoSportsSFundoBranca.png"
+            src={theme === "dark" ? "/LogoKivoSportsSFundoBranca.png" : "/Logo da Kivo Sports.png"}
             alt="Kivo Sports"
-            width={200}
+            width={theme === "dark" ? 200 : 58}
             height={68}
             style={{ width: "auto", height: "auto", objectFit: "contain" }}
             priority
@@ -252,7 +256,7 @@ export default function LoginPage() {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} style={{ display: "grid", gap: "var(--space-4)" }}>
+          <form className="login-form" onSubmit={handleSubmit} style={{ display: "grid", gap: "var(--space-4)" }}>
             {/* Identificador (Email ou CPF) */}
             <Input
               label="Email ou CPF:"
@@ -299,7 +303,7 @@ export default function LoginPage() {
                 href="/recuperar-senha"
                 style={{
                   fontSize: "var(--text-sm)",
-                  color: "var(--color-brand-secondary)",
+                  color: "var(--color-brand-primary)",
                   textDecoration: "none",
                   fontWeight: "600",
                   transition: "all 0.2s ease",
@@ -309,7 +313,7 @@ export default function LoginPage() {
                   e.currentTarget.style.textDecoration = "underline";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.color = "var(--color-brand-secondary)";
+                  e.currentTarget.style.color = "var(--color-brand-primary)";
                   e.currentTarget.style.textDecoration = "none";
                 }}
               >

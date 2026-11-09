@@ -55,6 +55,7 @@ import {
 } from '@/lib/registration.utils';
 import { registerUser, checkEmailExists, checkCPFExists } from '@/services/registration.service';
 import type { PasswordRequirements } from '@/lib/registration.utils';
+import { ThemeSelector } from '@/components/molecules/ThemeSelector/ThemeSelector';
 
 // Função helper para formatar título do erro
 function getErrorTitle(errorType: string): string {
@@ -342,6 +343,7 @@ export default function CadastroFormPage() {
       }}
       aria-busy={isSubmitting || isTransitioning}
     >
+      <div style={{ position: 'absolute', top: 16, right: 16 }}><ThemeSelector /></div>
       {isTransitioning ? (
         <div
           style={{
