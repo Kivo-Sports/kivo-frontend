@@ -197,6 +197,7 @@ export function FormSection({
                 paddingTop: 0,
                 borderTop: '1px solid var(--color-border-default)',
                 display: 'grid',
+                gridTemplateColumns: 'minmax(0, 1fr)',
                 gap: 'var(--space-4)',
               }}
             >
