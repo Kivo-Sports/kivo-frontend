@@ -132,7 +132,7 @@ export function EsporteSelect({ label = 'Esporte', value, onChange, error, disab
                       fontSize: 'var(--text-sm)',
                       textAlign: 'left',
                     }}
-                    onMouseEnter={(e) => { if (!ativoSel) e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
+                    onMouseEnter={(e) => { if (!ativoSel) e.currentTarget.style.background = 'var(--color-bg-elevated)'; }}
                     onMouseLeave={(e) => { if (!ativoSel) e.currentTarget.style.background = 'transparent'; }}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', minWidth: 0 }}>

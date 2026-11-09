@@ -46,8 +46,8 @@ function StatCard({ icon, valor, label, cor }: { icon: typeof Trophy; valor: num
         gap: "var(--space-3)",
         padding: "var(--space-3) var(--space-4)",
         borderRadius: "var(--radius-xl)",
-        background: "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(255,255,255,0.07)",
+        background: "var(--color-bg-surface)",
+        border: "1px solid var(--color-border-default)",
         minWidth: 0,
       }}
     >
@@ -198,7 +198,7 @@ function CampeonatoCard({ camp }: { camp: CampeonatoResponse }) {
         </div>
 
         {/* Metadata: período + número de times */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-1)", paddingTop: "var(--space-1)", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-1)", paddingTop: "var(--space-1)", borderTop: "1px solid var(--color-border-default)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "6px", paddingTop: "var(--space-2)" }}>
             <Icon icon={Calendar} size={12} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
             <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
@@ -399,8 +399,8 @@ export default function ExplorarCampeonatosPage() {
                   flexShrink: 0,
                   padding: "var(--space-2) var(--space-3)",
                   borderRadius: "var(--radius-md)",
-                  border: `1px solid ${ativo ? "rgba(0,230,118,0.4)" : "rgba(255,255,255,0.1)"}`,
-                  background: ativo ? "rgba(0,230,118,0.12)" : "rgba(255,255,255,0.03)",
+                  border: `1px solid ${ativo ? "rgba(0,230,118,0.4)" : "var(--color-border-strong)"}`,
+                  background: ativo ? "rgba(0,230,118,0.12)" : "var(--color-bg-surface)",
                   color: ativo ? "var(--color-brand-primary)" : "var(--color-text-secondary)",
                   fontSize: "var(--text-sm)",
                   fontWeight: 600,
@@ -433,7 +433,7 @@ export default function ExplorarCampeonatosPage() {
         />
       ) : filtrados.length === 0 ? (
         <Card padding="lg" style={{ textAlign: "center" }}>
-          <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "var(--color-bg-input)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto var(--space-3)" }}>
+          <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "var(--color-bg-input)", border: "1px solid var(--color-border-default)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto var(--space-3)" }}>
             <Icon icon={Trophy} size={22} style={{ color: "var(--color-text-muted)" }} />
           </div>
           <p style={{ margin: "0 0 var(--space-1)", fontWeight: 600, color: "var(--color-text-primary)", fontSize: "var(--text-sm)" }}>

@@ -54,7 +54,7 @@ export function TabelaClassificacao({ tabela, destacarAte = 0 }: TabelaClassific
                 <td style={{ padding: "var(--space-2)" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
                     <Avatar name={linha.nomeTime} src={linha.logoUrl || undefined} size="sm" />
-                    <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>{linha.nomeTime}</span>
+                    <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)" }}>{linha.nomeTime}</span>
                   </div>
                 </td>
                 {COLUNAS.map((col) => {
@@ -62,7 +62,7 @@ export function TabelaClassificacao({ tabela, destacarAte = 0 }: TabelaClassific
                   return (
                     <td
                       key={col.key}
-                      style={{ padding: "var(--space-2)", textAlign: "center", fontSize: "var(--text-sm)", fontWeight: col.key === "pontos" ? 700 : 400, color: col.key === "pontos" ? "white" : "var(--color-text-secondary)" }}
+                      style={{ padding: "var(--space-2)", textAlign: "center", fontSize: "var(--text-sm)", fontWeight: col.key === "pontos" ? 700 : 400, color: col.key === "pontos" ? "var(--color-text-primary)" : "var(--color-text-secondary)" }}
                     >
                       {valor}
                     </td>

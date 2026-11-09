@@ -5,6 +5,7 @@
 
 // - Next.js
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Barlow_Condensed, DM_Mono, DM_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -59,6 +60,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
       lang="pt-BR"
       className={`${fontDisplay.variable} ${fontBody.variable} ${fontMono.variable}`}
     >
+      <Script id="initial-theme" strategy="beforeInteractive">{`
+        try {
+          const user = JSON.parse(localStorage.getItem("auth_user") || "null");
+          const key = user?.id ? "kivo:theme:v1:user:" + user.id : "kivo:theme:v1:guest";
+          const theme = localStorage.getItem(key);
+          if (theme === "light" || theme === "dark") document.documentElement.setAttribute("data-theme", theme);
+        } catch {}
+      `}</Script>
       <body className="antialiased">
         <StoreProvider>
           <ThemeProvider>

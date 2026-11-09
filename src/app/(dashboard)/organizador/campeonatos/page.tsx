@@ -290,12 +290,12 @@ export default function OrganizadorCampeonatoPage() {
         style={{
           borderRadius: "var(--radius-2xl)",
           padding: "var(--space-6)",
-          background: "linear-gradient(145deg, rgba(0, 230, 118, 0.15) 0%, rgba(0, 0, 0, 0.7) 100%)",
+          background: "linear-gradient(145deg, var(--color-feedback-success-bg), var(--color-bg-surface))",
           border: "1px solid rgba(0, 230, 118, 0.2)",
           display: "grid",
           gridTemplateColumns: "minmax(0, 3fr) minmax(0, 2fr)",
           gap: "var(--space-6)",
-          boxShadow: "0 20px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.05)",
+          boxShadow: "var(--shadow-lg)",
         }}
       >
         <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
@@ -303,7 +303,7 @@ export default function OrganizadorCampeonatoPage() {
             <p style={{ margin: "0 0 var(--space-1)", fontSize: "var(--text-xs)", letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--color-brand-primary)" }}>
               Central de Campeonatos
             </p>
-            <h1 style={{ margin: 0, fontSize: "clamp(1.75rem, 3.5vw, 2.75rem)", fontWeight: 700, color: "white", lineHeight: 1.15 }}>
+            <h1 style={{ margin: 0, fontSize: "clamp(1.75rem, 3.5vw, 2.75rem)", fontWeight: 700, color: "var(--color-text-primary)", lineHeight: 1.15 }}>
               Olá, {userName}
             </h1>
             <p className="text-secondary" style={{ marginTop: "var(--space-2)", maxWidth: "30rem", lineHeight: 1.6 }}>
@@ -333,14 +333,14 @@ export default function OrganizadorCampeonatoPage() {
               key={stat.label}
               padding="sm"
               style={{
-                background: "rgba(255, 255, 255, 0.04)",
-                border: "1px solid rgba(255, 255, 255, 0.08)",
+                background: "var(--color-bg-surface)",
+                border: "1px solid var(--color-border-default)",
                 borderRadius: "var(--radius-lg)",
                 textAlign: "center",
               }}
             >
               <Icon icon={stat.icon} size={20} style={{ color: "var(--color-brand-primary)", margin: "0 auto var(--space-2)" }} />
-              <p style={{ margin: 0, fontSize: "var(--text-2xl)", fontWeight: 700, color: "white" }}>{stat.value}</p>
+              <p style={{ margin: 0, fontSize: "var(--text-2xl)", fontWeight: 700, color: "var(--color-text-primary)" }}>{stat.value}</p>
               <p style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", letterSpacing: "0.1em" }}>
                 {stat.label}
               </p>
@@ -386,7 +386,7 @@ export default function OrganizadorCampeonatoPage() {
                   width: "100%",
                   height: "42px",
                   background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.08)",
+                  border: "1px solid var(--color-border-default)",
                   borderRadius: "var(--radius-lg)",
                   paddingLeft: "calc(var(--space-3) + 15px + var(--space-2))",
                   paddingRight: search ? "40px" : "var(--space-3)",
@@ -464,8 +464,8 @@ export default function OrganizadorCampeonatoPage() {
               style={{
                 maxWidth: "44rem", width: "100%",
                 borderRadius: "var(--radius-2xl)",
-                background: "linear-gradient(160deg, rgba(0, 230, 118, 0.08), rgba(0, 0, 0, 0.5))",
-                textAlign: "center", color: "white",
+                background: "linear-gradient(160deg, var(--color-feedback-success-bg), var(--color-bg-surface))",
+                textAlign: "center", color: "var(--color-text-primary)",
                 border: "1px solid rgba(0, 230, 118, 0.15)",
               }}
             >
@@ -523,7 +523,7 @@ export default function OrganizadorCampeonatoPage() {
                       display: "flex",
                       flexDirection: "column",
                       gap: "var(--space-3)",
-                      background: "linear-gradient(150deg, rgba(20,20,20,0.95), rgba(10,10,10,0.8))",
+                      background: "linear-gradient(150deg, var(--color-bg-surface), var(--color-bg-elevated))",
                       border: "1px solid rgba(255,255,255,0.06)",
                       position: "relative",
                       overflow: "hidden",
@@ -533,7 +533,7 @@ export default function OrganizadorCampeonatoPage() {
                       <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", flex: 1, minWidth: 0 }}>
                         <Avatar name={campeonato.nome} src={campeonato.logoUrl || undefined} size="md" />
                         <div style={{ minWidth: 0 }}>
-                          <h3 style={{ margin: 0, fontSize: "var(--text-base)", fontWeight: 600, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          <h3 style={{ margin: 0, fontSize: "var(--text-base)", fontWeight: 600, color: "var(--color-text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {campeonato.nome}
                           </h3>
                           <p style={{ margin: "2px 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
@@ -578,9 +578,9 @@ export default function OrganizadorCampeonatoPage() {
                         marginTop: "var(--space-1)",
                         width: "100%",
                         justifyContent: "space-between",
-                        border: "1px solid rgba(255,255,255,0.08)",
-                        background: "rgba(255,255,255,0.03)",
-                        color: "white",
+                        border: "1px solid var(--color-border-default)",
+                        background: "var(--color-bg-surface)",
+                        color: "var(--color-text-primary)",
                         fontWeight: 600,
                       }}
                       onClick={() => router.push(`/organizador/campeonatos/${campeonato.id}`)}

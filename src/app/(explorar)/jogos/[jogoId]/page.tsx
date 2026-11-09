@@ -94,10 +94,10 @@ export default function ExplorarJogoDetalhePage({
       <Card
         padding="lg"
         style={{
-          background: "linear-gradient(160deg, rgba(18,18,18,0.98), rgba(10,10,10,0.99))",
-          border: "1px solid rgba(255,255,255,0.07)",
+          background: "linear-gradient(160deg, var(--color-bg-surface), var(--color-bg-elevated))",
+          border: "1px solid var(--color-border-default)",
           borderRadius: "var(--radius-2xl)",
-          boxShadow: "0 16px 48px rgba(0,0,0,0.4)",
+          boxShadow: "var(--shadow-lg)",
           marginBottom: "var(--space-5)",
         }}
       >
@@ -146,7 +146,7 @@ export default function ExplorarJogoDetalhePage({
               style={{
                 fontSize: "var(--text-sm)",
                 fontWeight: 700,
-                color: "white",
+                color: "var(--color-text-primary)",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 maxWidth: "100%",
@@ -180,7 +180,7 @@ export default function ExplorarJogoDetalhePage({
                 style={{
                   fontSize: "clamp(2rem, 8vw, 3rem)",
                   fontWeight: 800,
-                  color: "white",
+                  color: "var(--color-text-primary)",
                   lineHeight: 1,
                   fontVariantNumeric: "tabular-nums",
                 }}
@@ -222,7 +222,7 @@ export default function ExplorarJogoDetalhePage({
               style={{
                 fontSize: "var(--text-sm)",
                 fontWeight: 700,
-                color: "white",
+                color: "var(--color-text-primary)",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 maxWidth: "100%",
@@ -262,8 +262,8 @@ export default function ExplorarJogoDetalhePage({
       <Card
         padding="md"
         style={{
-          background: "rgba(255,255,255,0.02)",
-          border: "1px solid rgba(255,255,255,0.06)",
+          background: "var(--color-bg-surface)",
+          border: "1px solid var(--color-border-default)",
           borderRadius: "var(--radius-xl)",
           marginBottom: "var(--space-5)",
         }}
@@ -303,7 +303,7 @@ export default function ExplorarJogoDetalhePage({
               >
                 Quando
               </p>
-              <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>
+              <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)" }}>
                 {dataFormatada ?? "Data a definir"}
               </p>
             </div>
@@ -330,7 +330,7 @@ export default function ExplorarJogoDetalhePage({
               >
                 Onde
               </p>
-              <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>
+              <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)" }}>
                 {temLocal ? partida.local : "Local a definir"}
               </p>
             </div>

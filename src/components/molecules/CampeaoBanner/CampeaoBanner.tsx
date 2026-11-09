@@ -22,8 +22,8 @@ export function CampeaoBanner({ nome, logoUrl }: CampeaoBannerProps) {
         overflow: "hidden",
         borderRadius: "var(--radius-2xl)",
         border: "1px solid rgba(255,196,0,0.35)",
-        background: "linear-gradient(135deg, rgba(255,196,0,0.16) 0%, rgba(20,16,4,0.6) 45%, rgba(0,0,0,0.72) 100%)",
-        boxShadow: "0 16px 48px rgba(0,0,0,0.4)",
+        background: "linear-gradient(135deg, var(--color-feedback-warning-bg), var(--color-bg-surface))",
+        boxShadow: "var(--shadow-lg)",
         padding: "var(--space-5)",
         marginBottom: "var(--space-6)",
       }}
@@ -56,7 +56,7 @@ export function CampeaoBanner({ nome, logoUrl }: CampeaoBannerProps) {
               display: "flex",
             }}
           >
-            <Icon icon={Crown} size={22} style={{ color: "#FFC400" }} />
+            <Icon icon={Crown} size={22} style={{ color: "var(--color-brand-accent)" }} />
           </span>
           <div
             style={{
@@ -81,7 +81,7 @@ export function CampeaoBanner({ nome, logoUrl }: CampeaoBannerProps) {
               letterSpacing: "0.28em",
               textTransform: "uppercase",
               fontWeight: 700,
-              color: "#FFC400",
+              color: "var(--color-brand-accent)",
             }}
           >
             <Icon icon={Trophy} size={13} />
@@ -92,7 +92,7 @@ export function CampeaoBanner({ nome, logoUrl }: CampeaoBannerProps) {
               margin: "var(--space-1) 0 0",
               fontSize: "clamp(1.3rem, 3vw, 1.9rem)",
               fontWeight: 700,
-              color: "white",
+              color: "var(--color-text-primary)",
               lineHeight: 1.15,
               overflow: "hidden",
               textOverflow: "ellipsis",
