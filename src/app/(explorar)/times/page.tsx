@@ -196,7 +196,7 @@ export default function ExplorarTimesPage() {
         />
       ) : filtrados.length === 0 ? (
         <Card padding="lg" style={{ textAlign: "center" }}>
-          <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "var(--color-bg-input)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto var(--space-3)" }}>
+          <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "var(--color-bg-input)", border: "1px solid var(--color-border-default)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto var(--space-3)" }}>
             <Icon icon={Users} size={22} style={{ color: "var(--color-text-muted)" }} />
           </div>
           <p style={{ margin: "0 0 var(--space-1)", fontWeight: 600, color: "var(--color-text-primary)", fontSize: "var(--text-sm)" }}>

@@ -52,8 +52,8 @@ export function EsporteList({ onEditClick }: EsporteListProps) {
           textAlign: 'center',
           padding: 'var(--space-10) var(--space-4)',
           borderRadius: 'var(--radius-xl)',
-          border: '1px dashed rgba(255,255,255,0.12)',
-          background: 'rgba(255,255,255,0.02)',
+          border: '1px dashed var(--color-border-strong)',
+          background: 'var(--color-bg-surface)',
         }}
       >
         <p style={{ color: 'var(--color-text-secondary)', fontWeight: 600, margin: '0 0 var(--space-1)' }}>
@@ -95,9 +95,9 @@ export function EsporteList({ onEditClick }: EsporteListProps) {
                 gap: 'var(--space-3)',
                 padding: 'var(--space-3) var(--space-4)',
                 borderRadius: 'var(--radius-lg)',
-                background: 'linear-gradient(150deg, rgba(22,22,22,0.96), rgba(12,12,12,0.85))',
-                border: `1px solid ${esporte.ativo ? 'rgba(0,230,118,0.18)' : 'rgba(255,255,255,0.07)'}`,
-                boxShadow: '0 6px 20px rgba(0,0,0,0.28)',
+                background: 'linear-gradient(150deg, var(--color-bg-surface), var(--color-bg-elevated))',
+                border: `1px solid ${esporte.ativo ? 'rgba(0,230,118,0.18)' : 'var(--color-border-default)'}`,
+                boxShadow: 'var(--shadow-md)',
               }}
             >
               {/* Ícone */}
@@ -109,8 +109,8 @@ export function EsporteList({ onEditClick }: EsporteListProps) {
                   borderRadius: 'var(--radius-md)',
                   background: esporte.ativo
                     ? 'linear-gradient(150deg, rgba(0,230,118,0.2), rgba(0,230,118,0.05))'
-                    : 'rgba(255,255,255,0.05)',
-                  border: `1px solid ${esporte.ativo ? 'rgba(0,230,118,0.32)' : 'rgba(255,255,255,0.1)'}`,
+                    : 'var(--color-bg-elevated)',
+                  border: `1px solid ${esporte.ativo ? 'rgba(0,230,118,0.32)' : 'var(--color-border-strong)'}`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -128,7 +128,7 @@ export function EsporteList({ onEditClick }: EsporteListProps) {
                     fontFamily: 'var(--font-display)',
                     fontSize: 'var(--text-lg)',
                     fontWeight: 700,
-                    color: 'white',
+                    color: 'var(--color-text-primary)',
                     lineHeight: 1.15,
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -166,12 +166,12 @@ export function EsporteList({ onEditClick }: EsporteListProps) {
                   onClick={() => onEditClick?.(esporte)}
                   style={{
                     ...acaoBtnBase,
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    color: 'white',
+                    background: 'var(--color-bg-surface)',
+                    border: '1px solid var(--color-border-strong)',
+                    color: 'var(--color-text-primary)',
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-border-default)'; e.currentTarget.style.borderColor = 'var(--color-border-strong)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--color-bg-surface)'; e.currentTarget.style.borderColor = 'var(--color-border-strong)'; }}
                 >
                   <Icon icon={Pencil} size={17} />
                 </button>

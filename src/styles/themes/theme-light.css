@@ -13,21 +13,21 @@
   --color-brand-accent: #755900;
 
   /* ——— BACKGROUNDS ——— */
-  --color-bg-base: var(--light-50);
-  --color-bg-surface: var(--light-100);
-  --color-bg-elevated: var(--light-200);
+  --color-bg-base: #edf2ee;
+  --color-bg-surface: #f8faf8;
+  --color-bg-elevated: #e5ece6;
   --color-bg-overlay: rgba(255, 255, 255, 0.8);
   --color-bg-input: var(--light-100);
 
   /* ——— BORDERS ——— */
-  --color-border-default: var(--light-300);
-  --color-border-strong: var(--light-400);
+  --color-border-default: #cbd8ce;
+  --color-border-strong: #aabdae;
   --color-border-focus: #087a48;
 
   /* ——— TEXTO ——— */
   --color-text-primary: var(--light-700);
   --color-text-secondary: var(--light-600);
-  --color-text-muted: #6c6c6c;
+  --color-text-muted: #606960;
   --color-text-disabled: rgba(117, 117, 117, 0.4);
   --color-text-inverse: var(--light-50);
   --color-text-on-primary: var(--light-50);
@@ -36,7 +36,7 @@
 
   /* ——— FEEDBACK (Estados e mensagens) ——— */
   --color-feedback-success: #087a48;
-  --color-feedback-warning: #ff9100;
+  --color-feedback-warning: #945200;
   --color-feedback-danger: #d32f2f;
   --color-feedback-info: #087a78;
 

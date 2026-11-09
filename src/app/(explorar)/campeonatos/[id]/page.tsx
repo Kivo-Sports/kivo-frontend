@@ -58,14 +58,14 @@ function JogoRow({ jogo }: { jogo: JogoView }) {
         style={{
           display: "flex", alignItems: "center", gap: "var(--space-3)",
           padding: "var(--space-3) var(--space-4)", borderRadius: "var(--radius-lg)",
-          background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)",
+          background: "var(--color-bg-surface)", border: "1px solid var(--color-border-default)",
           cursor: "pointer", transition: "all 0.15s",
         }}
         onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,230,118,0.06)"; e.currentTarget.style.borderColor = "rgba(0,230,118,0.25)"; }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.025)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = "var(--color-bg-surface)"; e.currentTarget.style.borderColor = "var(--color-border-default)"; }}
       >
         <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "var(--space-2)" }}>
-          <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {jogo.casa}
           </span>
           <Avatar name={jogo.casa} src={jogo.logoCasa || undefined} size="sm" />
@@ -82,7 +82,7 @@ function JogoRow({ jogo }: { jogo: JogoView }) {
 
         <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
           <Avatar name={jogo.visitante} src={jogo.logoVisitante || undefined} size="sm" />
-          <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {jogo.visitante}
           </span>
         </div>
@@ -96,7 +96,7 @@ function JogoRow({ jogo }: { jogo: JogoView }) {
 function EmptyState({ titulo, descricao }: { titulo: string; descricao: string }) {
   return (
     <Card padding="lg" style={{ textAlign: "center" }}>
-      <p style={{ margin: "0 0 var(--space-1)", fontWeight: 600, color: "white", fontSize: "var(--text-sm)" }}>{titulo}</p>
+      <p style={{ margin: "0 0 var(--space-1)", fontWeight: 600, color: "var(--color-text-primary)", fontSize: "var(--text-sm)" }}>{titulo}</p>
       <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>{descricao}</p>
     </Card>
   );
@@ -228,10 +228,10 @@ export default function ExplorarCampeonatoDetalhePage({ params }: { params: Prom
       <Card
         padding="lg"
         style={{
-          background: "linear-gradient(160deg, rgba(18,18,18,0.98), rgba(10,10,10,0.99))",
-          border: "1px solid rgba(255,255,255,0.07)",
+          background: "linear-gradient(160deg, var(--color-bg-surface), var(--color-bg-elevated))",
+          border: "1px solid var(--color-border-default)",
           borderRadius: "var(--radius-2xl)",
-          boxShadow: "0 16px 48px rgba(0,0,0,0.4)",
+          boxShadow: "var(--shadow-lg)",
           marginBottom: "var(--space-6)",
           position: "relative",
         }}
@@ -266,33 +266,33 @@ export default function ExplorarCampeonatoDetalhePage({ params }: { params: Prom
 
           <div style={{ flex: 1, minWidth: "240px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", flexWrap: "wrap", marginBottom: "var(--space-2)" }}>
-              <h1 style={{ margin: 0, fontSize: "clamp(1.4rem, 3vw, 2rem)", fontWeight: 700, color: "white", lineHeight: 1.2 }}>
+              <h1 style={{ margin: 0, fontSize: "clamp(1.4rem, 3vw, 2rem)", fontWeight: 700, color: "var(--color-text-primary)", lineHeight: 1.2 }}>
                 {campeonato.nome}
               </h1>
               <Badge variant={statusCfg.variant}>{statusCfg.label}</Badge>
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-2)" }}>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "var(--radius-md)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "var(--radius-md)", background: "var(--color-bg-elevated)", border: "1px solid var(--color-border-default)", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
                 <Icon icon={Trophy} size={12} style={{ color: "var(--color-text-muted)" }} />
                 {formatoLabel(campeonato.formatoCampeonato)}
               </span>
               {campeonato.organizadorNome && (
-                <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "var(--radius-md)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "var(--radius-md)", background: "var(--color-bg-elevated)", border: "1px solid var(--color-border-default)", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
                   <Icon icon={UserCog} size={12} style={{ color: "var(--color-text-muted)" }} />
                   Organizado por {campeonato.organizadorNome}
                 </span>
               )}
               {mostrarDataInicio && (
-                <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "var(--radius-md)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "var(--radius-md)", background: "var(--color-bg-elevated)", border: "1px solid var(--color-border-default)", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
                   <Icon icon={Calendar} size={12} style={{ color: "var(--color-text-muted)" }} />
                   Início {dataInicio.toLocaleDateString("pt-BR")}
                 </span>
               )}
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "var(--radius-md)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "var(--radius-md)", background: "var(--color-bg-elevated)", border: "1px solid var(--color-border-default)", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
                 <Icon icon={Calendar} size={12} style={{ color: "var(--color-text-muted)" }} />
                 Término {dataFim.toLocaleDateString("pt-BR")}
               </span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "var(--radius-md)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "var(--radius-md)", background: "var(--color-bg-elevated)", border: "1px solid var(--color-border-default)", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
                 <Icon icon={Users} size={12} style={{ color: "var(--color-text-muted)" }} />
                 {campeonato.totalTimes} {campeonato.totalTimes === 1 ? "time" : "times"}
               </span>
@@ -305,7 +305,7 @@ export default function ExplorarCampeonatoDetalhePage({ params }: { params: Prom
       {campeao && <CampeaoBanner nome={campeao.nome} logoUrl={campeao.logoUrl} />}
 
       {/* Abas */}
-      <div style={{ display: "flex", gap: "4px", marginBottom: "var(--space-5)", padding: "4px", background: "rgba(255,255,255,0.03)", borderRadius: "var(--radius-lg)", border: "1px solid rgba(255,255,255,0.06)", overflowX: "auto" }}>
+      <div style={{ display: "flex", gap: "4px", marginBottom: "var(--space-5)", padding: "4px", background: "var(--color-bg-elevated)", borderRadius: "var(--radius-lg)", border: "1px solid var(--color-border-default)", overflowX: "auto" }}>
         {tabsVisiveis.map((t) => {
           const ativo = abaAtual === t.key;
           return (
@@ -339,13 +339,13 @@ export default function ExplorarCampeonatoDetalhePage({ params }: { params: Prom
               <motion.div key={time.id} variants={itemVariants}>
                 <Link href={`/times/${time.id}`} style={{ textDecoration: "none" }}>
                   <div
-                    style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", padding: "var(--space-3)", borderRadius: "var(--radius-lg)", background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)", cursor: "pointer", transition: "all 0.15s" }}
+                    style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", padding: "var(--space-3)", borderRadius: "var(--radius-lg)", background: "var(--color-bg-surface)", border: "1px solid var(--color-border-default)", cursor: "pointer", transition: "all 0.15s" }}
                     onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,230,118,0.06)"; e.currentTarget.style.borderColor = "rgba(0,230,118,0.25)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.025)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = "var(--color-bg-surface)"; e.currentTarget.style.borderColor = "var(--color-border-default)"; }}
                   >
                     <Avatar name={time.nome} src={time.logoUrl || undefined} size="md" />
                     <div style={{ minWidth: 0, flex: 1 }}>
-                      <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{time.nome}</p>
+                      <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{time.nome}</p>
                       <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)", display: "flex", alignItems: "center", gap: "4px" }}>
                         <Icon icon={MapPin} size={11} />
                         {time.cidade} · {time.estado}

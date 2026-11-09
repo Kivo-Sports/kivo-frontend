@@ -109,7 +109,7 @@ function ConviteCard({
       animate={{ opacity: 1, y: 0 }}
       style={{
         borderRadius: "var(--radius-xl)",
-        background: "linear-gradient(150deg, rgba(20,20,20,0.95), rgba(10,10,10,0.8))",
+        background: "linear-gradient(150deg, var(--color-bg-surface), var(--color-bg-elevated))",
         border: "1px solid rgba(255,255,255,0.06)",
         overflow: "hidden",
         position: "relative",
@@ -141,7 +141,7 @@ function ConviteCard({
               display: "inline-flex",
               alignItems: "center",
               gap: "4px",
-              color: "white",
+              color: "var(--color-text-primary)",
               maxWidth: "100%",
             }}
             onMouseEnter={(e) => {
@@ -329,7 +329,7 @@ function ConvitesPainel({ organizadorTimeId, times }: ConvitesPainelProps) {
         }}
       >
         <Icon icon={Bell} size={16} style={{ color: "var(--color-brand-primary)" }} />
-        <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>
+        <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)" }}>
           Convites pendentes
         </p>
         {convites.length > 0 && (
@@ -369,8 +369,8 @@ function ConvitesPainel({ organizadorTimeId, times }: ConvitesPainelProps) {
               width: "44px",
               height: "44px",
               borderRadius: "50%",
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.08)",
+              background: "var(--color-bg-elevated)",
+              border: "1px solid var(--color-border-default)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -378,7 +378,7 @@ function ConvitesPainel({ organizadorTimeId, times }: ConvitesPainelProps) {
           >
             <Icon icon={Bell} size={20} style={{ color: "var(--color-text-muted)" }} />
           </div>
-          <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>
+          <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)" }}>
             Nenhum convite no momento
           </p>
           <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
@@ -405,7 +405,7 @@ function ConvitesPainel({ organizadorTimeId, times }: ConvitesPainelProps) {
                     style={{
                       fontWeight: 700,
                       fontSize: "var(--text-sm)",
-                      color: "white",
+                      color: "var(--color-text-primary)",
                       whiteSpace: "nowrap",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
@@ -437,7 +437,7 @@ function ConvitesPainel({ organizadorTimeId, times }: ConvitesPainelProps) {
                       flex: 1,
                       height: "1px",
                       background:
-                        "linear-gradient(90deg, rgba(0,230,118,0.3), rgba(255,255,255,0.04))",
+                        "linear-gradient(90deg, rgba(0,230,118,0.3), var(--color-bg-elevated))",
                     }}
                   />
                 </div>
@@ -538,7 +538,7 @@ export default function OrganizadorTimePage() {
           borderRadius: "var(--radius-2xl)",
           padding: "var(--space-6)",
           background:
-            "linear-gradient(145deg, rgba(0, 230, 118, 0.15) 0%, rgba(0, 0, 0, 0.7) 100%)",
+            "linear-gradient(145deg, var(--color-feedback-success-bg), var(--color-bg-surface))",
           border: "1px solid rgba(0, 230, 118, 0.2)",
           boxShadow: "0 20px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.05)",
           display: "grid",
@@ -564,7 +564,7 @@ export default function OrganizadorTimePage() {
                 margin: 0,
                 fontSize: "clamp(1.75rem, 3.5vw, 2.75rem)",
                 fontWeight: 700,
-                color: "white",
+                color: "var(--color-text-primary)",
                 lineHeight: 1.15,
               }}
             >
@@ -632,7 +632,7 @@ export default function OrganizadorTimePage() {
                 style={{ color: "var(--color-brand-primary)", margin: "0 auto var(--space-2)" }}
               />
               <p
-                style={{ margin: 0, fontSize: "var(--text-2xl)", fontWeight: 700, color: "white" }}
+                style={{ margin: 0, fontSize: "var(--text-2xl)", fontWeight: 700, color: "var(--color-text-primary)" }}
               >
                 {stat.value}
               </p>
@@ -694,9 +694,9 @@ export default function OrganizadorTimePage() {
                   maxWidth: "48rem",
                   width: "100%",
                   borderRadius: "var(--radius-2xl)",
-                  background: "linear-gradient(160deg, rgba(0, 230, 118, 0.2), rgba(0, 0, 0, 0.6))",
+                  background: "linear-gradient(160deg, var(--color-feedback-success-bg), var(--color-bg-surface))",
                   textAlign: "center",
-                  color: "white",
+                  color: "var(--color-text-primary)",
                   border: "1px solid rgba(0, 230, 118, 0.3)",
                 }}
               >
@@ -779,7 +779,7 @@ export default function OrganizadorTimePage() {
                         flexDirection: "column",
                         gap: "var(--space-3)",
                         background:
-                          "linear-gradient(150deg, rgba(20,20,20,0.95), rgba(10,10,10,0.8))",
+                          "linear-gradient(150deg, var(--color-bg-surface), var(--color-bg-elevated))",
                         border: "1px solid rgba(255,255,255,0.06)",
                         position: "relative",
                         overflow: "hidden",
@@ -810,7 +810,7 @@ export default function OrganizadorTimePage() {
                                 margin: 0,
                                 fontSize: "var(--text-base)",
                                 fontWeight: 600,
-                                color: "white",
+                                color: "var(--color-text-primary)",
                                 overflow: "hidden",
                                 textOverflow: "ellipsis",
                                 whiteSpace: "nowrap",
@@ -893,9 +893,9 @@ export default function OrganizadorTimePage() {
                           marginTop: "var(--space-1)",
                           width: "100%",
                           justifyContent: "space-between",
-                          border: "1px solid rgba(255,255,255,0.08)",
-                          background: "rgba(255,255,255,0.03)",
-                          color: "white",
+                          border: "1px solid var(--color-border-default)",
+                          background: "var(--color-bg-surface)",
+                          color: "var(--color-text-primary)",
                           fontWeight: 600,
                         }}
                         onClick={() => router.push(`/organizador/times/${time.id}`)}
@@ -948,7 +948,7 @@ export default function OrganizadorTimePage() {
                         margin: 0,
                         fontSize: "var(--text-sm)",
                         fontWeight: 600,
-                        color: "white",
+                        color: "var(--color-text-primary)",
                       }}
                     >
                       Convites pendentes
@@ -1016,8 +1016,8 @@ export default function OrganizadorTimePage() {
                   style={{
                     width: "100%",
                     height: "36px",
-                    background: "rgba(255,255,255,0.04)",
-                    border: "1px solid rgba(255,255,255,0.08)",
+                    background: "var(--color-bg-elevated)",
+                    border: "1px solid var(--color-border-default)",
                     borderRadius: "var(--radius-md)",
                     paddingLeft: "calc(var(--space-3) + 14px + var(--space-2))",
                     paddingRight: "var(--space-3)",

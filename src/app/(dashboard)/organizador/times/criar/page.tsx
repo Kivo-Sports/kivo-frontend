@@ -47,7 +47,7 @@ const criarTimeSchema = z.object({
     .trim()
     .length(2, "Selecione um estado")
     .refine((value) => BR_STATE_CODES.includes(value), "Estado inválido"),
-  esporteId: z.string().uuid("Selecione um esporte"),
+  esporteId: z.guid("Selecione um esporte"),
 });
 
 const estadosBrasileiros: ReadonlyArray<{ sigla: string; nome: string }> = [
@@ -222,7 +222,7 @@ export default function CriarTimePage() {
             >
               <Icon icon={Users} size={24} style={{ color: "var(--color-brand-primary)" }} />
             </div>
-            <h1 style={{ margin: 0, fontSize: "var(--text-2xl)", fontWeight: 700, color: "white", lineHeight: 1.2 }}>
+            <h1 style={{ margin: 0, fontSize: "var(--text-2xl)", fontWeight: 700, color: "var(--color-text-primary)", lineHeight: 1.2 }}>
               Criar time
             </h1>
             <p className="text-secondary" style={{ margin: "var(--space-2) 0 0", lineHeight: 1.6 }}>
@@ -316,7 +316,7 @@ export default function CriarTimePage() {
               <p style={{ margin: "0 0 4px", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.2em" }}>
                 Prévia
               </p>
-              <p style={{ margin: 0, fontSize: "var(--text-base)", fontWeight: 600, color: "white" }}>
+              <p style={{ margin: 0, fontSize: "var(--text-base)", fontWeight: 600, color: "var(--color-text-primary)" }}>
                 {nomeValue}
               </p>
               {(cidadeValue || estadoValue) && (
@@ -337,10 +337,10 @@ export default function CriarTimePage() {
           <Card
             padding="lg"
             style={{
-              background: "linear-gradient(160deg, rgba(18, 18, 18, 0.95), rgba(10, 10, 10, 0.98))",
-              border: "1px solid rgba(255, 255, 255, 0.07)",
+              background: "linear-gradient(160deg, var(--color-bg-surface), var(--color-bg-elevated))",
+              border: "1px solid var(--color-border-default)",
               borderRadius: "var(--radius-2xl)",
-              boxShadow: "0 24px 60px rgba(0, 0, 0, 0.45)",
+              boxShadow: "var(--shadow-lg)",
             }}
           >
             <form onSubmit={handleSubmit(onSubmit)} style={{ display: "grid", gap: "var(--space-4)" }} noValidate>
@@ -425,7 +425,7 @@ export default function CriarTimePage() {
                     gap: "var(--space-2)",
                   }}
                 >
-                  <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>
+                  <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)" }}>
                     {logoFile ? "Arquivo selecionado" : "Clique ou arraste a logo aqui"}
                   </p>
                   <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>

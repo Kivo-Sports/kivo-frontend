@@ -20,7 +20,7 @@ const FASE_LABEL_LONGO: Record<string, string> = {
   Final: "Final",
 };
 
-const LINHA = "rgba(255,255,255,0.18)";
+const LINHA = "var(--color-border-strong)";
 const CARD_W = 168;
 const CONN_W = 40;
 const CELL_MIN = 132;
@@ -101,14 +101,14 @@ function TeamLine({ nome, logo, gols, venceu, finalizado, placeholder }: {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "6px", padding: "5px 8px", background: venceu ? "rgba(0,230,118,0.08)" : "transparent" }}>
       {placeholder ? (
-        <div style={{ width: "22px", height: "22px", borderRadius: "50%", border: "1px dashed rgba(255,255,255,0.2)", flexShrink: 0 }} />
+        <div style={{ width: "22px", height: "22px", borderRadius: "50%", border: "1px dashed var(--color-border-strong)", flexShrink: 0 }} />
       ) : (
         <Avatar name={nome} src={logo || undefined} size="sm" />
       )}
-      <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-xs)", fontWeight: venceu ? 700 : 600, color: placeholder ? "var(--color-text-muted)" : venceu ? "var(--color-brand-primary)" : "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+      <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-xs)", fontWeight: venceu ? 700 : 600, color: placeholder ? "var(--color-text-muted)" : venceu ? "var(--color-brand-primary)" : "var(--color-text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
         {nome}
       </span>
-      <span style={{ flexShrink: 0, width: "16px", textAlign: "center", fontSize: "12px", fontWeight: 700, color: finalizado ? (venceu ? "var(--color-brand-primary)" : "white") : "var(--color-text-muted)" }}>
+      <span style={{ flexShrink: 0, width: "16px", textAlign: "center", fontSize: "12px", fontWeight: 700, color: finalizado ? (venceu ? "var(--color-brand-primary)" : "var(--color-text-primary)") : "var(--color-text-muted)" }}>
         {finalizado ? gols : "–"}
       </span>
     </div>
@@ -127,14 +127,14 @@ function MatchCard({ slot, mirror, destaque }: { slot: Slot; mirror?: boolean; d
       style={{
         width: "100%",
         borderRadius: "var(--radius-md)",
-        background: destaque ? "rgba(0,230,118,0.06)" : "rgba(255,255,255,0.03)",
-        border: `1px solid ${destaque ? "rgba(0,230,118,0.35)" : "rgba(255,255,255,0.08)"}`,
+        background: destaque ? "rgba(0,230,118,0.06)" : "var(--color-bg-surface)",
+        border: `1px solid ${destaque ? "rgba(0,230,118,0.35)" : "var(--color-border-default)"}`,
         overflow: "hidden",
         transform: mirror ? "scaleX(-1)" : undefined,
       }}
     >
       <TeamLine nome={p?.timeCasa ?? "A definir"} logo={p?.logoCasa ?? null} gols={p?.golsCasa ?? 0} venceu={casaVenceu} finalizado={finalizado} placeholder={placeholder} />
-      <div style={{ height: 1, background: "rgba(255,255,255,0.06)" }} />
+      <div style={{ height: 1, background: "var(--color-border-default)" }} />
       <TeamLine nome={p?.timeVisitante ?? "A definir"} logo={p?.logoVisitante ?? null} gols={p?.golsVisitante ?? 0} venceu={visVenceu} finalizado={finalizado} placeholder={placeholder} />
     </div>
   );
@@ -251,10 +251,10 @@ function ListaFases({ rounds }: { rounds: Slot[][] }) {
               <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, color: "var(--color-brand-primary)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
                 {FASE_LABEL_LONGO[fase] ?? fase}
               </span>
-              <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, color: "var(--color-text-muted)", background: "rgba(255,255,255,0.06)", padding: "1px 8px", borderRadius: "var(--radius-full)" }}>
+              <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, color: "var(--color-text-muted)", background: "var(--color-border-default)", padding: "1px 8px", borderRadius: "var(--radius-full)" }}>
                 {slots.length} {slots.length === 1 ? "jogo" : "jogos"}
               </span>
-              <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.06)" }} />
+              <div style={{ flex: 1, height: 1, background: "var(--color-border-default)" }} />
             </div>
             <div
               style={{
