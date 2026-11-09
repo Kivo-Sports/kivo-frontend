@@ -213,8 +213,8 @@ function ReativarContaContent() {
           padding="lg"
           className="w-full"
           style={{
-            maxWidth: '100%',
-            width: '450px',
+            width: '100%',
+            maxWidth: '450px',
             padding: 'var(--space-6)',
           }}
         >
