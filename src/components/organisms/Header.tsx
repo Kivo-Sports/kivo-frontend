@@ -448,7 +448,7 @@ export function Header() {
                 borderRadius: "8px",
                 cursor: "pointer",
                 fontWeight: 700,
-                color: "#000",
+                color: "var(--color-text-on-primary)",
                 fontSize: "13px",
                 transition: "all 0.2s ease",
               }}

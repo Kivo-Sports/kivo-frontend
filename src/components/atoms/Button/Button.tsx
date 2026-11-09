@@ -41,7 +41,7 @@ const variantClasses: Record<ButtonVariant, string> = {
   ghost:
     "border-[var(--color-border-default)] bg-transparent text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)] hover:border-[var(--color-brand-secondary)]",
   danger:
-    "border-transparent bg-[var(--color-feedback-danger)] text-[var(--color-text-primary)] shadow-[0_6px_18px_rgba(255,23,68,0.24)] hover:opacity-95 hover:shadow-[0_8px_22px_rgba(255,23,68,0.3)]",
+    "border-transparent bg-[var(--color-feedback-danger)] text-[var(--color-text-on-danger)] shadow-[0_6px_18px_rgba(255,23,68,0.24)] hover:opacity-95 hover:shadow-[0_8px_22px_rgba(255,23,68,0.3)]",
 };
 
 export function Button({

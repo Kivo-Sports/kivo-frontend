@@ -31,6 +31,8 @@
   --color-text-disabled: rgba(117, 117, 117, 0.4);
   --color-text-inverse: var(--light-50);
   --color-text-on-primary: var(--light-50);
+  --color-text-on-danger: #ffffff;
+  --color-role-admin: #7a6100;
 
   /* ——— FEEDBACK (Estados e mensagens) ——— */
   --color-feedback-success: #087a48;
