@@ -57,7 +57,6 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
           fontSize: "var(--text-sm)",
           colorScheme: theme,
           accentColor: "var(--color-brand-primary)",
-          outline: "none",
           opacity: disabled ? 0.6 : 1,
           ...style,
         }}

@@ -371,7 +371,7 @@ export default function ExplorarCampeonatosPage() {
             placeholder="Buscar campeonato..."
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
-            style={{ width: "100%", height: "40px", padding: "0 var(--space-3) 0 calc(var(--space-3) + 22px)", background: "var(--color-bg-input)", border: "1px solid var(--color-border-default)", borderRadius: "var(--radius-md)", color: "var(--color-text-primary)", fontSize: "var(--text-sm)", outline: "none", boxSizing: "border-box", transition: "border-color 0.15s" }}
+            style={{ width: "100%", height: "40px", padding: "0 var(--space-3) 0 calc(var(--space-3) + 22px)", background: "var(--color-bg-input)", border: "1px solid var(--color-border-default)", borderRadius: "var(--radius-md)", color: "var(--color-text-primary)", fontSize: "var(--text-sm)", boxSizing: "border-box", transition: "border-color 0.15s" }}
             onFocus={(e) => { e.currentTarget.style.borderColor = "var(--color-border-focus)"; }}
             onBlur={(e) => { e.currentTarget.style.borderColor = "var(--color-border-default)"; }}
           />

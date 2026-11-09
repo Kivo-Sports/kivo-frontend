@@ -208,7 +208,6 @@ function QuantidadeField({
             padding: "0 var(--space-2)",
             border: 0,
             background: "transparent",
-            outline: "none",
             textAlign: "center",
             fontSize: "var(--text-lg)",
             fontWeight: 700,

@@ -577,7 +577,6 @@ function EditarTimeModal({ time, onClose }: { time: TimeResponse; onClose: () =>
                   padding: "var(--space-3)",
                   cursor: "pointer",
                   transition: "all 0.2s ease",
-                  outline: "none",
                   display: "grid",
                   gap: "4px",
                 }}

@@ -392,7 +392,6 @@ export default function OrganizadorCampeonatoPage() {
                   paddingRight: search ? "40px" : "var(--space-3)",
                   fontSize: "var(--text-sm)",
                   color: "var(--color-text-primary)",
-                  outline: "none",
                   boxSizing: "border-box",
                   transition: "border-color 0.15s",
                 }}

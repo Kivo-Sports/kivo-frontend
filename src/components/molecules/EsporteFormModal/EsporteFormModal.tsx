@@ -227,7 +227,7 @@ export function EsporteFormModal({ isOpen, onClose, esporte }: EsporteFormModalP
                       value={busca}
                       onChange={(e) => setBusca(e.target.value)}
                       disabled={isLoading}
-                      style={{ width: '100%', padding: 'var(--space-2) var(--space-3) var(--space-2) calc(var(--space-3) + 22px)', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 'var(--radius-md)', color: 'white', fontSize: 'var(--text-sm)', outline: 'none', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: 'var(--space-2) var(--space-3) var(--space-2) calc(var(--space-3) + 22px)', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 'var(--radius-md)', color: 'white', fontSize: 'var(--text-sm)', boxSizing: 'border-box' }}
                     />
                   </div>
 
