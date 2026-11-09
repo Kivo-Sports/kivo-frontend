@@ -92,6 +92,7 @@ export default function CadastroPage() {
         alignItems: 'center',
         justifyContent: 'center',
         padding: 'var(--space-4)',
+        paddingTop: '72px',
         background:
           'radial-gradient(circle at 8% 12%, rgba(0, 230, 118, 0.15), transparent 35%), radial-gradient(circle at 100% 0%, rgba(255, 214, 0, 0.1), transparent 32%), linear-gradient(145deg, var(--color-bg-base), color-mix(in srgb, var(--color-bg-base), #000 10%))',
       }}
@@ -138,7 +139,7 @@ export default function CadastroPage() {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
             gap: 'var(--space-5)',
             marginBottom: 'var(--space-8)',
           }}
