@@ -74,7 +74,7 @@ const criarCampeonatoSchema = z
     pontosVitoria: pontuacaoSchema,
     pontosDerrota: pontuacaoSchema,
     pontosEmpate:  pontuacaoSchema,
-    esporteId: z.string().uuid("Selecione um esporte"),
+    esporteId: z.guid("Selecione um esporte"),
   })
   .refine((d) => parseLocalDate(d.dataFim) > parseLocalDate(d.dataInicio), {
     message: "A data de fim deve ser posterior à de início",
@@ -264,7 +264,7 @@ export default function CriarCampeonatoPage() {
             >
               <Icon icon={Trophy} size={24} style={{ color: "var(--color-brand-primary)" }} />
             </div>
-            <h1 style={{ margin: 0, fontSize: "var(--text-2xl)", fontWeight: 700, color: "white", lineHeight: 1.2 }}>
+            <h1 style={{ margin: 0, fontSize: "var(--text-2xl)", fontWeight: 700, color: "var(--color-text-primary)", lineHeight: 1.2 }}>
               Criar campeonato
             </h1>
             <p className="text-secondary" style={{ margin: "var(--space-2) 0 0", lineHeight: 1.6 }}>
@@ -358,7 +358,7 @@ export default function CriarCampeonatoPage() {
               <p style={{ margin: "0 0 4px", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.2em" }}>
                 Prévia
               </p>
-              <p style={{ margin: 0, fontSize: "var(--text-base)", fontWeight: 600, color: "white" }}>
+              <p style={{ margin: 0, fontSize: "var(--text-base)", fontWeight: 600, color: "var(--color-text-primary)" }}>
                 {nomeValue}
               </p>
               {dataInicioValue && dataFimValue && (
@@ -379,13 +379,13 @@ export default function CriarCampeonatoPage() {
           <Card
             padding="lg"
             style={{
-              background: "linear-gradient(160deg, rgba(18, 18, 18, 0.95), rgba(10, 10, 10, 0.98))",
-              border: "1px solid rgba(255, 255, 255, 0.07)",
+              background: "linear-gradient(160deg, var(--color-bg-surface), var(--color-bg-elevated))",
+              border: "1px solid var(--color-border-default)",
               borderRadius: "var(--radius-2xl)",
-              boxShadow: "0 24px 60px rgba(0, 0, 0, 0.45)",
+              boxShadow: "var(--shadow-lg)",
             }}
           >
-            <form onSubmit={handleSubmit(onSubmit)} style={{ display: "grid", gap: "var(--space-4)" }} noValidate>
+            <form onSubmit={handleSubmit(onSubmit)} style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: "var(--space-4)" }} noValidate>
 
               <FormField
                 label="Nome do campeonato"
@@ -400,7 +400,7 @@ export default function CriarCampeonatoPage() {
                 error={errors.esporteId?.message}
               />
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: "var(--space-3)" }}>
                 <DateInput
                   label="Data de início"
                   type="date"
@@ -447,7 +447,7 @@ export default function CriarCampeonatoPage() {
                               background: ativo ? "var(--color-brand-primary)" : "transparent",
                             }}
                           />
-                          <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>
+                          <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)" }}>
                             {opcao.label}
                           </span>
                         </div>
@@ -485,7 +485,7 @@ export default function CriarCampeonatoPage() {
                   <div
                     style={{
                       display: "grid",
-                      gridTemplateColumns: "1fr 1fr 1fr",
+                      gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr)",
                       gap: "var(--space-3)",
                       padding: "var(--space-3)",
                       borderRadius: "var(--radius-lg)",
@@ -563,12 +563,11 @@ export default function CriarCampeonatoPage() {
                     padding: "var(--space-4)",
                     cursor: "pointer",
                     transition: "all 0.2s ease",
-                    outline: "none",
                     display: "grid",
                     gap: "var(--space-2)",
                   }}
                 >
-                  <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>
+                  <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)" }}>
                     {logoFile ? "Arquivo selecionado" : "Clique ou arraste a logo aqui"}
                   </p>
                   <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
@@ -619,7 +618,7 @@ export default function CriarCampeonatoPage() {
       <style>{`
         @media (max-width: 720px) {
           [data-criar-grid] {
-            grid-template-columns: 1fr !important;
+            grid-template-columns: minmax(0, 1fr) !important;
           }
         }
       `}</style>

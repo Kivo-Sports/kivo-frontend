@@ -155,7 +155,7 @@ export function Select({
                       textAlign: "left",
                     }}
                     onMouseEnter={(e) => {
-                      if (!ativoSel) e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+                      if (!ativoSel) e.currentTarget.style.background = "var(--color-bg-elevated)";
                     }}
                     onMouseLeave={(e) => {
                       if (!ativoSel) e.currentTarget.style.background = "transparent";

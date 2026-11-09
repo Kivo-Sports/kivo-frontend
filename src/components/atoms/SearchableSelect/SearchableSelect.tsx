@@ -134,7 +134,7 @@ export function SearchableSelect({
             }}
           >
             {/* Barra de busca */}
-            <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", padding: "var(--space-2) var(--space-3)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", padding: "var(--space-2) var(--space-3)", borderBottom: "1px solid var(--color-border-default)" }}>
               <Icon icon={Search} size={15} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
               <input
                 ref={inputRef}
@@ -145,7 +145,6 @@ export function SearchableSelect({
                   flex: 1,
                   minWidth: 0,
                   border: "none",
-                  outline: "none",
                   background: "transparent",
                   color: "var(--color-text-primary)",
                   fontSize: "var(--text-sm)",
@@ -184,7 +183,7 @@ export function SearchableSelect({
                           fontSize: "var(--text-sm)",
                           textAlign: "left",
                         }}
-                        onMouseEnter={(e) => { if (!ativoSel) e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
+                        onMouseEnter={(e) => { if (!ativoSel) e.currentTarget.style.background = "var(--color-bg-elevated)"; }}
                         onMouseLeave={(e) => { if (!ativoSel) e.currentTarget.style.background = "transparent"; }}
                       >
                         <span style={{ minWidth: 0 }}>
@@ -205,7 +204,7 @@ export function SearchableSelect({
 
             {/* Rodapé: indica que a lista é limitada */}
             {totalDisponivel > filtradas.length && (
-              <div style={{ padding: "var(--space-2) var(--space-3)", borderTop: "1px solid rgba(255,255,255,0.08)", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textAlign: "center" }}>
+              <div style={{ padding: "var(--space-2) var(--space-3)", borderTop: "1px solid var(--color-border-default)", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textAlign: "center" }}>
                 Mostrando {filtradas.length} de {totalDisponivel}. Refine a busca para ver mais.
               </div>
             )}

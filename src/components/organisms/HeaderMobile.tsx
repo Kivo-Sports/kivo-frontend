@@ -8,10 +8,12 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { clearCredentials } from "@/store/slices/authSlice";
 import { Icon } from "@/components/atoms/Icon";
 import { NotificationBell } from "@/components/molecules/NotificationBell";
+import { useTheme } from "@/hooks/useTheme";
 import { Settings, LogOut, Ticket } from "lucide-react";
 import { getRedirectPathAfterLogin, getHomeRoute } from "@/lib/auth.utils";
 
 export function HeaderMobile() {
+  const { theme } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
@@ -35,7 +37,7 @@ export function HeaderMobile() {
     cursor: "pointer",
     textDecoration: "none",
     borderRadius: "8px",
-    background: isActive(path) ? "rgba(0, 230, 118, 0.1)" : "transparent",
+    background: isActive(path) ? "color-mix(in srgb, var(--color-brand-primary), transparent 90%)" : "transparent",
   });
 
   useEffect(() => {
@@ -72,10 +74,10 @@ export function HeaderMobile() {
         left: 0,
         right: 0,
         zIndex: 1001,
-        background: "rgba(20, 20, 20, 0.98)",
+        background: "color-mix(in srgb, var(--color-bg-surface), transparent 2%)",
         backdropFilter: "blur(8px)",
-        borderBottom: "1px solid rgba(0, 230, 118, 0.2)",
-        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
+        borderBottom: "1px solid var(--color-border-default)",
+        boxShadow: "var(--shadow-sm)",
       }}
     >
       <div
@@ -104,9 +106,9 @@ export function HeaderMobile() {
           }}
         >
           <Image
-            src="/LogoKivoSportsSFundoBranca.png"
+            src={theme === "dark" ? "/LogoKivoSportsSFundoBranca.png" : "/Logo da Kivo Sports.png"}
             alt="Kivo Sports"
-            width={90}
+            width={theme === "dark" ? 90 : 38}
             height={38}
             style={{ width: "auto", height: "auto", objectFit: "contain" }}
             priority
@@ -132,7 +134,7 @@ export function HeaderMobile() {
                 borderRadius: "8px",
                 cursor: "pointer",
                 fontWeight: 700,
-                color: "#000",
+                color: "var(--color-text-on-primary)",
                 fontSize: "13px",
                 transition: "opacity 0.2s ease",
               }}
@@ -162,8 +164,8 @@ export function HeaderMobile() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                background: "rgba(0, 230, 118, 0.08)",
-                border: "1px solid rgba(0, 230, 118, 0.3)",
+                background: "color-mix(in srgb, var(--color-brand-primary), transparent 92%)",
+                border: "1px solid var(--color-border-strong)",
                 borderRadius: "8px",
                 cursor: "pointer",
                 transition: "all 0.3s ease",
@@ -174,18 +176,18 @@ export function HeaderMobile() {
                 lineHeight: 1,
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(0, 230, 118, 0.15)";
+                e.currentTarget.style.background = "color-mix(in srgb, var(--color-brand-primary), transparent 85%)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(0, 230, 118, 0.08)";
+                e.currentTarget.style.background = "color-mix(in srgb, var(--color-brand-primary), transparent 92%)";
               }}
               onTouchStart={(e) => {
                 e.stopPropagation();
-                e.currentTarget.style.background = "rgba(0, 230, 118, 0.15)";
+                e.currentTarget.style.background = "color-mix(in srgb, var(--color-brand-primary), transparent 85%)";
               }}
               onTouchEnd={(e) => {
                 e.stopPropagation();
-                e.currentTarget.style.background = "rgba(0, 230, 118, 0.08)";
+                e.currentTarget.style.background = "color-mix(in srgb, var(--color-brand-primary), transparent 92%)";
               }}
             >
               {isMenuOpen ? "✕" : "☰"}
@@ -201,8 +203,8 @@ export function HeaderMobile() {
                   width: "40px",
                   height: "40px",
                   borderRadius: "50%",
-                  background: "rgba(0, 230, 118, 0.15)",
-                  border: "2px solid rgba(0, 230, 118, 0.4)",
+                  background: "color-mix(in srgb, var(--color-brand-primary), transparent 85%)",
+                  border: "2px solid color-mix(in srgb, var(--color-brand-primary), transparent 60%)",
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
@@ -213,10 +215,10 @@ export function HeaderMobile() {
                   transition: "all 0.3s ease",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(0, 230, 118, 0.25)";
+                  e.currentTarget.style.background = "color-mix(in srgb, var(--color-brand-primary), transparent 75%)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(0, 230, 118, 0.15)";
+                  e.currentTarget.style.background = "color-mix(in srgb, var(--color-brand-primary), transparent 85%)";
                 }}
               >
                 {user?.name && user.name.length > 0 ? user.name.charAt(0).toUpperCase() : "U"}
@@ -229,9 +231,9 @@ export function HeaderMobile() {
                     top: "100%",
                     right: 0,
                     marginTop: "var(--space-2)",
-                    background: "rgba(20, 20, 20, 0.99)",
+                    background: "var(--color-bg-elevated)",
                     backdropFilter: "blur(10px)",
-                    border: "1px solid rgba(0, 230, 118, 0.3)",
+                    border: "1px solid var(--color-border-strong)",
                     borderRadius: "12px",
                     minWidth: "200px",
                     maxWidth: "calc(100vw - var(--space-6))",
@@ -244,7 +246,7 @@ export function HeaderMobile() {
                   <div
                     style={{
                       padding: "var(--space-3)",
-                      borderBottom: "1px solid rgba(0, 230, 118, 0.2)",
+                      borderBottom: "1px solid var(--color-border-default)",
                     }}
                   >
                     <div
@@ -264,7 +266,7 @@ export function HeaderMobile() {
                       style={{
                         fontSize: "var(--text-sm)",
                         fontWeight: 600,
-                        color: "white",
+                        color: "var(--color-text-primary)",
                         wordBreak: "break-all",
                       }}
                     >
@@ -275,7 +277,7 @@ export function HeaderMobile() {
                   <div
                     style={{
                       padding: "var(--space-3)",
-                      borderBottom: "1px solid rgba(0, 230, 118, 0.2)",
+                      borderBottom: "1px solid var(--color-border-default)",
                     }}
                   >
                     <div
@@ -322,7 +324,7 @@ export function HeaderMobile() {
                         marginBottom: "var(--space-1)",
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = "rgba(0, 230, 118, 0.1)";
+                        e.currentTarget.style.background = "color-mix(in srgb, var(--color-brand-primary), transparent 90%)";
                         e.currentTarget.style.color = "var(--color-brand-primary)";
                       }}
                       onMouseLeave={(e) => {
@@ -355,7 +357,7 @@ export function HeaderMobile() {
                         marginBottom: "var(--space-1)",
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = "rgba(0, 230, 118, 0.1)";
+                        e.currentTarget.style.background = "color-mix(in srgb, var(--color-brand-primary), transparent 90%)";
                         e.currentTarget.style.color = "var(--color-brand-primary)";
                       }}
                       onMouseLeave={(e) => {
@@ -413,8 +415,8 @@ export function HeaderMobile() {
             flexDirection: "column",
             gap: "var(--space-2)",
             padding: "var(--space-3) var(--space-4)",
-            background: "rgba(15, 15, 15, 0.95)",
-            borderTop: "1px solid rgba(0, 230, 118, 0.2)",
+            background: "var(--color-bg-surface)",
+            borderTop: "1px solid var(--color-border-default)",
             animation: "slideDown 0.3s ease-out",
             zIndex: 999,
             position: "relative",
@@ -428,7 +430,7 @@ export function HeaderMobile() {
             style={getNavLinkStyle(dashboardRoute)}
             onMouseEnter={(e) => {
               if (!isActive(dashboardRoute)) {
-                e.currentTarget.style.background = "rgba(0, 230, 118, 0.1)";
+                e.currentTarget.style.background = "color-mix(in srgb, var(--color-brand-primary), transparent 90%)";
                 e.currentTarget.style.color = "var(--color-brand-primary)";
               }
             }}
@@ -447,7 +449,7 @@ export function HeaderMobile() {
             style={getNavLinkStyle(homeRoute)}
             onMouseEnter={(e) => {
               if (!isActive(homeRoute)) {
-                e.currentTarget.style.background = "rgba(0, 230, 118, 0.1)";
+                e.currentTarget.style.background = "color-mix(in srgb, var(--color-brand-primary), transparent 90%)";
                 e.currentTarget.style.color = "var(--color-brand-primary)";
               }
             }}
@@ -469,7 +471,7 @@ export function HeaderMobile() {
                 ? "var(--color-brand-primary)"
                 : "var(--color-text-secondary)",
               fontWeight: pathname.startsWith("/times") ? 600 : 500,
-              background: pathname.startsWith("/times") ? "rgba(0, 230, 118, 0.1)" : "transparent",
+              background: pathname.startsWith("/times") ? "color-mix(in srgb, var(--color-brand-primary), transparent 90%)" : "transparent",
             }}
           >
             Times
@@ -484,7 +486,7 @@ export function HeaderMobile() {
                 : "var(--color-text-secondary)",
               fontWeight: pathname.startsWith("/campeonatos") ? 600 : 500,
               background: pathname.startsWith("/campeonatos")
-                ? "rgba(0, 230, 118, 0.1)"
+                ? "color-mix(in srgb, var(--color-brand-primary), transparent 90%)"
                 : "transparent",
             }}
           >

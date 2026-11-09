@@ -7,7 +7,7 @@
 
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import {
   CalendarCheck,
@@ -53,6 +53,7 @@ import {
 } from "@/lib/relatorio.utils";
 import { useListarEsportesQuery } from "@/store/api/esporteApi";
 import { useObterRelatorioAdministrativoQuery } from "@/store/api/relatorioApi";
+import { useAppSelector } from "@/store/hooks";
 
 type SelecaoPeriodo = PeriodoPreset | "personalizado";
 
@@ -60,6 +61,10 @@ const OPCOES_PERIODO: { valor: SelecaoPeriodo; rotulo: string }[] = [
   ...PERIODO_PRESETS,
   { valor: "personalizado", rotulo: "Personalizado" },
 ];
+
+function intervaloValido(inicio: string, fim: string): boolean {
+  return validarPeriodoPersonalizado({ inicio, fim }) === null;
+}
 
 const ICONES_INDICADOR: Record<ChaveIndicador, LucideIcon> = {
   receita: DollarSign,
@@ -104,8 +109,8 @@ const estiloBotaoPeriodo = (ativo: boolean) => ({
   height: "32px",
   padding: "0 var(--space-3)",
   borderRadius: "var(--radius-md)",
-  border: ativo ? "1px solid rgba(0,230,118,0.4)" : "1px solid rgba(255,255,255,0.08)",
-  background: ativo ? "rgba(0,230,118,0.12)" : "rgba(255,255,255,0.04)",
+  border: ativo ? "1px solid color-mix(in srgb, var(--color-brand-primary), transparent 60%)" : "1px solid var(--color-border-default)",
+  background: ativo ? "color-mix(in srgb, var(--color-brand-primary), transparent 90%)" : "var(--color-bg-surface)",
   color: ativo ? "var(--color-brand-primary)" : "var(--color-text-secondary)",
   fontSize: "var(--text-xs)",
   fontWeight: 600,
@@ -115,11 +120,41 @@ const estiloBotaoPeriodo = (ativo: boolean) => ({
 
 export function AdminDashboard() {
   const toast = useToast();
+  const userId = useAppSelector((state) => state.auth.user?.id);
   const [selecao, setSelecao] = useState<SelecaoPeriodo>("30d");
   const [inicioPersonalizado, setInicioPersonalizado] = useState("");
   const [fimPersonalizado, setFimPersonalizado] = useState("");
   const [esporteId, setEsporteId] = useState("todos");
   const [gerandoPdf, setGerandoPdf] = useState(false);
+  const [filtrosProntosPara, setFiltrosProntosPara] = useState<string | null>(null);
+  const [resetVersion, setResetVersion] = useState(0);
+  const resetKeyRef = useRef<string | null>(null);
+  const filtrosKey = userId ? `kivo:admin-filters:v1:user:${userId}` : null;
+
+  useEffect(() => {
+    if (!filtrosKey) return;
+    let salvo: { selecao?: string; inicio?: string; fim?: string; esporteId?: string } | null = null;
+    try {
+      const raw = localStorage.getItem(filtrosKey);
+      if (raw) salvo = JSON.parse(raw);
+    } catch { /* Dados inválidos ou armazenamento indisponível: usar padrão. */ }
+    const presets = PERIODO_PRESETS.map((item) => item.valor);
+    let nextSelection = salvo && (salvo.selecao === "personalizado" || presets.includes(salvo.selecao as PeriodoPreset)) ? salvo.selecao as SelecaoPeriodo : "30d";
+    const storedStart = typeof salvo?.inicio === "string" ? salvo.inicio : "";
+    const storedEnd = typeof salvo?.fim === "string" ? salvo.fim : "";
+    const savedDatesValid = intervaloValido(storedStart, storedEnd);
+    const nextStart = savedDatesValid ? storedStart : "";
+    const nextEnd = savedDatesValid ? storedEnd : "";
+    if (nextSelection === "personalizado" && !savedDatesValid) nextSelection = "30d";
+    // Restaurar o recorte da nova identidade antes de liberar consulta.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSelecao(nextSelection);
+    setInicioPersonalizado(nextStart);
+    setFimPersonalizado(nextEnd);
+    const savedSportId = typeof salvo?.esporteId === "string" ? salvo.esporteId : "todos";
+    setEsporteId(savedSportId === "todos" || /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(savedSportId) ? savedSportId : "todos");
+    setFiltrosProntosPara(userId ?? null);
+  }, [filtrosKey, userId]);
 
   const periodo: Periodo = useMemo(
     () =>
@@ -132,7 +167,43 @@ export function AdminDashboard() {
   const periodoInvalido = erroPeriodo !== null;
   const filtrandoEsporte = esporteId !== "todos";
 
-  const { data: esportes = [] } = useListarEsportesQuery();
+  const { data: esportes = [], isSuccess: catalogoCarregado, isFetching: catalogoCarregando } = useListarEsportesQuery();
+  const filtrosProntos = Boolean(userId) && filtrosProntosPara === userId;
+
+  useEffect(() => {
+    if (!filtrosProntos || !catalogoCarregado || catalogoCarregando || esporteId === "todos") return;
+    // Limpar apenas quando o catálogo carregou com sucesso e confirmou remoção.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (!esportes.some((item) => item.id === esporteId)) setEsporteId("todos");
+  }, [catalogoCarregado, catalogoCarregando, esporteId, esportes, filtrosProntos]);
+
+  useEffect(() => {
+    if (!filtrosKey || !filtrosProntos || periodoInvalido) return;
+    if (resetKeyRef.current === filtrosKey) {
+      resetKeyRef.current = null;
+      return;
+    }
+    let inicioSalvo = inicioPersonalizado;
+    let fimSalvo = fimPersonalizado;
+    if (!intervaloValido(inicioSalvo, fimSalvo)) {
+      try {
+        const anterior = JSON.parse(localStorage.getItem(filtrosKey) ?? "null") as { inicio?: unknown; fim?: unknown } | null;
+        const inicioAnterior = typeof anterior?.inicio === "string" ? anterior.inicio : "";
+        const fimAnterior = typeof anterior?.fim === "string" ? anterior.fim : "";
+        if (intervaloValido(inicioAnterior, fimAnterior)) {
+          inicioSalvo = inicioAnterior;
+          fimSalvo = fimAnterior;
+        } else {
+          inicioSalvo = "";
+          fimSalvo = "";
+        }
+      } catch {
+        inicioSalvo = "";
+        fimSalvo = "";
+      }
+    }
+    try { localStorage.setItem(filtrosKey, JSON.stringify({ selecao, inicio: inicioSalvo, fim: fimSalvo, esporteId })); } catch { /* Dashboard permanece utilizável durante a sessão. */ }
+  }, [filtrosKey, filtrosProntos, periodoInvalido, selecao, inicioPersonalizado, fimPersonalizado, esporteId, resetVersion]);
   const {
     data: relatorio,
     // `data` guarda o último resultado mesmo após trocar o filtro; exportação usa só o do filtro atual.
@@ -144,10 +215,10 @@ export function AdminDashboard() {
   } = useObterRelatorioAdministrativoQuery(
     { ...periodo, esporteId: filtrandoEsporte ? esporteId : undefined },
     // Relatório agregado: ao reabrir o painel, refaz a consulta se o cache tiver mais de 30s.
-    { skip: periodoInvalido, refetchOnMountOrArgChange: 30 },
+    { skip: periodoInvalido || !filtrosProntos, refetchOnMountOrArgChange: 30 },
   );
 
-  const nomeEsporte = esportes.find((e) => e.id === esporteId)?.nome ?? "Todos os esportes";
+  const nomeEsporte = esportes.find((e) => e.id === esporteId)?.nome ?? (filtrandoEsporte ? "Esporte selecionado" : "Todos os esportes");
   const contextoExportacao = {
     periodo: descreverPeriodo(periodo),
     esporte: filtrandoEsporte ? nomeEsporte : "Todos os esportes",
@@ -176,6 +247,14 @@ export function AdminDashboard() {
 
   const podeExportar = Boolean(relatorioAtual) && !isFetching && !isError && !periodoInvalido;
   const notaSemData = relatorio ? notaReceitaSemData(relatorio) : null;
+
+  if (!filtrosProntos) {
+    return (
+      <section aria-label="Dashboard gerencial" aria-busy="true" style={{ display: "grid", justifyItems: "center", padding: "var(--space-8)" }}>
+        <Spinner size="lg" ariaLabel="Restaurando filtros do dashboard" />
+      </section>
+    );
+  }
 
   return (
     <section aria-label="Dashboard gerencial">
@@ -209,7 +288,21 @@ export function AdminDashboard() {
         <div style={{ width: "220px", maxWidth: "100%", display: "flex" }}>
           <EsporteFilterSelect value={esporteId} onChange={setEsporteId} />
         </div>
-        <div style={{ display: "flex", gap: "var(--space-2)", marginLeft: "auto" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-2)", marginLeft: "auto" }}>
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={!filtrosProntos}
+            onClick={() => {
+              setSelecao("30d");
+              setInicioPersonalizado("");
+              setFimPersonalizado("");
+              setEsporteId("todos");
+              resetKeyRef.current = filtrosKey;
+              setResetVersion((value) => value + 1);
+              try { if (filtrosKey) localStorage.removeItem(filtrosKey); } catch { /* Reset local segue aplicado na tela. */ }
+            }}
+          >Restaurar padrão</Button>
           <Button
             variant="ghost"
             size="sm"

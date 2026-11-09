@@ -80,7 +80,7 @@ const editarTimeSchema = z.object({
     .trim()
     .length(2, "Selecione um estado")
     .refine((value) => BR_STATE_CODES.includes(value), "Estado inválido"),
-  esporteId: z.string().uuid("Selecione um esporte"),
+  esporteId: z.guid("Selecione um esporte"),
 });
 
 function extrairMensagemErroApi(error: unknown, fallback: string): string {
@@ -167,7 +167,7 @@ function CampeonatoItem({ camp }: { camp: CampeonatoResponse }) {
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--space-2)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", flex: 1, minWidth: 0 }}>
           <Avatar name={camp.nome} src={camp.logoUrl || undefined} size="sm" />
-          <p style={{ margin: 0, fontWeight: 600, color: "white", fontSize: "var(--text-sm)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <p style={{ margin: 0, fontWeight: 600, color: "var(--color-text-primary)", fontSize: "var(--text-sm)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {camp.nome}
           </p>
         </div>
@@ -300,7 +300,7 @@ function TimeJogoRow({ jogo }: { jogo: TimeJogoView }) {
       <span
         style={{
           flexShrink: 0,
-          fontSize: "10px",
+          fontSize: "var(--text-xs)",
           fontWeight: 700,
           letterSpacing: "0.06em",
           textTransform: "uppercase",
@@ -317,7 +317,7 @@ function TimeJogoRow({ jogo }: { jogo: TimeJogoView }) {
       <Avatar name={jogo.adversario} src={jogo.logoAdversario || undefined} size="sm" />
 
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {jogo.adversario}
         </p>
         <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
@@ -333,14 +333,14 @@ function TimeJogoRow({ jogo }: { jogo: TimeJogoView }) {
 
       {jogo.finalizado ? (
         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", flexShrink: 0 }}>
-          <span style={{ fontSize: "var(--text-base)", fontWeight: 700, color: "white" }}>
+          <span style={{ fontSize: "var(--text-base)", fontWeight: 700, color: "var(--color-text-primary)" }}>
             {jogo.golsTime} × {jogo.golsAdversario}
           </span>
           <span
             style={{
               width: 22, height: 22, borderRadius: "50%",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: "11px", fontWeight: 800,
+              fontSize: "var(--text-xs)", fontWeight: 800,
               color: corResultado,
               background: "rgba(255,255,255,0.05)",
               border: `1px solid ${corResultado}`,
@@ -487,7 +487,7 @@ function EditarTimeModal({ time, onClose }: { time: TimeResponse; onClose: () =>
         exit={{ opacity: 0, scale: 0.95, y: 12 }}
         transition={{ duration: 0.2 }}
         onClick={(e) => e.stopPropagation()}
-        style={{ width: "100%", maxWidth: "440px", background: "rgba(18,18,18,0.99)", border: "1px solid rgba(0,230,118,0.25)", borderRadius: "var(--radius-2xl)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)", display: "flex", flexDirection: "column", maxHeight: "85vh", overflow: "hidden" }}
+        style={{ width: "100%", maxWidth: "440px", background: "var(--color-bg-surface)", border: "1px solid rgba(0,230,118,0.25)", borderRadius: "var(--radius-2xl)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)", display: "flex", flexDirection: "column", maxHeight: "85vh", overflow: "hidden" }}
       >
         <div style={{ padding: "var(--space-4) var(--space-5)", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
           <p style={{ margin: 0, fontSize: "var(--text-xs)", letterSpacing: "0.25em", textTransform: "uppercase", color: "var(--color-brand-primary)" }}>
@@ -577,12 +577,11 @@ function EditarTimeModal({ time, onClose }: { time: TimeResponse; onClose: () =>
                   padding: "var(--space-3)",
                   cursor: "pointer",
                   transition: "all 0.2s ease",
-                  outline: "none",
                   display: "grid",
                   gap: "4px",
                 }}
               >
-                <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>
+                <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)" }}>
                   {logoFile ? "Novo arquivo selecionado" : time.logoUrl ? "Trocar logo" : "Clique ou arraste a logo aqui"}
                 </p>
                 <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
@@ -719,7 +718,7 @@ export default function DetalheTimePage({ params }: { params: Promise<{ id: stri
           padding="lg"
           className="time-hero-card"
           style={{
-            background: "linear-gradient(160deg, rgba(18,18,18,0.98), rgba(10,10,10,0.99))",
+            background: "linear-gradient(160deg, var(--color-bg-surface), var(--color-bg-elevated))",
             border: "1px solid rgba(255,255,255,0.07)",
             borderRadius: "var(--radius-2xl)",
             boxShadow: "0 16px 48px rgba(0,0,0,0.4)",
@@ -737,7 +736,7 @@ export default function DetalheTimePage({ params }: { params: Promise<{ id: stri
 
             <div style={{ flex: 1, minWidth: "200px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", flexWrap: "wrap", marginBottom: "var(--space-2)" }}>
-                <h1 style={{ margin: 0, fontSize: "clamp(1.4rem, 3vw, 2rem)", fontWeight: 700, color: "white", lineHeight: 1.2 }}>
+                <h1 style={{ margin: 0, fontSize: "clamp(1.4rem, 3vw, 2rem)", fontWeight: 700, color: "var(--color-text-primary)", lineHeight: 1.2 }}>
                   {time.nome}
                 </h1>
                 <Badge variant={time.ativo ? "success" : "danger"}>
@@ -784,7 +783,7 @@ export default function DetalheTimePage({ params }: { params: Promise<{ id: stri
               </div>
               <div data-time-stat-divider style={{ width: 1, background: "rgba(255,255,255,0.1)", alignSelf: "stretch" }} />
               <div style={{ textAlign: "center" }}>
-                <p style={{ margin: 0, fontSize: "var(--text-2xl)", fontWeight: 700, color: "white", lineHeight: 1 }}>
+                <p style={{ margin: 0, fontSize: "var(--text-2xl)", fontWeight: 700, color: "var(--color-text-primary)", lineHeight: 1 }}>
                   {campeonatosDoTime.length}
                 </p>
                 <p style={{ margin: "4px 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.12em" }}>
@@ -811,7 +810,7 @@ export default function DetalheTimePage({ params }: { params: Promise<{ id: stri
           <Card
             padding="md"
             style={{
-              background: "linear-gradient(160deg, rgba(18,18,18,0.98), rgba(10,10,10,0.99))",
+              background: "linear-gradient(160deg, var(--color-bg-surface), var(--color-bg-elevated))",
               border: "1px solid rgba(255,255,255,0.07)",
               borderRadius: "var(--radius-2xl)",
               boxShadow: "0 16px 48px rgba(0,0,0,0.4)",
@@ -969,7 +968,7 @@ export default function DetalheTimePage({ params }: { params: Promise<{ id: stri
       <style>{`
         @media (max-width: 768px) {
           [data-detalhes-grid] {
-            grid-template-columns: 1fr !important;
+            grid-template-columns: minmax(0, 1fr) !important;
           }
         }
         @media (max-width: 640px) {
@@ -1002,16 +1001,16 @@ export default function DetalheTimePage({ params }: { params: Promise<{ id: stri
               exit={{ opacity: 0, scale: 0.95, y: 12 }}
               transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
-              style={{ width: "100%", maxWidth: "400px", background: "rgba(18, 18, 18, 0.99)", border: "1px solid rgba(255, 193, 7, 0.3)", borderRadius: "var(--radius-2xl)", padding: "var(--space-6)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)", textAlign: "center" }}
+              style={{ width: "100%", maxWidth: "400px", background: "var(--color-bg-surface)", border: "1px solid rgba(255, 193, 7, 0.3)", borderRadius: "var(--radius-2xl)", padding: "var(--space-6)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)", textAlign: "center" }}
             >
               <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "rgba(255, 193, 7, 0.1)", border: "1px solid rgba(255, 193, 7, 0.3)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto var(--space-4)" }}>
                 <Icon icon={AlertTriangle} size={22} style={{ color: "rgba(255, 193, 7, 0.9)" }} />
               </div>
-              <h2 style={{ margin: "0 0 var(--space-2)", fontSize: "var(--text-lg)", fontWeight: 600, color: "white" }}>
+              <h2 style={{ margin: "0 0 var(--space-2)", fontSize: "var(--text-lg)", fontWeight: 600, color: "var(--color-text-primary)" }}>
                 Desativar time?
               </h2>
               <p style={{ margin: "0 0 var(--space-5)", fontSize: "var(--text-sm)", color: "var(--color-text-secondary)", lineHeight: 1.6 }}>
-                <strong style={{ color: "white" }}>{time.nome}</strong> ficará inativo e não poderá participar de novos campeonatos. Você poderá reativar a qualquer momento.
+                <strong style={{ color: "var(--color-text-primary)" }}>{time.nome}</strong> ficará inativo e não poderá participar de novos campeonatos. Você poderá reativar a qualquer momento.
               </p>
               <div style={{ display: "flex", gap: "var(--space-3)", justifyContent: "center" }}>
                 <Button variant="ghost" onClick={() => setShowDesativarModal(false)} disabled={isToggling}>

@@ -130,14 +130,14 @@ function ConvidarTimeModal({ campeonato, onClose, convidadosIniciais }: { campeo
         exit={{ opacity: 0, scale: 0.95, y: 12 }}
         transition={{ duration: 0.2 }}
         onClick={(e) => e.stopPropagation()}
-        style={{ width: "100%", maxWidth: "480px", background: "rgba(18,18,18,0.99)", border: "1px solid rgba(0,230,118,0.25)", borderRadius: "var(--radius-2xl)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)", display: "flex", flexDirection: "column", maxHeight: "80vh", overflow: "hidden" }}
+        style={{ width: "100%", maxWidth: "480px", background: "var(--color-bg-surface)", border: "1px solid rgba(0,230,118,0.25)", borderRadius: "var(--radius-2xl)", boxShadow: "var(--shadow-lg)", display: "flex", flexDirection: "column", maxHeight: "80vh", overflow: "hidden" }}
       >
-        <div style={{ padding: "var(--space-4) var(--space-5)", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
+        <div style={{ padding: "var(--space-4) var(--space-5)", borderBottom: "1px solid var(--color-border-default)", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
           <div>
             <p style={{ margin: 0, fontSize: "var(--text-xs)", letterSpacing: "0.25em", textTransform: "uppercase", color: "var(--color-brand-primary)" }}>
               Convidar Time
             </p>
-            <h2 style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-lg)", fontWeight: 600, color: "white" }}>
+            <h2 style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-lg)", fontWeight: 600, color: "var(--color-text-primary)" }}>
               {campeonato.nome}
             </h2>
             {campeonato.esporteNome && (
@@ -149,8 +149,8 @@ function ConvidarTimeModal({ campeonato, onClose, convidadosIniciais }: { campeo
           </div>
           <button
             onClick={onClose}
-            style={{ width: "32px", height: "32px", borderRadius: "50%", border: "1px solid rgba(255,255,255,0.1)", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--color-text-muted)", transition: "all 0.15s" }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "white"; }}
+            style={{ width: "32px", height: "32px", borderRadius: "50%", border: "1px solid var(--color-border-strong)", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--color-text-muted)", transition: "all 0.15s" }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "var(--color-border-default)"; e.currentTarget.style.color = "var(--color-text-primary)"; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--color-text-muted)"; }}
           >
             <Icon icon={X} size={16} />
@@ -165,9 +165,9 @@ function ConvidarTimeModal({ campeonato, onClose, convidadosIniciais }: { campeo
               placeholder="Buscar por nome ou cidade..."
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
-              style={{ width: "100%", padding: "var(--space-2) var(--space-3) var(--space-2) calc(var(--space-3) + 22px)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "var(--radius-md)", color: "white", fontSize: "var(--text-sm)", outline: "none", boxSizing: "border-box", transition: "border-color 0.15s" }}
+              style={{ width: "100%", padding: "var(--space-2) var(--space-3) var(--space-2) calc(var(--space-3) + 22px)", background: "var(--color-bg-elevated)", border: "1px solid var(--color-border-strong)", borderRadius: "var(--radius-md)", color: "var(--color-text-primary)", fontSize: "var(--text-sm)", boxSizing: "border-box", transition: "border-color 0.15s" }}
               onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(0,230,118,0.4)"; }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = "var(--color-border-strong)"; }}
             />
           </div>
         </div>
@@ -195,7 +195,7 @@ function ConvidarTimeModal({ campeonato, onClose, convidadosIniciais }: { campeo
                     <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", minWidth: 0 }}>
                       <Avatar name={time.nome} src={time.logoUrl || undefined} size="sm" />
                       <div style={{ minWidth: 0 }}>
-                        <p style={{ margin: 0, fontWeight: 600, color: "white", fontSize: "var(--text-sm)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{time.nome}</p>
+                        <p style={{ margin: 0, fontWeight: 600, color: "var(--color-text-primary)", fontSize: "var(--text-sm)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{time.nome}</p>
                         <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>{time.cidade} · {time.estado}</p>
                       </div>
                     </div>
@@ -253,16 +253,16 @@ function RemoverTimeModal({ nomeTime, onConfirm, onClose, isLoading }: {
         exit={{ opacity: 0, scale: 0.95, y: 12 }}
         transition={{ duration: 0.2 }}
         onClick={(e) => e.stopPropagation()}
-        style={{ width: "100%", maxWidth: "400px", background: "rgba(18,18,18,0.99)", border: "1px solid rgba(255,72,68,0.3)", borderRadius: "var(--radius-2xl)", padding: "var(--space-6)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)", textAlign: "center" }}
+        style={{ width: "100%", maxWidth: "400px", background: "var(--color-bg-surface)", border: "1px solid rgba(255,72,68,0.3)", borderRadius: "var(--radius-2xl)", padding: "var(--space-6)", boxShadow: "var(--shadow-lg)", textAlign: "center" }}
       >
         <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "rgba(255,72,68,0.1)", border: "1px solid rgba(255,72,68,0.3)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto var(--space-4)" }}>
           <Icon icon={Trash2} size={22} style={{ color: "var(--color-feedback-danger)" }} />
         </div>
-        <h2 style={{ margin: "0 0 var(--space-2)", fontSize: "var(--text-lg)", fontWeight: 600, color: "white" }}>
+        <h2 style={{ margin: "0 0 var(--space-2)", fontSize: "var(--text-lg)", fontWeight: 600, color: "var(--color-text-primary)" }}>
           Remover time?
         </h2>
         <p style={{ margin: "0 0 var(--space-5)", fontSize: "var(--text-sm)", color: "var(--color-text-secondary)", lineHeight: 1.6 }}>
-          <strong style={{ color: "white" }}>{nomeTime}</strong> será removido do campeonato. O convite será cancelado.
+          <strong style={{ color: "var(--color-text-primary)" }}>{nomeTime}</strong> será removido do campeonato. O convite será cancelado.
         </p>
         <div style={{ display: "flex", gap: "var(--space-3)", justifyContent: "center" }}>
           <Button variant="ghost" onClick={onClose} disabled={isLoading}>Voltar</Button>
@@ -289,16 +289,16 @@ function CancelarModal({ nome, onConfirm, onClose, isLoading }: { nome: string; 
         exit={{ opacity: 0, scale: 0.95, y: 12 }}
         transition={{ duration: 0.2 }}
         onClick={(e) => e.stopPropagation()}
-        style={{ width: "100%", maxWidth: "400px", background: "rgba(18,18,18,0.99)", border: "1px solid rgba(255,72,68,0.3)", borderRadius: "var(--radius-2xl)", padding: "var(--space-6)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)", textAlign: "center" }}
+        style={{ width: "100%", maxWidth: "400px", background: "var(--color-bg-surface)", border: "1px solid rgba(255,72,68,0.3)", borderRadius: "var(--radius-2xl)", padding: "var(--space-6)", boxShadow: "var(--shadow-lg)", textAlign: "center" }}
       >
         <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "rgba(255,72,68,0.1)", border: "1px solid rgba(255,72,68,0.3)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto var(--space-4)" }}>
           <Icon icon={AlertTriangle} size={22} style={{ color: "var(--color-feedback-danger)" }} />
         </div>
-        <h2 style={{ margin: "0 0 var(--space-2)", fontSize: "var(--text-lg)", fontWeight: 600, color: "white" }}>
+        <h2 style={{ margin: "0 0 var(--space-2)", fontSize: "var(--text-lg)", fontWeight: 600, color: "var(--color-text-primary)" }}>
           Cancelar campeonato?
         </h2>
         <p style={{ margin: "0 0 var(--space-5)", fontSize: "var(--text-sm)", color: "var(--color-text-secondary)", lineHeight: 1.6 }}>
-          <strong style={{ color: "white" }}>{nome}</strong> será marcado como cancelado. Esta ação não pode ser desfeita.
+          <strong style={{ color: "var(--color-text-primary)" }}>{nome}</strong> será marcado como cancelado. Esta ação não pode ser desfeita.
         </p>
         <div style={{ display: "flex", gap: "var(--space-3)", justifyContent: "center" }}>
           <Button variant="ghost" onClick={onClose} disabled={isLoading}>Voltar</Button>
@@ -357,13 +357,12 @@ function EditarCampeonatoModal({ campeonato, onClose }: { campeonato: Campeonato
   const inputStyle = {
     width: "100%",
     height: "38px",
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    background: "var(--color-bg-elevated)",
+    border: "1px solid var(--color-border-strong)",
     borderRadius: "var(--radius-md)",
     padding: "0 var(--space-3)",
-    color: "white",
+    color: "var(--color-text-primary)",
     fontSize: "var(--text-sm)",
-    outline: "none",
     boxSizing: "border-box" as const,
   };
 
@@ -417,15 +416,15 @@ function EditarCampeonatoModal({ campeonato, onClose }: { campeonato: Campeonato
         exit={{ opacity: 0, scale: 0.95, y: 12 }}
         transition={{ duration: 0.2 }}
         onClick={(e) => e.stopPropagation()}
-        style={{ width: "100%", maxWidth: "440px", background: "rgba(18,18,18,0.99)", border: "1px solid rgba(0,230,118,0.25)", borderRadius: "var(--radius-2xl)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)", display: "flex", flexDirection: "column", maxHeight: "85vh", overflow: "hidden" }}
+        style={{ width: "100%", maxWidth: "440px", background: "var(--color-bg-surface)", border: "1px solid rgba(0,230,118,0.25)", borderRadius: "var(--radius-2xl)", boxShadow: "var(--shadow-lg)", display: "flex", flexDirection: "column", maxHeight: "85vh", overflow: "hidden" }}
       >
-        <div style={{ padding: "var(--space-4) var(--space-5)", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
+        <div style={{ padding: "var(--space-4) var(--space-5)", borderBottom: "1px solid var(--color-border-default)", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
           <p style={{ margin: 0, fontSize: "var(--text-xs)", letterSpacing: "0.25em", textTransform: "uppercase", color: "var(--color-brand-primary)" }}>
             Editar Campeonato
           </p>
           <button
             onClick={onClose}
-            style={{ width: "28px", height: "28px", borderRadius: "50%", border: "1px solid rgba(255,255,255,0.1)", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--color-text-muted)" }}
+            style={{ width: "28px", height: "28px", borderRadius: "50%", border: "1px solid var(--color-border-strong)", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--color-text-muted)" }}
           >
             <Icon icon={X} size={14} />
           </button>
@@ -546,12 +545,11 @@ function EditarCampeonatoModal({ campeonato, onClose }: { campeonato: Campeonato
                 padding: "var(--space-3)",
                 cursor: "pointer",
                 transition: "all 0.2s ease",
-                outline: "none",
                 display: "grid",
                 gap: "4px",
               }}
             >
-              <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>
+              <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)" }}>
                 {logoFile ? "Novo arquivo selecionado" : campeonato.logoUrl ? "Trocar logo" : "Clique ou arraste a logo aqui"}
               </p>
               <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
@@ -568,7 +566,7 @@ function EditarCampeonatoModal({ campeonato, onClose }: { campeonato: Campeonato
           </div>
         </div>
 
-        <div style={{ padding: "var(--space-4) var(--space-5)", borderTop: "1px solid rgba(255,255,255,0.06)", display: "flex", gap: "var(--space-3)", flexShrink: 0 }}>
+        <div style={{ padding: "var(--space-4) var(--space-5)", borderTop: "1px solid var(--color-border-default)", display: "flex", gap: "var(--space-3)", flexShrink: 0 }}>
           <Button variant="ghost" onClick={onClose} disabled={isLoading} fullWidth>
             Cancelar
           </Button>
@@ -640,7 +638,7 @@ function CountdownFimCampeonato({ dataFim }: { dataFim: Date }) {
         <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
           {passou ? "Aguardando finalização" : "Finaliza em"}
         </p>
-        <p style={{ margin: "2px 0 0", fontSize: "var(--text-base)", fontWeight: 700, color: passou ? "rgba(255,193,7,0.95)" : "white" }}>
+        <p style={{ margin: "2px 0 0", fontSize: "var(--text-base)", fontWeight: 700, color: passou ? "var(--color-feedback-warning)" : "var(--color-text-primary)" }}>
           {formatarContagem(restante)}
         </p>
         <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
@@ -902,10 +900,10 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
           padding="lg"
           className="camp-hero-card"
           style={{
-            background: "linear-gradient(160deg, rgba(18,18,18,0.98), rgba(10,10,10,0.99))",
-            border: "1px solid rgba(255,255,255,0.07)",
+            background: "linear-gradient(160deg, var(--color-bg-surface), var(--color-bg-elevated))",
+            border: "1px solid var(--color-border-default)",
             borderRadius: "var(--radius-2xl)",
-            boxShadow: "0 16px 48px rgba(0,0,0,0.4)",
+            boxShadow: "var(--shadow-lg)",
             position: "relative",
             overflow: "hidden",
           }}
@@ -938,7 +936,6 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                   display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
                   overflow: "hidden",
                   cursor: campeonato.logoUrl ? "zoom-in" : "default",
-                  outline: "none",
                   boxShadow: "0 0 0 4px rgba(0,230,118,0.08), 0 10px 28px rgba(0,230,118,0.2)",
                 }}
               >
@@ -946,7 +943,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
               </div>
 
               <div style={{ minWidth: 0 }}>
-                <h1 style={{ margin: 0, fontSize: "clamp(1.4rem, 3vw, 2.1rem)", fontWeight: 700, color: "white", lineHeight: 1.15, overflow: "hidden", textOverflow: "ellipsis" }}>
+                <h1 style={{ margin: 0, fontSize: "clamp(1.4rem, 3vw, 2.1rem)", fontWeight: 700, color: "var(--color-text-primary)", lineHeight: 1.15, overflow: "hidden", textOverflow: "ellipsis" }}>
                   {campeonato.nome}
                 </h1>
 
@@ -958,7 +955,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                     {FORMATO_CAMPEONATO[campeonato.formatoCampeonato as FormatoCampeonato]?.label ?? campeonato.formatoCampeonato}
                   </span>
                   {campeonato.esporteNome && (
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "5px 12px", borderRadius: "var(--radius-full)", fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-secondary)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "5px 12px", borderRadius: "var(--radius-full)", fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-secondary)", background: "var(--color-bg-elevated)", border: "1px solid var(--color-border-strong)" }}>
                       {campeonato.esporteIcone && <IconifyIcon icon={campeonato.esporteIcone} width={14} height={14} />}
                       {campeonato.esporteNome}
                     </span>
@@ -967,11 +964,11 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
 
                 {/* Datas */}
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-2)", marginTop: "var(--space-3)" }}>
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "var(--radius-md)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "var(--radius-md)", background: "var(--color-bg-elevated)", border: "1px solid var(--color-border-default)", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
                     <Icon icon={Calendar} size={12} style={{ color: "var(--color-text-muted)" }} />
                     {dataInicio.toLocaleDateString("pt-BR")} → {dataFim.toLocaleDateString("pt-BR")}
                   </span>
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "var(--radius-md)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "var(--radius-md)", background: "var(--color-bg-elevated)", border: "1px solid var(--color-border-default)", fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
                     <Icon icon={Clock} size={12} style={{ color: "var(--color-text-muted)" }} />
                     Criado em {new Date(campeonato.criadoEm).toLocaleDateString("pt-BR")}
                   </span>
@@ -1005,10 +1002,10 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                 </p>
               </div>
 
-              <div data-camp-stat-divider style={{ width: 1, background: "rgba(255,255,255,0.1)", alignSelf: "stretch" }} />
+              <div data-camp-stat-divider style={{ width: 1, background: "var(--color-border-strong)", alignSelf: "stretch" }} />
 
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
-                <Icon icon={Clock} size={15} style={{ color: "rgba(255,255,255,0.4)" }} />
+                <Icon icon={Clock} size={15} style={{ color: "var(--color-text-muted)" }} />
                 <p style={{ margin: 0, fontSize: "var(--text-3xl)", fontWeight: 700, color: contagem.valor != null ? "white" : "var(--color-text-muted)", lineHeight: 1 }}>
                   {contagem.valor ?? "—"}
                 </p>
@@ -1020,14 +1017,14 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
               {/* Pontuação — só para formatos com fase de pontos corridos */}
               {mostraClassificacao && (
                 <>
-                  <div data-camp-stat-divider style={{ width: 1, background: "rgba(255,255,255,0.1)", alignSelf: "stretch" }} />
+                  <div data-camp-stat-divider style={{ width: 1, background: "var(--color-border-strong)", alignSelf: "stretch" }} />
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "6px" }}>
-                    <Icon icon={Award} size={15} style={{ color: "rgba(255,255,255,0.4)" }} />
+                    <Icon icon={Award} size={15} style={{ color: "var(--color-text-muted)" }} />
                     <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center", justifyContent: "center" }}>
                       <span style={{ fontSize: "var(--text-base)", fontWeight: 700, color: "var(--color-feedback-success)" }}>V {campeonato.pontosVitoria}</span>
-                      <span style={{ color: "rgba(255,255,255,0.15)" }}>·</span>
+                      <span style={{ color: "var(--color-border-strong)" }}>·</span>
                       <span style={{ fontSize: "var(--text-base)", fontWeight: 700, color: "var(--color-feedback-warning)" }}>E {campeonato.pontosEmpate}</span>
-                      <span style={{ color: "rgba(255,255,255,0.15)" }}>·</span>
+                      <span style={{ color: "var(--color-border-strong)" }}>·</span>
                       <span style={{ fontSize: "var(--text-base)", fontWeight: 700, color: "var(--color-text-muted)" }}>D {campeonato.pontosDerrota}</span>
                     </div>
                     <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.12em" }}>
@@ -1059,7 +1056,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
           {/* Ações */}
           <Card
             padding="md"
-            style={{ background: "linear-gradient(160deg, rgba(18,18,18,0.98), rgba(10,10,10,0.99))", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "var(--radius-2xl)", boxShadow: "0 16px 48px rgba(0,0,0,0.4)" }}
+            style={{ background: "linear-gradient(160deg, var(--color-bg-surface), var(--color-bg-elevated))", border: "1px solid var(--color-border-default)", borderRadius: "var(--radius-2xl)", boxShadow: "var(--shadow-lg)" }}
           >
             <p style={{ margin: "0 0 var(--space-3)", fontSize: "var(--text-xs)", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--color-text-muted)" }}>
               Ações disponíveis
@@ -1072,12 +1069,12 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
               const faltam = Math.max(0, MIN_TIMES - confirmados);
               const progresso = Math.min(100, (confirmados / MIN_TIMES) * 100);
               return (
-                <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)", marginBottom: "var(--space-3)", padding: "var(--space-3)", borderRadius: "var(--radius-md)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)", marginBottom: "var(--space-3)", padding: "var(--space-3)", borderRadius: "var(--radius-md)", background: "rgba(255,255,255,0.03)", border: "1px solid var(--color-border-default)" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
                     <Icon icon={Users} size={14} style={{ color: faltam === 0 ? "var(--color-feedback-success)" : "var(--color-text-muted)", flexShrink: 0 }} />
                     <div style={{ flex: 1 }}>
                       <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Times confirmados</p>
-                      <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: faltam === 0 ? "var(--color-feedback-success)" : "white" }}>
+                      <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: faltam === 0 ? "var(--color-feedback-success)" : "var(--color-text-primary)" }}>
                         {confirmados}/{MIN_TIMES} confirmados
                         {faltam > 0 && (
                           <span style={{ fontWeight: 400, color: "rgba(255,193,7,0.85)", marginLeft: "6px" }}>
@@ -1087,7 +1084,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                       </p>
                     </div>
                   </div>
-                  <div style={{ height: "4px", borderRadius: "var(--radius-full)", background: "rgba(255,255,255,0.07)", overflow: "hidden" }}>
+                  <div style={{ height: "4px", borderRadius: "var(--radius-full)", background: "var(--color-border-default)", overflow: "hidden" }}>
                     <div style={{ height: "100%", width: `${progresso}%`, borderRadius: "var(--radius-full)", background: faltam === 0 ? "var(--color-feedback-success)" : "rgba(255,193,7,0.7)", transition: "width 0.3s ease" }} />
                   </div>
                 </div>
@@ -1142,7 +1139,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
 
               {/* Finalizado/Cancelado — read-only notice */}
               {isClosed && (
-                <div style={{ padding: "var(--space-3)", borderRadius: "var(--radius-md)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", textAlign: "center" }}>
+                <div style={{ padding: "var(--space-3)", borderRadius: "var(--radius-md)", background: "rgba(255,255,255,0.03)", border: "1px solid var(--color-border-default)", textAlign: "center" }}>
                   <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
                     Este campeonato está encerrado e não aceita mais ações.
                   </p>
@@ -1170,7 +1167,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
           {/* Gestão do campeonato */}
           <Card
             padding="md"
-            style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "var(--radius-2xl)" }}
+            style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--color-border-default)", borderRadius: "var(--radius-2xl)" }}
           >
             <p style={{ margin: "0 0 var(--space-3)", fontSize: "var(--text-xs)", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--color-text-muted)" }}>
               Gestão do campeonato
@@ -1187,7 +1184,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                       <Icon icon={item.icon} size={15} style={{ color: "var(--color-brand-primary)" }} />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>{item.title}</p>
+                      <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)" }}>{item.title}</p>
                       <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)", lineHeight: 1.4 }}>{item.desc}</p>
                     </div>
                     <Icon icon={ChevronRight} size={14} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
@@ -1206,11 +1203,11 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
         >
           <Card
             padding="lg"
-            style={{ background: "linear-gradient(160deg, rgba(15,15,15,0.98), rgba(8,8,8,0.99))", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "var(--radius-2xl)", boxShadow: "0 16px 48px rgba(0,0,0,0.4)" }}
+            style={{ background: "linear-gradient(160deg, var(--color-bg-surface), var(--color-bg-elevated))", border: "1px solid var(--color-border-default)", borderRadius: "var(--radius-2xl)", boxShadow: "var(--shadow-lg)" }}
           >
             {/* Seletor de abas — campeonato em andamento */}
             {iniciado && (
-              <div style={{ display: "flex", gap: "4px", marginBottom: "var(--space-5)", padding: "4px", background: "rgba(255,255,255,0.03)", borderRadius: "var(--radius-lg)", border: "1px solid rgba(255,255,255,0.06)" }}>
+              <div style={{ display: "flex", gap: "4px", marginBottom: "var(--space-5)", padding: "4px", background: "rgba(255,255,255,0.03)", borderRadius: "var(--radius-lg)", border: "1px solid var(--color-border-default)" }}>
                 {([
                   { key: "times" as const,  label: "Times",       icon: Users },
                   { key: "tabela" as const, label: abaTabelaLabel, icon: temMataMata && !temPontosCorridos ? GitFork : BarChart3 },
@@ -1242,13 +1239,13 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
             {(!iniciado || aba === "times") && (
             <>
             {/* Cabeçalho */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-3)", marginBottom: "var(--space-4)", paddingBottom: "var(--space-4)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-3)", marginBottom: "var(--space-4)", paddingBottom: "var(--space-4)", borderBottom: "1px solid var(--color-border-default)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
                 <div style={{ width: "2.25rem", height: "2.25rem", borderRadius: "var(--radius-lg)", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,230,118,0.1)", border: "1px solid rgba(0,230,118,0.2)", flexShrink: 0 }}>
                   <Icon icon={Users} size={16} style={{ color: "var(--color-brand-primary)" }} />
                 </div>
                 <div>
-                  <p style={{ margin: 0, fontSize: "var(--text-base)", fontWeight: 700, color: "white" }}>Times participantes</p>
+                  <p style={{ margin: 0, fontSize: "var(--text-base)", fontWeight: 700, color: "var(--color-text-primary)" }}>Times participantes</p>
                   <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
                     {participacoesDisplay.length === 0
                       ? "Nenhum time convidado ainda"
@@ -1288,9 +1285,9 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                   placeholder="Buscar time..."
                   value={teamSearch}
                   onChange={(e) => setTeamSearch(e.target.value)}
-                  style={{ width: "100%", height: "36px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "var(--radius-md)", paddingLeft: "calc(var(--space-3) + 14px + var(--space-2))", paddingRight: "var(--space-3)", fontSize: "var(--text-sm)", color: "var(--color-text-primary)", outline: "none", boxSizing: "border-box", transition: "border-color 0.15s" }}
+                  style={{ width: "100%", height: "36px", background: "var(--color-bg-elevated)", border: "1px solid var(--color-border-default)", borderRadius: "var(--radius-md)", paddingLeft: "calc(var(--space-3) + 14px + var(--space-2))", paddingRight: "var(--space-3)", fontSize: "var(--text-sm)", color: "var(--color-text-primary)", boxSizing: "border-box", transition: "border-color 0.15s" }}
                   onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(0,230,118,0.35)"; }}
-                  onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = "var(--color-border-default)"; }}
                 />
               </div>
             )}
@@ -1298,10 +1295,10 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
             {/* Times agrupados por categoria */}
             {participacoesDisplay.length === 0 ? (
               <div style={{ textAlign: "center", padding: "var(--space-8) var(--space-4)" }}>
-                <div style={{ width: "3.5rem", height: "3.5rem", borderRadius: "50%", background: "rgba(255,255,255,0.04)", border: "1px dashed rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto var(--space-3)" }}>
+                <div style={{ width: "3.5rem", height: "3.5rem", borderRadius: "50%", background: "var(--color-bg-elevated)", border: "1px dashed var(--color-border-strong)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto var(--space-3)" }}>
                   <Icon icon={Users} size={22} style={{ color: "var(--color-text-muted)" }} />
                 </div>
-                <p style={{ margin: "0 0 var(--space-1)", fontWeight: 600, color: "white", fontSize: "var(--text-sm)" }}>
+                <p style={{ margin: "0 0 var(--space-1)", fontWeight: 600, color: "var(--color-text-primary)", fontSize: "var(--text-sm)" }}>
                   Nenhum time convidado ainda
                 </p>
                 <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
@@ -1327,7 +1324,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                       <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, color: grupo.color, letterSpacing: "0.1em", textTransform: "uppercase" }}>
                         {grupo.label}
                       </span>
-                      <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--color-text-muted)", background: "rgba(255,255,255,0.06)", padding: "1px 8px", borderRadius: "var(--radius-full)", lineHeight: 1.7 }}>
+                      <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, color: "var(--color-text-muted)", background: "var(--color-border-default)", padding: "1px 8px", borderRadius: "var(--radius-full)", lineHeight: 1.7 }}>
                         {grupo.items.length}
                       </span>
                       <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.05)" }} />
@@ -1346,17 +1343,17 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                             gap: "var(--space-3)",
                             padding: "var(--space-3)",
                             borderRadius: "var(--radius-lg)",
-                            background: "rgba(255,255,255,0.025)",
+                            background: "var(--color-bg-surface)",
                             border: `1px solid ${grupo.border}`,
                             transition: "background 0.15s",
                             cursor: "pointer",
                           }}
                           onMouseEnter={(e) => { e.currentTarget.style.background = grupo.bg; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.025)"; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = "var(--color-bg-surface)"; }}
                         >
                           <Avatar name={p.nomeTime} src={p.logoUrl || undefined} size="sm" />
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <p style={{ margin: 0, fontWeight: 600, color: "white", fontSize: "var(--text-sm)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            <p style={{ margin: 0, fontWeight: 600, color: "var(--color-text-primary)", fontSize: "var(--text-sm)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                               {p.nomeTime}
                             </p>
                             {(p.cidade || p.estado) && (
@@ -1416,7 +1413,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                 ) : (
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
-                      <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                      <tr style={{ borderBottom: "1px solid var(--color-border-default)" }}>
                         <th style={{ padding: "var(--space-2)", textAlign: "left", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", fontWeight: 600, width: "28px" }}>#</th>
                         <th style={{ padding: "var(--space-2)", textAlign: "left", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", fontWeight: 600 }}>Time</th>
                         {[{ k: "pontos", l: "P" }, { k: "jogos", l: "J" }, { k: "vitorias", l: "V" }, { k: "saldoGols", l: "SG" }].map((c) => (
@@ -1426,15 +1423,15 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                     </thead>
                     <tbody>
                       {classificacaoData.map((linha) => (
-                        <tr key={linha.timeId} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                        <tr key={linha.timeId} style={{ borderBottom: "1px solid var(--color-bg-elevated)" }}>
                           <td style={{ padding: "var(--space-2)", fontSize: "var(--text-sm)", fontWeight: 700, color: linha.posicao <= 3 ? "var(--color-brand-primary)" : "var(--color-text-muted)" }}>{linha.posicao}</td>
                           <td style={{ padding: "var(--space-2)" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
                               <Avatar name={linha.nomeTime} src={linha.logoUrl || undefined} size="sm" />
-                              <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{linha.nomeTime}</span>
+                              <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{linha.nomeTime}</span>
                             </div>
                           </td>
-                          <td style={{ padding: "var(--space-2)", textAlign: "center", fontSize: "var(--text-sm)", fontWeight: 700, color: "white" }}>{linha.pontos}</td>
+                          <td style={{ padding: "var(--space-2)", textAlign: "center", fontSize: "var(--text-sm)", fontWeight: 700, color: "var(--color-text-primary)" }}>{linha.pontos}</td>
                           <td style={{ padding: "var(--space-2)", textAlign: "center", fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>{linha.jogos}</td>
                           <td style={{ padding: "var(--space-2)", textAlign: "center", fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>{linha.vitorias}</td>
                           <td style={{ padding: "var(--space-2)", textAlign: "center", fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>{linha.saldoGols}</td>
@@ -1446,7 +1443,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
 
                 <Link
                   href={`/organizador/campeonatos/${id}/${temMataMata && !temPontosCorridos ? "chaveamento" : "classificacao"}`}
-                  style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--space-1)", marginTop: "var(--space-4)", padding: "var(--space-2)", borderRadius: "var(--radius-md)", border: "1px solid rgba(255,255,255,0.08)", color: "var(--color-text-secondary)", textDecoration: "none", fontSize: "var(--text-xs)", fontWeight: 600 }}
+                  style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--space-1)", marginTop: "var(--space-4)", padding: "var(--space-2)", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border-default)", color: "var(--color-text-secondary)", textDecoration: "none", fontSize: "var(--text-xs)", fontWeight: 600 }}
                 >
                   Ver {temMataMata && !temPontosCorridos ? "chaveamento" : "tabela"} completo
                 </Link>
@@ -1479,16 +1476,16 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                       <button
                         key={j.id}
                         onClick={() => router.push(`/organizador/campeonatos/${id}/jogo/${j.id}`)}
-                        style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", padding: "var(--space-3)", borderRadius: "var(--radius-lg)", background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)", cursor: "pointer", width: "100%", textAlign: "left", transition: "all 0.15s" }}
+                        style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", padding: "var(--space-3)", borderRadius: "var(--radius-lg)", background: "var(--color-bg-surface)", border: "1px solid var(--color-border-default)", cursor: "pointer", width: "100%", textAlign: "left", transition: "all 0.15s" }}
                         onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,230,118,0.06)"; e.currentTarget.style.borderColor = "rgba(0,230,118,0.25)"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.025)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = "var(--color-bg-surface)"; e.currentTarget.style.borderColor = "var(--color-border-default)"; }}
                       >
-                        <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--color-text-muted)", background: "rgba(255,255,255,0.06)", padding: "2px 8px", borderRadius: "var(--radius-full)", flexShrink: 0 }}>
+                        <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, color: "var(--color-text-muted)", background: "var(--color-border-default)", padding: "2px 8px", borderRadius: "var(--radius-full)", flexShrink: 0 }}>
                           {j.etiqueta}
                         </span>
-                        <span style={{ flex: 1, textAlign: "right", fontSize: "var(--text-sm)", fontWeight: 600, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{j.casa}</span>
+                        <span style={{ flex: 1, textAlign: "right", fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{j.casa}</span>
                         <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)", fontWeight: 700 }}>×</span>
-                        <span style={{ flex: 1, textAlign: "left", fontSize: "var(--text-sm)", fontWeight: 600, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{j.visitante}</span>
+                        <span style={{ flex: 1, textAlign: "left", fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{j.visitante}</span>
                         <Icon icon={ChevronRight} size={15} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
                       </button>
                     ))}
@@ -1497,7 +1494,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
 
                 <Link
                   href={`/organizador/campeonatos/${id}/jogos`}
-                  style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--space-1)", marginTop: "var(--space-4)", padding: "var(--space-2)", borderRadius: "var(--radius-md)", border: "1px solid rgba(255,255,255,0.08)", color: "var(--color-text-secondary)", textDecoration: "none", fontSize: "var(--text-xs)", fontWeight: 600 }}
+                  style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--space-1)", marginTop: "var(--space-4)", padding: "var(--space-2)", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border-default)", color: "var(--color-text-secondary)", textDecoration: "none", fontSize: "var(--text-xs)", fontWeight: 600 }}
                 >
                   Ver todos os jogos
                 </Link>
@@ -1518,7 +1515,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
           <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 700, color: "var(--color-text-secondary)" }}>
             Funcionalidades em desenvolvimento
           </p>
-          <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.06)" }} />
+          <div style={{ flex: 1, height: 1, background: "var(--color-border-default)" }} />
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "var(--space-2)" }}>
@@ -1532,7 +1529,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
               <span style={{ flex: 1, fontSize: "var(--text-xs)", fontWeight: 600, color: "var(--color-text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {feat.title}
               </span>
-              <span style={{ fontSize: "9px", background: "rgba(255,255,255,0.06)", padding: "2px 6px", borderRadius: "var(--radius-full)", color: "var(--color-text-muted)", letterSpacing: "0.06em", textTransform: "uppercase", flexShrink: 0 }}>
+              <span style={{ fontSize: "var(--text-xs)", background: "var(--color-border-default)", padding: "2px 6px", borderRadius: "var(--radius-full)", color: "var(--color-text-muted)", letterSpacing: "0.06em", textTransform: "uppercase", flexShrink: 0 }}>
                 Em breve
               </span>
             </div>
@@ -1623,7 +1620,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
-              style={{ maxWidth: "min(90vw, 640px)", maxHeight: "85vh", objectFit: "contain", borderRadius: "var(--radius-lg)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)", cursor: "default" }}
+              style={{ maxWidth: "min(90vw, 640px)", maxHeight: "85vh", objectFit: "contain", borderRadius: "var(--radius-lg)", boxShadow: "var(--shadow-lg)", cursor: "default" }}
             />
           </motion.div>
         )}

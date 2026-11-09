@@ -46,6 +46,13 @@ export interface IngressoDetalhes {
   pixCopiaCola: string;
   nomeTitular: string;
   cpfTitular: string;
+  tipoDeficienciaId: string;
+  tipoDeficienciaDescricao: string;
+}
+
+export interface TipoDeficiencia {
+  id: string;
+  descricao: string;
 }
 
 export interface CompraIngressosResponse {
@@ -60,10 +67,32 @@ export interface AtribuirTitularIngressoRequest {
   ingressoId: string;
   nome: string;
   cpf: string;
+  tipoDeficienciaId: string;
 }
 
 export interface MensagemResponse {
   message: string;
+}
+
+/** Resposta 200 de POST /api/ingresso/validar-portaria/{codigo}: entrada liberada. */
+export interface ValidacaoPortariaResponse {
+  message: string;
+  ingressoId: string;
+  nomeTitular: string;
+  /** CPF com as pontas ocultas (***.456.789-**), para conferir com o documento. */
+  cpfTitularMascarado: string;
+  nomeLote: string;
+  nomePartida: string;
+  dataPartida: string | null;
+  localPartida: string;
+  dataUso: string;
+}
+
+/** Corpo do 409 da portaria: o ingresso já liberou uma entrada antes. */
+export interface IngressoJaUtilizadoErro {
+  message: string;
+  nomeTitular: string;
+  dataUso: string | null;
 }
 
 export interface PartidaComIngressos {

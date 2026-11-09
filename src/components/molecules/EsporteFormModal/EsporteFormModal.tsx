@@ -142,7 +142,7 @@ export function EsporteFormModal({ isOpen, onClose, esporte }: EsporteFormModalP
                 <button
                   type="button"
                   onClick={onClose}
-                  style={{ width: '32px', height: '32px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-muted)' }}
+                  style={{ width: '32px', height: '32px', borderRadius: '50%', border: '1px solid var(--color-border-strong)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-muted)' }}
                 >
                   <Icon icon={X} size={16} />
                 </button>
@@ -170,8 +170,8 @@ export function EsporteFormModal({ isOpen, onClose, esporte }: EsporteFormModalP
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-3)',
                       padding: 'var(--space-3) var(--space-4)',
                       borderRadius: 'var(--radius-lg)',
-                      border: `1px solid ${ativo ? 'rgba(0,230,118,0.3)' : 'rgba(255,255,255,0.1)'}`,
-                      background: ativo ? 'rgba(0,230,118,0.06)' : 'rgba(255,255,255,0.03)',
+                      border: `1px solid ${ativo ? 'rgba(0,230,118,0.3)' : 'var(--color-border-strong)'}`,
+                      background: ativo ? 'rgba(0,230,118,0.06)' : 'var(--color-bg-surface)',
                       cursor: 'pointer',
                       transition: 'all 0.2s',
                     }}
@@ -191,7 +191,7 @@ export function EsporteFormModal({ isOpen, onClose, esporte }: EsporteFormModalP
                         position: 'relative', flexShrink: 0,
                         width: '46px', height: '26px',
                         borderRadius: 'var(--radius-full)',
-                        background: ativo ? 'var(--color-brand-primary)' : 'rgba(255,255,255,0.15)',
+                        background: ativo ? 'var(--color-brand-primary)' : 'var(--color-border-strong)',
                         transition: 'background 0.2s',
                       }}
                     >
@@ -227,7 +227,7 @@ export function EsporteFormModal({ isOpen, onClose, esporte }: EsporteFormModalP
                       value={busca}
                       onChange={(e) => setBusca(e.target.value)}
                       disabled={isLoading}
-                      style={{ width: '100%', padding: 'var(--space-2) var(--space-3) var(--space-2) calc(var(--space-3) + 22px)', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 'var(--radius-md)', color: 'white', fontSize: 'var(--text-sm)', outline: 'none', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: 'var(--space-2) var(--space-3) var(--space-2) calc(var(--space-3) + 22px)', background: 'var(--color-bg-elevated)', border: '1px solid var(--color-border-strong)', borderRadius: 'var(--radius-md)', color: 'var(--color-text-primary)', fontSize: 'var(--text-sm)', boxSizing: 'border-box' }}
                     />
                   </div>
 
@@ -240,7 +240,7 @@ export function EsporteFormModal({ isOpen, onClose, esporte }: EsporteFormModalP
                       overflowY: 'auto',
                       padding: 'var(--space-2)',
                       borderRadius: 'var(--radius-md)',
-                      border: `1px solid ${erroIcone ? 'var(--color-feedback-danger)' : 'rgba(255,255,255,0.08)'}`,
+                      border: `1px solid ${erroIcone ? 'var(--color-feedback-danger)' : 'var(--color-border-default)'}`,
                       background: 'rgba(0,0,0,0.2)',
                     }}
                   >
@@ -263,16 +263,16 @@ export function EsporteFormModal({ isOpen, onClose, esporte }: EsporteFormModalP
                                 padding: 'var(--space-2)',
                                 borderRadius: 'var(--radius-md)',
                                 cursor: 'pointer',
-                                background: selecionado ? 'rgba(0,230,118,0.12)' : 'rgba(255,255,255,0.03)',
-                                border: `1px solid ${selecionado ? 'rgba(0,230,118,0.5)' : 'rgba(255,255,255,0.06)'}`,
+                                background: selecionado ? 'rgba(0,230,118,0.12)' : 'var(--color-bg-surface)',
+                                border: `1px solid ${selecionado ? 'rgba(0,230,118,0.5)' : 'var(--color-border-default)'}`,
                                 color: selecionado ? 'var(--color-brand-primary)' : 'white',
                                 transition: 'all 0.12s',
                               }}
                               onMouseEnter={(e) => { if (!selecionado) e.currentTarget.style.background = 'rgba(0,230,118,0.06)'; }}
-                              onMouseLeave={(e) => { if (!selecionado) e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+                              onMouseLeave={(e) => { if (!selecionado) e.currentTarget.style.background = 'var(--color-bg-surface)'; }}
                             >
                               <IconifyIcon icon={item.name} width={26} height={26} />
-                              <span style={{ fontSize: '9px', color: 'var(--color-text-muted)', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>
+                              <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>
                                 {item.label}
                               </span>
                             </button>

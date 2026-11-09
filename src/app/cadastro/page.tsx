@@ -22,6 +22,7 @@ import { Button } from '@/components/atoms/Button';
 import { Card } from '@/components/molecules/Card';
 import { FadeIn } from '@/components/atoms/FadeIn';
 import type { UserType } from '@/lib/registration.utils';
+import { ThemeSelector } from '@/components/molecules/ThemeSelector/ThemeSelector';
 
 interface UserTypeOption {
   type: UserType;
@@ -95,6 +96,7 @@ export default function CadastroPage() {
           'radial-gradient(circle at 8% 12%, rgba(0, 230, 118, 0.15), transparent 35%), radial-gradient(circle at 100% 0%, rgba(255, 214, 0, 0.1), transparent 32%), linear-gradient(145deg, var(--color-bg-base), color-mix(in srgb, var(--color-bg-base), #000 10%))',
       }}
     >
+      <div style={{ position: 'absolute', top: 16, right: 16 }}><ThemeSelector /></div>
       <div
         style={{
           width: '100%',

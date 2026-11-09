@@ -8,10 +8,12 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { clearCredentials } from "@/store/slices/authSlice";
 import { Icon } from "@/components/atoms/Icon";
 import { NotificationBell } from "@/components/molecules/NotificationBell";
+import { useTheme } from "@/hooks/useTheme";
 import { LogOut, Settings, Ticket } from "lucide-react";
 import { getRedirectPathAfterLogin, getHomeRoute } from "@/lib/auth.utils";
 
 export function Header() {
+  const { theme } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
@@ -62,10 +64,10 @@ export function Header() {
         left: 0,
         right: 0,
         zIndex: 1000,
-        background: "rgba(20, 20, 20, 0.98)",
+        background: "color-mix(in srgb, var(--color-bg-surface), transparent 2%)",
         backdropFilter: "blur(8px)",
-        borderBottom: "1px solid rgba(0, 230, 118, 0.2)",
-        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
+        borderBottom: "1px solid var(--color-border-default)",
+        boxShadow: "var(--shadow-sm)",
       }}
     >
       <div
@@ -102,9 +104,9 @@ export function Header() {
           }}
         >
           <Image
-            src="/LogoKivoSportsSFundoBranca.png"
+            src={theme === "dark" ? "/LogoKivoSportsSFundoBranca.png" : "/Logo da Kivo Sports.png"}
             alt="Kivo Sports"
-            width={120}
+            width={theme === "dark" ? 120 : 40}
             height={40}
             // width/height "auto" preserva a proporção junto do `img { max-width: 100% }`
             // global e elimina o warning do next/image.
@@ -232,8 +234,8 @@ export function Header() {
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 style={{
                   padding: "var(--space-2) var(--space-3)",
-                  background: "rgba(0, 230, 118, 0.08)",
-                  border: "1px solid rgba(0, 230, 118, 0.3)",
+                  background: "color-mix(in srgb, var(--color-brand-primary), transparent 92%)",
+                  border: "1px solid var(--color-border-strong)",
                   borderRadius: "8px",
                   cursor: "pointer",
                   transition: "all 0.3s ease",
@@ -246,12 +248,12 @@ export function Header() {
                   maxWidth: "180px",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(0, 230, 118, 0.15)";
-                  e.currentTarget.style.borderColor = "rgba(0, 230, 118, 0.5)";
+                  e.currentTarget.style.background = "color-mix(in srgb, var(--color-brand-primary), transparent 85%)";
+                  e.currentTarget.style.borderColor = "color-mix(in srgb, var(--color-brand-primary), transparent 50%)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(0, 230, 118, 0.08)";
-                  e.currentTarget.style.borderColor = "rgba(0, 230, 118, 0.3)";
+                  e.currentTarget.style.background = "color-mix(in srgb, var(--color-brand-primary), transparent 92%)";
+                  e.currentTarget.style.borderColor = "color-mix(in srgb, var(--color-brand-primary), transparent 70%)";
                 }}
               >
                 {user?.email || "Usuário"}
@@ -264,9 +266,9 @@ export function Header() {
                     top: "100%",
                     right: 0,
                     marginTop: "var(--space-3)",
-                    background: "rgba(20, 20, 20, 0.99)",
+                    background: "var(--color-bg-elevated)",
                     backdropFilter: "blur(10px)",
-                    border: "1px solid rgba(0, 230, 118, 0.3)",
+                    border: "1px solid var(--color-border-strong)",
                     borderRadius: "12px",
                     minWidth: "240px",
                     maxWidth: "calc(100vw - 32px)",
@@ -279,7 +281,7 @@ export function Header() {
                   <div
                     style={{
                       padding: "var(--space-4)",
-                      borderBottom: "1px solid rgba(0, 230, 118, 0.2)",
+                      borderBottom: "1px solid var(--color-border-default)",
                     }}
                   >
                     <div
@@ -298,7 +300,7 @@ export function Header() {
                       style={{
                         fontSize: "var(--text-sm)",
                         fontWeight: 600,
-                        color: "white",
+                        color: "var(--color-text-primary)",
                         wordBreak: "break-all",
                       }}
                     >
@@ -309,7 +311,7 @@ export function Header() {
                   <div
                     style={{
                       padding: "var(--space-4)",
-                      borderBottom: "1px solid rgba(0, 230, 118, 0.2)",
+                      borderBottom: "1px solid var(--color-border-default)",
                     }}
                   >
                     <div
@@ -356,7 +358,7 @@ export function Header() {
                         marginBottom: "var(--space-1)",
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = "rgba(0, 230, 118, 0.1)";
+                        e.currentTarget.style.background = "color-mix(in srgb, var(--color-brand-primary), transparent 90%)";
                         e.currentTarget.style.color = "var(--color-brand-primary)";
                       }}
                       onMouseLeave={(e) => {
@@ -389,7 +391,7 @@ export function Header() {
                         marginBottom: "var(--space-1)",
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = "rgba(0, 230, 118, 0.1)";
+                        e.currentTarget.style.background = "color-mix(in srgb, var(--color-brand-primary), transparent 90%)";
                         e.currentTarget.style.color = "var(--color-brand-primary)";
                       }}
                       onMouseLeave={(e) => {
@@ -446,7 +448,7 @@ export function Header() {
                 borderRadius: "8px",
                 cursor: "pointer",
                 fontWeight: 700,
-                color: "#000",
+                color: "var(--color-text-on-primary)",
                 fontSize: "13px",
                 transition: "all 0.2s ease",
               }}

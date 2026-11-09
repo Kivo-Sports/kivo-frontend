@@ -46,8 +46,8 @@ function StatCard({ icon, valor, label, cor }: { icon: typeof Trophy; valor: num
         gap: "var(--space-3)",
         padding: "var(--space-3) var(--space-4)",
         borderRadius: "var(--radius-xl)",
-        background: "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(255,255,255,0.07)",
+        background: "var(--color-bg-surface)",
+        border: "1px solid var(--color-border-default)",
         minWidth: 0,
       }}
     >
@@ -67,10 +67,10 @@ function StatCard({ icon, valor, label, cor }: { icon: typeof Trophy; valor: num
         <Icon icon={icon} size={15} style={{ color: cor }} />
       </div>
       <div style={{ minWidth: 0 }}>
-        <p style={{ margin: 0, fontSize: "var(--text-lg)", fontWeight: 700, color: "white", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
+        <p style={{ margin: 0, fontSize: "var(--text-lg)", fontWeight: 700, color: "var(--color-text-primary)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
           {valor}
         </p>
-        <p style={{ margin: "2px 0 0", fontSize: "10px", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>
+        <p style={{ margin: "2px 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>
           {label}
         </p>
       </div>
@@ -84,10 +84,10 @@ function StatusPill({ status }: { status: string }) {
   const cfg = obterStatusCampeonato(status);
   const isAoVivo = status === "EmAndamento";
   const cor =
-    status === "EmAndamento" ? "#60a5fa"
+    status === "EmAndamento" ? "var(--color-feedback-info)"
       : status === "InscricoesAbertas" ? "var(--color-brand-primary)"
-        : status === "Finalizado" ? "rgba(255,196,0,0.95)"
-          : "var(--color-text-muted)";
+        : status === "Finalizado" ? "var(--color-brand-accent)"
+          : "var(--color-text-secondary)";
   return (
     <span
       style={{
@@ -96,9 +96,9 @@ function StatusPill({ status }: { status: string }) {
         gap: "6px",
         padding: "3px 10px",
         borderRadius: "var(--radius-full)",
-        background: `${cor}1f`,
-        border: `1px solid ${cor}55`,
-        fontSize: "10px",
+        background: "var(--color-bg-surface)",
+        border: `1px solid color-mix(in srgb, ${cor} 42%, var(--color-border-default))`,
+        fontSize: "var(--text-xs)",
         fontWeight: 700,
         color: cor,
         textTransform: "uppercase",
@@ -135,8 +135,8 @@ function CampeonatoCard({ camp }: { camp: CampeonatoResponse }) {
         hoverable
         style={{
           height: "100%",
-          background: "linear-gradient(160deg, rgba(20,20,20,0.98), rgba(10,10,10,0.99))",
-          border: "1px solid rgba(255,255,255,0.07)",
+          background: "linear-gradient(160deg, var(--color-bg-surface), var(--color-bg-elevated))",
+          border: "1px solid var(--color-border-default)",
           borderRadius: "var(--radius-2xl)",
           cursor: "pointer",
           display: "flex",
@@ -168,7 +168,7 @@ function CampeonatoCard({ camp }: { camp: CampeonatoResponse }) {
           </div>
 
           <div style={{ minWidth: 0, flex: 1 }}>
-            <h2 style={{ margin: 0, fontSize: "var(--text-base)", fontWeight: 700, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <h2 style={{ margin: 0, fontSize: "var(--text-base)", fontWeight: 700, color: "var(--color-text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {camp.nome}
             </h2>
             <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "4px", flexWrap: "wrap" }}>
@@ -180,9 +180,9 @@ function CampeonatoCard({ camp }: { camp: CampeonatoResponse }) {
                   gap: "4px",
                   padding: "3px 8px",
                   borderRadius: "var(--radius-full)",
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  fontSize: "10px",
+                  background: "var(--color-bg-input)",
+                  border: "1px solid var(--color-border-default)",
+                  fontSize: "var(--text-xs)",
                   fontWeight: 600,
                   color: "var(--color-text-muted)",
                   textTransform: "uppercase",
@@ -198,7 +198,7 @@ function CampeonatoCard({ camp }: { camp: CampeonatoResponse }) {
         </div>
 
         {/* Metadata: período + número de times */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-1)", paddingTop: "var(--space-1)", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-1)", paddingTop: "var(--space-1)", borderTop: "1px solid var(--color-border-default)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "6px", paddingTop: "var(--space-2)" }}>
             <Icon icon={Calendar} size={12} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
             <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
@@ -232,18 +232,18 @@ function CampeonatoCard({ camp }: { camp: CampeonatoResponse }) {
               gap: "var(--space-2)",
               padding: "var(--space-2) var(--space-3)",
               borderRadius: "var(--radius-lg)",
-              background: "linear-gradient(135deg, rgba(255,196,0,0.12), rgba(255,196,0,0.03))",
-              border: "1px solid rgba(255,196,0,0.3)",
+              background: "linear-gradient(135deg, color-mix(in srgb, var(--color-brand-accent), transparent 88%), color-mix(in srgb, var(--color-brand-accent), transparent 96%))",
+              border: "1px solid color-mix(in srgb, var(--color-brand-accent), transparent 70%)",
               marginTop: "auto",
             }}
           >
-            <Icon icon={Crown} size={14} style={{ color: "#FFC400", flexShrink: 0 }} />
+            <Icon icon={Crown} size={14} style={{ color: "var(--color-brand-accent)", flexShrink: 0 }} />
             <Avatar name={camp.vencedorTimeNome ?? "?"} src={camp.vencedorTimeLogo || undefined} size="sm" />
             <div style={{ minWidth: 0, flex: 1 }}>
-              <p style={{ margin: 0, fontSize: "9px", color: "rgba(255,196,0,0.8)", textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, lineHeight: 1 }}>
+              <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-brand-accent)", textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, lineHeight: 1 }}>
                 Campeão
               </p>
-              <p style={{ margin: "2px 0 0", fontSize: "var(--text-sm)", fontWeight: 700, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <p style={{ margin: "2px 0 0", fontSize: "var(--text-sm)", fontWeight: 700, color: "var(--color-text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {camp.vencedorTimeNome}
               </p>
             </div>
@@ -312,8 +312,8 @@ export default function ExplorarCampeonatosPage() {
           overflow: "hidden",
           borderRadius: "var(--radius-2xl)",
           padding: "var(--space-6) var(--space-5)",
-          background: "linear-gradient(135deg, rgba(0,230,118,0.14) 0%, rgba(12,14,13,0.55) 45%, rgba(0,0,0,0.72) 100%)",
-          border: "1px solid rgba(0,230,118,0.22)",
+          background: "linear-gradient(135deg, color-mix(in srgb, var(--color-brand-primary), transparent 86%) 0%, color-mix(in srgb, var(--color-bg-surface), transparent 35%) 45%, var(--color-bg-elevated) 100%)",
+          border: "1px solid color-mix(in srgb, var(--color-brand-primary), transparent 78%)",
           marginBottom: "var(--space-5)",
         }}
       >
@@ -350,7 +350,7 @@ export default function ExplorarCampeonatosPage() {
             <Icon icon={Sparkles} size={22} style={{ color: "var(--color-brand-primary)" }} />
           </div>
           <div style={{ minWidth: 0, flex: 1 }}>
-            <h1 style={{ margin: 0, fontSize: "clamp(1.4rem, 3vw, 2rem)", fontWeight: 700, color: "white", lineHeight: 1.15 }}>
+            <h1 style={{ margin: 0, fontSize: "clamp(1.4rem, 3vw, 2rem)", fontWeight: 700, color: "var(--color-text-primary)", lineHeight: 1.15 }}>
              Campeonatos
             </h1>
             <p style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-sm)", color: "var(--color-text-secondary)", lineHeight: 1.5 }}>
@@ -371,9 +371,9 @@ export default function ExplorarCampeonatosPage() {
             placeholder="Buscar campeonato..."
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
-            style={{ width: "100%", height: "40px", padding: "0 var(--space-3) 0 calc(var(--space-3) + 22px)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "var(--radius-md)", color: "white", fontSize: "var(--text-sm)", outline: "none", boxSizing: "border-box", transition: "border-color 0.15s" }}
-            onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(0,230,118,0.4)"; }}
-            onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; }}
+            style={{ width: "100%", height: "40px", padding: "0 var(--space-3) 0 calc(var(--space-3) + 22px)", background: "var(--color-bg-input)", border: "1px solid var(--color-border-default)", borderRadius: "var(--radius-md)", color: "var(--color-text-primary)", fontSize: "var(--text-sm)", boxSizing: "border-box", transition: "border-color 0.15s" }}
+            onFocus={(e) => { e.currentTarget.style.borderColor = "var(--color-border-focus)"; }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = "var(--color-border-default)"; }}
           />
           {busca && (
             <button
@@ -399,8 +399,8 @@ export default function ExplorarCampeonatosPage() {
                   flexShrink: 0,
                   padding: "var(--space-2) var(--space-3)",
                   borderRadius: "var(--radius-md)",
-                  border: `1px solid ${ativo ? "rgba(0,230,118,0.4)" : "rgba(255,255,255,0.1)"}`,
-                  background: ativo ? "rgba(0,230,118,0.12)" : "rgba(255,255,255,0.03)",
+                  border: `1px solid ${ativo ? "rgba(0,230,118,0.4)" : "var(--color-border-strong)"}`,
+                  background: ativo ? "rgba(0,230,118,0.12)" : "var(--color-bg-surface)",
                   color: ativo ? "var(--color-brand-primary)" : "var(--color-text-secondary)",
                   fontSize: "var(--text-sm)",
                   fontWeight: 600,
@@ -433,10 +433,10 @@ export default function ExplorarCampeonatosPage() {
         />
       ) : filtrados.length === 0 ? (
         <Card padding="lg" style={{ textAlign: "center" }}>
-          <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto var(--space-3)" }}>
+          <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "var(--color-bg-input)", border: "1px solid var(--color-border-default)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto var(--space-3)" }}>
             <Icon icon={Trophy} size={22} style={{ color: "var(--color-text-muted)" }} />
           </div>
-          <p style={{ margin: "0 0 var(--space-1)", fontWeight: 600, color: "white", fontSize: "var(--text-sm)" }}>
+          <p style={{ margin: "0 0 var(--space-1)", fontWeight: 600, color: "var(--color-text-primary)", fontSize: "var(--text-sm)" }}>
             Nenhum campeonato encontrado
           </p>
           <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>

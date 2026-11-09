@@ -61,14 +61,14 @@ export const ACCOUNT_TYPE_CONFIG: Record<string, AccountTypeConfig> = {
   },
   admin: {
     label: 'Administrador',
-    color: '#FFD700',
+    color: 'var(--color-role-admin)',
     bgColor: 'rgba(255, 215, 0, 0.1)',
     borderColor: 'rgba(255, 215, 0, 0.3)',
     icon: Crown,
   },
   Administrador: {
     label: 'Administrador',
-    color: '#FFD700',
+    color: 'var(--color-role-admin)',
     bgColor: 'rgba(255, 215, 0, 0.1)',
     borderColor: 'rgba(255, 215, 0, 0.3)',
     icon: Crown,

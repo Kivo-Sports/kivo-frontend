@@ -150,14 +150,25 @@ export function descreverPeriodo(periodo: Periodo): string {
  */
 export const MAX_DIAS_PERIODO_PERSONALIZADO = 3660;
 
+function dataCalendariaValida(data: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(data) || data.startsWith("0000-")) return false;
+  const parsed = new Date(`${data}T00:00:00Z`);
+  return !Number.isNaN(parsed.valueOf()) && parsed.toISOString().slice(0, 10) === data;
+}
+
 /** Mensagem de erro do período personalizado, ou `null` se válido (datas parciais são válidas). */
 export function validarPeriodoPersonalizado(periodo: Periodo): string | null {
-  if (!periodo.inicio || !periodo.fim) return null;
-  if (periodo.fim < periodo.inicio)
-    return "A data final deve ser igual ou posterior à data inicial.";
-  const dias = (Date.parse(periodo.fim) - Date.parse(periodo.inicio)) / (24 * 60 * 60 * 1000) + 1;
-  if (dias > MAX_DIAS_PERIODO_PERSONALIZADO)
-    return "O período personalizado pode ter no máximo 10 anos. Para o histórico completo, use “Tudo”.";
+  const { inicio, fim } = periodo;
+  if (inicio && !dataCalendariaValida(inicio)) return "Informe uma data inicial válida.";
+  if (fim && !dataCalendariaValida(fim)) return "Informe uma data final válida.";
+  if (inicio && fim) {
+    if (fim < inicio) return "A data final deve ser igual ou posterior à data inicial.";
+    const dias = (Date.parse(fim) - Date.parse(inicio)) / (24 * 60 * 60 * 1000) + 1;
+    if (dias > MAX_DIAS_PERIODO_PERSONALIZADO)
+      return "O período personalizado pode ter no máximo 10 anos. Para o histórico completo, use “Tudo”.";
+  }
+  // A API usa o dia seguinte como limite exclusivo do relatório.
+  if (fim === "9999-12-31") return "A data final deve ser anterior a 31/12/9999.";
   return null;
 }
 

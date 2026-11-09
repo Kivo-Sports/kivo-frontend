@@ -1,8 +1,8 @@
 .feed {
   max-width: 1160px;
   margin: 0 auto;
-  color: #f1f4f2;
-  --feed-green: #00e676;
+  color: var(--color-text-primary);
+  --feed-green: var(--color-brand-primary);
 }
 .feed button,
 .feed input,
@@ -49,7 +49,7 @@
   display: flex;
   align-items: center;
   gap: 9px;
-  font-size: 10px;
+  font-size: var(--text-xs);
   font-weight: 700;
   letter-spacing: 2px;
   color: var(--feed-green);
@@ -72,7 +72,7 @@
 }
 .hero p,
 .muted {
-  color: #9da9a2;
+  color: var(--color-text-secondary);
   font-size: 14px;
   line-height: 1.65;
 }
@@ -82,9 +82,9 @@
   display: grid;
   place-items: center;
   color: var(--feed-green);
-  border: 1px solid #244432;
+  border: 1px solid var(--color-border-default);
   border-radius: 50%;
-  background: radial-gradient(circle, #143322, transparent);
+  background: color-mix(in srgb, var(--color-brand-primary), transparent 88%);
   transform: rotate(-12deg);
   flex-shrink: 0;
 }
@@ -104,15 +104,15 @@
 .composer,
 .sideCard,
 .composerTrigger {
-  border: 1px solid #2b302d;
-  background: #151917;
+  border: 1px solid var(--color-border-default);
+  background: var(--color-bg-surface);
   border-radius: 18px;
 }
 .composerTrigger {
   display: flex;
   align-items: center;
   gap: 14px;
-  color: #dce4df;
+  color: var(--color-text-primary);
   text-align: left;
   padding: 20px;
   width: 100%;
@@ -122,9 +122,9 @@
 }
 .composerTrigger small {
   display: block;
-  font-size: 11px;
+  font-size: var(--text-xs);
   margin-top: 6px;
-  color: #98a39c;
+  color: var(--color-text-secondary);
 }
 .composerTrigger > svg {
   color: var(--feed-green);
@@ -141,8 +141,8 @@
   height: 43px;
   flex-shrink: 0;
   border-radius: 13px;
-  background: #20372a;
-  color: #76eba7;
+  background: var(--color-brand-primary);
+  color: var(--color-text-on-primary);
   display: grid;
   place-items: center;
   font-size: 14px;
@@ -160,17 +160,19 @@
 }
 .tabs {
   display: flex;
-  overflow-x: auto;
-  border-bottom: 1px solid #2b302d;
-  gap: 22px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--color-border-default);
+  gap: 4px 22px;
 }
 .tabs button {
   background: transparent;
   border: 0;
   padding: 15px 0;
-  color: #98a39c;
+  color: var(--color-text-secondary);
   font-size: 13px;
-  white-space: nowrap;
+  white-space: normal;
+  min-height: 44px;
+  flex: 1 1 auto;
   border-bottom: 2px solid transparent;
 }
 .tabs .activeTab {
@@ -181,18 +183,18 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #151917;
-  border: 1px solid #2b302d;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
   border-radius: 12px;
   padding: 8px 13px;
-  color: #89998e;
+  color: var(--color-text-secondary);
 }
 .search input {
   background: none;
   border: 0;
   width: 100%;
   min-width: 0;
-  color: #edf4ef;
+  color: var(--color-text-primary);
   font-size: 13px;
   padding: 5px 0;
 }
@@ -215,12 +217,12 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  font-size: 11px;
-  color: #96a39a;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
   margin-top: 5px;
 }
 .meta > span:first-child {
-  color: #74bc92;
+  color: var(--color-brand-primary);
 }
 .postBody {
   padding: 0 22px 18px;
@@ -238,7 +240,7 @@
 .content {
   white-space: pre-wrap;
   line-height: 1.8;
-  color: #c8d0cb;
+  color: var(--color-text-secondary);
   font-size: 14px;
   margin: 8px 0 0;
 }
@@ -247,7 +249,7 @@
   width: 100%;
   max-height: 700px;
   object-fit: contain;
-  background: #0d100e;
+  background: var(--color-bg-base);
 }
 .postFooter {
   display: flex;
@@ -255,8 +257,8 @@
   align-items: center;
   gap: 12px;
   padding: 16px 22px;
-  border-top: 1px solid #272f2a;
-  color: #a5b0a9;
+  border-top: 1px solid var(--color-border-default);
+  color: var(--color-text-secondary);
   font-size: 12px;
 }
 .postFooter a {
@@ -268,7 +270,7 @@
 .iconButton {
   background: none;
   border: 0;
-  color: #a5b0a9;
+  color: var(--color-text-secondary);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -296,7 +298,7 @@
 }
 .sideCard {
   padding: 24px;
-  background: linear-gradient(145deg, #17251c, #151917 60%);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--color-brand-primary), var(--color-bg-surface) 90%), var(--color-bg-surface) 60%);
 }
 .sideCard h2 {
   font-size: 23px;
@@ -308,13 +310,13 @@
 .community p {
   font-size: 13px;
   line-height: 1.8;
-  color: #99aa9f;
+  color: var(--color-text-secondary);
 }
 .sideCard > a {
   display: flex;
   align-items: center;
   gap: 12px;
-  border-top: 1px solid #2c382f;
+  border-top: 1px solid var(--color-border-default);
   padding: 21px 0 0;
   margin-top: 22px;
   font-size: 13px;
@@ -328,8 +330,8 @@
 }
 .sideCard small {
   display: block;
-  color: #90a095;
-  font-size: 11px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
   line-height: 1.6;
   margin-top: 5px;
 }
@@ -348,9 +350,9 @@
   font-size: 13px;
 }
 .signature {
-  font-size: 9px;
+  font-size: var(--text-xs);
   letter-spacing: 1.3px;
-  color: #76877b;
+  color: var(--color-text-muted);
   padding: 0 24px;
 }
 .composer {
@@ -370,9 +372,9 @@
 .label select {
   display: block;
   width: 100%;
-  background: #0d120f;
-  color: #edf4ef;
-  border: 1px solid #354339;
+  background: var(--color-bg-input);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-strong);
   border-radius: 10px;
   padding: 12px;
   margin-top: 8px;
@@ -386,8 +388,8 @@
 }
 .counter {
   text-align: right;
-  color: #99aa9f;
-  font-size: 11px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
   margin: 8px 0 16px;
 }
 .actions {
@@ -408,38 +410,38 @@
   gap: 8px;
   font-size: 13px !important;
   font-weight: 600 !important;
-  border: 1px solid #354339;
+  border: 1px solid var(--color-border-strong);
 }
 .primary {
   background: var(--feed-green);
-  color: #052311;
+  color: var(--color-text-on-primary);
   border-color: var(--feed-green);
 }
 .secondary,
 .loadMore {
-  background: #1b241e;
-  color: #d3dfd7;
+  background: var(--color-bg-elevated);
+  color: var(--color-text-primary);
 }
 .actions .primary {
   margin-left: auto;
 }
 .hint {
-  color: #8b9b90;
-  font-size: 11px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
 }
 .preview img {
   max-height: 320px;
   width: 100%;
   object-fit: contain;
   display: block;
-  background: #0d120f;
+  background: var(--color-bg-input);
   border-radius: 12px;
   margin-bottom: 10px;
 }
 .error {
   padding: 12px;
-  background: #3d1d23;
-  color: #ffc3c3;
+  background: var(--color-feedback-danger-bg);
+  color: var(--color-feedback-danger);
   border-radius: 8px;
   font-size: 13px;
 }
@@ -449,9 +451,9 @@
   flex-direction: column;
   text-align: center;
   padding: 50px 24px;
-  border: 1px dashed #354339;
+  border: 1px dashed var(--color-border-strong);
   border-radius: 16px;
-  color: #a6b7ac;
+  color: var(--color-text-secondary);
   gap: 14px;
 }
 .empty > svg {
@@ -459,7 +461,7 @@
 }
 .empty h2 {
   margin: 0;
-  color: #e2ebe5;
+  color: var(--color-text-primary);
   font-size: 21px;
 }
 .empty p {
@@ -469,7 +471,7 @@
 }
 .end {
   text-align: center;
-  color: #879b8e;
+  color: var(--color-text-secondary);
   font-size: 12px;
   margin: 20px 0;
 }
@@ -484,13 +486,13 @@
 .skeleton {
   padding: 25px;
   border-radius: 18px;
-  background: #151917;
-  border: 1px solid #2b302d;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
 }
 .skeleton > div {
   height: 14px;
   border-radius: 6px;
-  background: #27352c;
+  background: var(--color-bg-elevated);
   margin-bottom: 20px;
   animation: pulse 1.5s ease-in-out infinite alternate;
 }
@@ -529,6 +531,11 @@
   }
 }
 @media (max-width: 540px) {
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 12px;
+  }
   .hero {
     padding: 15px 2px 24px;
   }
@@ -539,7 +546,7 @@
     font-size: 13px;
   }
   .eyebrow {
-    font-size: 9px;
+    font-size: var(--text-xs);
     letter-spacing: 1.5px;
   }
   .postHeader,
@@ -567,12 +574,12 @@
     gap: 20px;
   }
   .postFooter {
-    font-size: 11px;
+    font-size: var(--text-xs);
   }
   .actions .primary {
     margin-left: 0;
   }
   .meta {
-    font-size: 10px;
+    font-size: var(--text-xs);
   }
 }

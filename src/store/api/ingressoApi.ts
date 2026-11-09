@@ -8,6 +8,7 @@ import type {
   IngressoLote,
   MensagemResponse,
   PartidaComIngressos,
+  ValidacaoPortariaResponse,
 } from "@/types/ingresso";
 import type { CampeonatoResponse } from "@/types/campeonato";
 import type { ChaveamentoResponse, DetalhePartidaResponse, JogoResponse } from "@/types/partida";
@@ -112,7 +113,7 @@ export const ingressoApi = baseApi.injectEndpoints({
         })),
       ],
     }),
-    validarIngressoPortaria: builder.mutation<MensagemResponse, string>({
+    validarIngressoPortaria: builder.mutation<ValidacaoPortariaResponse, string>({
       query: (codigo) => ({
         url: `/api/ingresso/validar-portaria/${encodeURIComponent(codigo)}`,
         method: "POST",

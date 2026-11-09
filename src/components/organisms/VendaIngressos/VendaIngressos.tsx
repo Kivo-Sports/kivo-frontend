@@ -186,8 +186,8 @@ export function VendaIngressos({
     <Card
       padding="md"
       style={{
-        background: "rgba(255,255,255,0.02)",
-        border: "1px solid rgba(255,255,255,0.08)",
+        background: "var(--color-bg-surface)",
+        border: "1px solid var(--color-border-default)",
         borderRadius: "var(--radius-xl)",
       }}
     >
@@ -204,8 +204,8 @@ export function VendaIngressos({
             width: 44,
             height: 44,
             borderRadius: "var(--radius-lg)",
-            background: "rgba(0,230,118,.08)",
-            border: "1px solid rgba(0,230,118,.2)",
+            background: "color-mix(in srgb, var(--color-brand-primary), transparent 92%)",
+            border: "1px solid color-mix(in srgb, var(--color-brand-primary), transparent 78%)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -215,7 +215,7 @@ export function VendaIngressos({
         </div>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-            <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 700, color: "white" }}>
+            <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 700, color: "var(--color-text-primary)" }}>
               Monte sua compra
             </p>
             <Badge size="sm" variant="success">
@@ -262,9 +262,9 @@ export function VendaIngressos({
                   padding: "var(--space-3)",
                   border:
                     quantidade > 0
-                      ? "1px solid rgba(0,230,118,.28)"
-                      : "1px solid rgba(255,255,255,.08)",
-                  background: quantidade > 0 ? "rgba(0,230,118,.045)" : "transparent",
+                      ? "1px solid color-mix(in srgb, var(--color-brand-primary), transparent 72%)"
+                      : "1px solid var(--color-border-default)",
+                  background: quantidade > 0 ? "color-mix(in srgb, var(--color-brand-primary), transparent 95%)" : "var(--color-bg-elevated)",
                   borderRadius: "var(--radius-lg)",
                   display: "flex",
                   justifyContent: "space-between",
@@ -275,7 +275,7 @@ export function VendaIngressos({
               >
                 <div>
                   <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    <strong style={{ color: "white", fontSize: "var(--text-sm)" }}>
+                    <strong style={{ color: "var(--color-text-primary)", fontSize: "var(--text-sm)" }}>
                       {lote.nomeLote}
                     </strong>
                     {esgotado && (
@@ -309,7 +309,7 @@ export function VendaIngressos({
                         placeItems: "center",
                         background: "transparent",
                         border: "1px solid var(--color-border-default)",
-                        color: "white",
+                        color: "var(--color-text-primary)",
                         borderRadius: 8,
                         cursor: "pointer",
                       }}
@@ -317,8 +317,8 @@ export function VendaIngressos({
                       <Icon icon={quantidade === 1 ? Trash2 : Minus} size={14} />
                     </button>
                     <div style={{ minWidth: 66, textAlign: "center" }}>
-                      <strong style={{ display: "block", color: "white" }}>{quantidade}</strong>
-                      <span style={{ color: "var(--color-text-muted)", fontSize: 10 }}>
+                      <strong style={{ display: "block", color: "var(--color-text-primary)" }}>{quantidade}</strong>
+                      <span style={{ color: "var(--color-text-muted)", fontSize: "var(--text-xs)" }}>
                         {formatarMoeda(lote.preco * quantidade)}
                       </span>
                     </div>
@@ -331,8 +331,8 @@ export function VendaIngressos({
                         height: 34,
                         display: "grid",
                         placeItems: "center",
-                        background: "rgba(0,230,118,.08)",
-                        border: "1px solid rgba(0,230,118,.25)",
+                        background: "color-mix(in srgb, var(--color-brand-primary), transparent 92%)",
+                        border: "1px solid color-mix(in srgb, var(--color-brand-primary), transparent 68%)",
                         color: "var(--color-brand-primary)",
                         borderRadius: 8,
                         cursor: podeAdicionar ? "pointer" : "not-allowed",
@@ -356,8 +356,8 @@ export function VendaIngressos({
                 gap: "var(--space-4)",
                 padding: "var(--space-4)",
                 borderRadius: "var(--radius-lg)",
-                background: "rgba(0,230,118,.07)",
-                border: "1px solid rgba(0,230,118,.2)",
+                background: "color-mix(in srgb, var(--color-brand-primary), transparent 93%)",
+                border: "1px solid color-mix(in srgb, var(--color-brand-primary), transparent 78%)",
                 flexWrap: "wrap",
               }}
             >
@@ -405,22 +405,22 @@ export function VendaIngressos({
                 justifyContent: "space-between",
                 gap: 12,
                 paddingBottom: "var(--space-3)",
-                borderBottom: "1px solid rgba(255,255,255,.08)",
+                borderBottom: "1px solid var(--color-border-default)",
               }}
             >
               <div>
-                <strong style={{ display: "block", color: "white", fontSize: "var(--text-sm)" }}>
+                <strong style={{ display: "block", color: "var(--color-text-primary)", fontSize: "var(--text-sm)" }}>
                   {lote.nomeLote}
                 </strong>
                 <span style={{ color: "var(--color-text-muted)", fontSize: "var(--text-xs)" }}>
                   {quantidade} × {formatarMoeda(lote.preco)}
                 </span>
               </div>
-              <strong style={{ color: "white" }}>{formatarMoeda(lote.preco * quantidade)}</strong>
+              <strong style={{ color: "var(--color-text-primary)" }}>{formatarMoeda(lote.preco * quantidade)}</strong>
             </div>
           ))}
           <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-            <strong style={{ color: "white" }}>Total</strong>
+            <strong style={{ color: "var(--color-text-primary)" }}>Total</strong>
             <strong style={{ color: "var(--color-brand-primary)", fontSize: 20 }}>
               {formatarMoeda(valorTotal)}
             </strong>

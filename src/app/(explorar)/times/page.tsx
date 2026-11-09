@@ -25,8 +25,8 @@ function TimeCard({ time }: { time: TimeResponse }) {
         hoverable
         style={{
           height: "100%",
-          background: "linear-gradient(160deg, rgba(20,20,20,0.98), rgba(10,10,10,0.99))",
-          border: "1px solid rgba(255,255,255,0.07)",
+          background: "linear-gradient(160deg, var(--color-bg-surface), var(--color-bg-elevated))",
+          border: "1px solid var(--color-border-default)",
           borderRadius: "var(--radius-2xl)",
           cursor: "pointer",
           display: "flex",
@@ -39,14 +39,14 @@ function TimeCard({ time }: { time: TimeResponse }) {
         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
           <Avatar name={time.nome} src={time.logoUrl || undefined} size="md" />
           <div style={{ minWidth: 0, flex: 1 }}>
-            <h2 style={{ margin: 0, fontSize: "var(--text-base)", fontWeight: 700, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <h2 style={{ margin: 0, fontSize: "var(--text-base)", fontWeight: 700, color: "var(--color-text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {time.nome}
             </h2>
           </div>
         </div>
 
         {/* Metadata: localização + esporte + campeonatos */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-1)", paddingTop: "var(--space-2)", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-1)", paddingTop: "var(--space-2)", borderTop: "1px solid var(--color-border-default)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "6px", paddingTop: "var(--space-1)" }}>
             <Icon icon={MapPin} size={12} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
             <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
@@ -109,8 +109,8 @@ export default function ExplorarTimesPage() {
           overflow: "hidden",
           borderRadius: "var(--radius-2xl)",
           padding: "var(--space-6) var(--space-5)",
-          background: "linear-gradient(135deg, rgba(0,230,118,0.14) 0%, rgba(12,14,13,0.55) 45%, rgba(0,0,0,0.72) 100%)",
-          border: "1px solid rgba(0,230,118,0.22)",
+          background: "linear-gradient(135deg, color-mix(in srgb, var(--color-brand-primary), transparent 86%) 0%, color-mix(in srgb, var(--color-bg-surface), transparent 35%) 45%, var(--color-bg-elevated) 100%)",
+          border: "1px solid color-mix(in srgb, var(--color-brand-primary), transparent 78%)",
           marginBottom: "var(--space-5)",
         }}
       >
@@ -147,7 +147,7 @@ export default function ExplorarTimesPage() {
             <Icon icon={Users} size={22} style={{ color: "var(--color-brand-primary)" }} />
           </div>
           <div style={{ minWidth: 0, flex: 1 }}>
-            <h1 style={{ margin: 0, fontSize: "clamp(1.4rem, 3vw, 2rem)", fontWeight: 700, color: "white", lineHeight: 1.15 }}>
+            <h1 style={{ margin: 0, fontSize: "clamp(1.4rem, 3vw, 2rem)", fontWeight: 700, color: "var(--color-text-primary)", lineHeight: 1.15 }}>
               Times
             </h1>
             <p style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-sm)", color: "var(--color-text-secondary)", lineHeight: 1.5 }}>
@@ -165,9 +165,9 @@ export default function ExplorarTimesPage() {
           placeholder="Buscar por nome, cidade ou estado..."
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
-          style={{ width: "100%", height: "44px", padding: "0 var(--space-3) 0 calc(var(--space-3) + 22px)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "var(--radius-lg)", color: "white", fontSize: "var(--text-sm)", outline: "none", boxSizing: "border-box", transition: "border-color 0.15s" }}
-          onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(0,230,118,0.4)"; }}
-          onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; }}
+          style={{ width: "100%", height: "44px", padding: "0 var(--space-3) 0 calc(var(--space-3) + 22px)", background: "var(--color-bg-input)", border: "1px solid var(--color-border-default)", borderRadius: "var(--radius-lg)", color: "var(--color-text-primary)", fontSize: "var(--text-sm)", boxSizing: "border-box", transition: "border-color 0.15s" }}
+          onFocus={(e) => { e.currentTarget.style.borderColor = "var(--color-border-focus)"; }}
+          onBlur={(e) => { e.currentTarget.style.borderColor = "var(--color-border-default)"; }}
         />
         {busca && (
           <button
@@ -196,10 +196,10 @@ export default function ExplorarTimesPage() {
         />
       ) : filtrados.length === 0 ? (
         <Card padding="lg" style={{ textAlign: "center" }}>
-          <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto var(--space-3)" }}>
+          <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "var(--color-bg-input)", border: "1px solid var(--color-border-default)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto var(--space-3)" }}>
             <Icon icon={Users} size={22} style={{ color: "var(--color-text-muted)" }} />
           </div>
-          <p style={{ margin: "0 0 var(--space-1)", fontWeight: 600, color: "white", fontSize: "var(--text-sm)" }}>
+          <p style={{ margin: "0 0 var(--space-1)", fontWeight: 600, color: "var(--color-text-primary)", fontSize: "var(--text-sm)" }}>
             Nenhum time encontrado
           </p>
           <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>

@@ -59,7 +59,7 @@ function SectionTitle({
     >
       <Icon icon={icon} size={18} color="var(--color-brand-primary)" />
       <h2
-        style={{ margin: 0, fontSize: "clamp(16px, 3vw, 20px)", fontWeight: 700, color: "white" }}
+        style={{ margin: 0, fontSize: "clamp(16px, 3vw, 20px)", fontWeight: 700, color: "var(--color-text-primary)" }}
       >
         {title}
       </h2>
@@ -88,7 +88,7 @@ function SectionTitle({
 
 function EmptyCard({ texto, href, cta }: { texto: string; href: string; cta: string }) {
   return (
-    <Card padding="lg" style={{ textAlign: "center", border: "1px dashed rgba(255,255,255,0.1)" }}>
+    <Card padding="lg" style={{ textAlign: "center", border: "1px dashed var(--color-border-strong)" }}>
       <p
         style={{
           margin: "0 0 var(--space-3)",
@@ -124,8 +124,8 @@ function TimelineRow({ jogo }: { jogo: TimelineItem }) {
           gap: "var(--space-3)",
           padding: "var(--space-3)",
           borderRadius: "var(--radius-lg)",
-          background: "rgba(255,255,255,0.025)",
-          border: "1px solid rgba(255,255,255,0.06)",
+          background: "var(--color-bg-surface)",
+          border: "1px solid var(--color-border-default)",
           cursor: "pointer",
           transition: "all 0.15s",
         }}
@@ -134,8 +134,8 @@ function TimelineRow({ jogo }: { jogo: TimelineItem }) {
           e.currentTarget.style.borderColor = "rgba(0,230,118,0.25)";
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.background = "rgba(255,255,255,0.025)";
-          e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)";
+          e.currentTarget.style.background = "var(--color-bg-surface)";
+          e.currentTarget.style.borderColor = "var(--color-border-default)";
         }}
       >
         {/* Data */}
@@ -160,7 +160,7 @@ function TimelineRow({ jogo }: { jogo: TimelineItem }) {
           >
             {dia}
           </div>
-          {hora && <div style={{ fontSize: "10px", color: "var(--color-text-muted)" }}>{hora}</div>}
+          {hora && <div style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>{hora}</div>}
         </div>
 
         {/* Confronto */}
@@ -168,14 +168,14 @@ function TimelineRow({ jogo }: { jogo: TimelineItem }) {
           <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
             <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", minWidth: 0 }}>
               <Avatar name={jogo.timeCasa} src={jogo.logoCasa || undefined} size="sm" />
-              <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>
+              <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)" }}>
                 {jogo.timeCasa}
               </span>
             </span>
             <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>x</span>
             <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", minWidth: 0 }}>
               <Avatar name={jogo.timeVisitante} src={jogo.logoVisitante || undefined} size="sm" />
-              <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>
+              <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)" }}>
                 {jogo.timeVisitante}
               </span>
             </span>
@@ -194,7 +194,7 @@ function TimelineRow({ jogo }: { jogo: TimelineItem }) {
             </span>
             <span
               style={{
-                fontSize: "10px",
+                fontSize: "var(--text-xs)",
                 color: "var(--color-brand-primary)",
                 background: "rgba(0,230,118,0.1)",
                 borderRadius: "var(--radius-full)",
@@ -209,7 +209,7 @@ function TimelineRow({ jogo }: { jogo: TimelineItem }) {
                   display: "inline-flex",
                   alignItems: "center",
                   gap: "3px",
-                  fontSize: "10px",
+                  fontSize: "var(--text-xs)",
                   color: "var(--color-text-muted)",
                 }}
               >
@@ -259,9 +259,9 @@ function SeguindoModal({
           gap: "4px",
           marginBottom: "var(--space-3)",
           padding: "4px",
-          background: "rgba(255,255,255,0.03)",
+          background: "var(--color-bg-surface)",
           borderRadius: "var(--radius-lg)",
-          border: "1px solid rgba(255,255,255,0.06)",
+          border: "1px solid var(--color-border-default)",
         }}
       >
         {(["times", "campeonatos"] as const).map((k) => {
@@ -329,7 +329,7 @@ function SeguindoModal({
                   transition: "background 0.15s",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+                  e.currentTarget.style.background = "var(--color-bg-elevated)";
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = "transparent";
@@ -342,7 +342,7 @@ function SeguindoModal({
                       margin: 0,
                       fontSize: "var(--text-sm)",
                       fontWeight: 600,
-                      color: "white",
+                      color: "var(--color-text-primary)",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       whiteSpace: "nowrap",
@@ -386,7 +386,7 @@ function SeguindoModal({
                   transition: "background 0.15s",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+                  e.currentTarget.style.background = "var(--color-bg-elevated)";
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = "transparent";
@@ -399,7 +399,7 @@ function SeguindoModal({
                       margin: "0 0 2px",
                       fontSize: "var(--text-sm)",
                       fontWeight: 600,
-                      color: "white",
+                      color: "var(--color-text-primary)",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       whiteSpace: "nowrap",
@@ -475,7 +475,7 @@ export default function TorcedorDashboardPage() {
             margin: "2px 0 0",
             fontSize: "clamp(24px, 4vw, 34px)",
             fontWeight: 700,
-            color: "white",
+            color: "var(--color-text-primary)",
           }}
         >
           Olá, {user?.name || "Torcedor"}
@@ -527,10 +527,10 @@ export default function TorcedorDashboardPage() {
               }}
               title={`Ver ${s.label.toLowerCase()} que você segue`}
             >
-              <strong style={{ color: "white", fontSize: "var(--text-md)", fontWeight: 700 }}>
+              <strong style={{ color: "var(--color-text-primary)", fontSize: "var(--text-md)", fontWeight: 700 }}>
                 {s.valor}
               </strong>
-              <span style={{ borderBottom: "1px dashed rgba(255,255,255,0.25)" }}>{s.label}</span>
+              <span style={{ borderBottom: "1px dashed var(--color-border-strong)" }}>{s.label}</span>
             </button>
           ))}
         </div>
@@ -547,7 +547,7 @@ export default function TorcedorDashboardPage() {
             alignItems: "center",
             gap: "var(--space-4)",
             border: "1px solid rgba(0,230,118,0.2)",
-            background: "linear-gradient(135deg, rgba(0,230,118,0.08), rgba(255,255,255,0.02))",
+            background: "linear-gradient(135deg, rgba(0,230,118,0.08), var(--color-bg-surface))",
             cursor: "pointer",
           }}
         >
@@ -566,7 +566,7 @@ export default function TorcedorDashboardPage() {
             <Icon icon={Ticket} size={22} color="var(--color-brand-primary)" />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <h2 style={{ margin: 0, color: "white", fontSize: "var(--text-md)", fontWeight: 700 }}>
+            <h2 style={{ margin: 0, color: "var(--color-text-primary)", fontSize: "var(--text-md)", fontWeight: 700 }}>
               Meus ingressos
             </h2>
             <p
@@ -604,7 +604,7 @@ export default function TorcedorDashboardPage() {
             onRetry={() => recarregarPartidasComIngressos()}
           />
         ) : partidasComIngressos.length === 0 ? (
-          <Card padding="lg" style={{ border: "1px dashed rgba(255,255,255,0.1)" }}>
+          <Card padding="lg" style={{ border: "1px dashed var(--color-border-strong)" }}>
             <p style={{ margin: 0, color: "var(--color-text-muted)", fontSize: "var(--text-sm)" }}>
               Não há partidas com ingressos disponíveis no momento.
             </p>
@@ -669,7 +669,7 @@ export default function TorcedorDashboardPage() {
                         <p
                           style={{
                             margin: "6px 0 0",
-                            color: "white",
+                            color: "var(--color-text-primary)",
                             fontSize: "var(--text-xs)",
                             fontWeight: 600,
                           }}
@@ -691,7 +691,7 @@ export default function TorcedorDashboardPage() {
                         <p
                           style={{
                             margin: "6px 0 0",
-                            color: "white",
+                            color: "var(--color-text-primary)",
                             fontSize: "var(--text-xs)",
                             fontWeight: 600,
                           }}
@@ -704,7 +704,7 @@ export default function TorcedorDashboardPage() {
                       style={{
                         marginTop: "var(--space-4)",
                         paddingTop: "var(--space-3)",
-                        borderTop: "1px solid rgba(255,255,255,0.07)",
+                        borderTop: "1px solid var(--color-border-default)",
                         display: "flex",
                         alignItems: "flex-end",
                         justifyContent: "space-between",
@@ -716,7 +716,7 @@ export default function TorcedorDashboardPage() {
                           style={{
                             display: "block",
                             color: "var(--color-text-muted)",
-                            fontSize: "10px",
+                            fontSize: "var(--text-xs)",
                           }}
                         >
                           A partir de
@@ -756,7 +756,7 @@ export default function TorcedorDashboardPage() {
             <Spinner size="md" ariaLabel="Carregando próximos jogos" />
           </div>
         ) : timeline.length === 0 ? (
-          <Card padding="lg" style={{ border: "1px dashed rgba(255,255,255,0.1)" }}>
+          <Card padding="lg" style={{ border: "1px dashed var(--color-border-strong)" }}>
             <p style={{ margin: 0, color: "var(--color-text-muted)", fontSize: "var(--text-sm)" }}>
               Nenhum jogo agendado dos seus favoritos. Favorite times e campeonatos para acompanhar
               a agenda aqui.

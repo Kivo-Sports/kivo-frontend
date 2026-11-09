@@ -21,6 +21,8 @@ import { AccountTypeBadge } from '@/components/atoms/AccountTypeBadge';
 import { AppLayout } from '@/components/templates/AppLayout';
 import { Icon } from "@/components/atoms/Icon";
 import { SquarePen  } from "lucide-react";
+import { ThemeSelector } from '@/components/molecules/ThemeSelector/ThemeSelector';
+import { TextScaleSelector } from '@/components/molecules/TextScaleSelector/TextScaleSelector';
 
 // Store
 import type { RootState } from '@/store';
@@ -194,6 +196,20 @@ export default function ConfiguracoesPage() {
               </p>
             </div>
 
+            <Card padding="lg" style={{ marginBottom: 'var(--space-6)' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                <div>
+                  <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--color-text-primary)' }}>Aparência</h2>
+                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)', marginTop: 'var(--space-1)' }}>Escolha o tema e o tamanho do texto desta conta neste navegador.</p>
+                </div>
+                <ThemeSelector variant="inline" />
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-4)', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--color-text-primary)' }}>Tamanho do texto</span>
+                  <TextScaleSelector />
+                </div>
+              </div>
+            </Card>
+
             {/* Seção: Informações Pessoais */}
             <Card padding="lg" style={{ marginBottom: 'var(--space-6)' }}>
               <div
@@ -214,7 +230,7 @@ export default function ConfiguracoesPage() {
                   Informações Pessoais
                 </h2>
                 <Button
-                  variant="secondary"
+                  variant="primary"
                   size="sm"
                   onClick={() => setIsEditUserDataOpen(true)}
                   disabled={isLoadingUserData || !userData}
@@ -237,7 +253,7 @@ export default function ConfiguracoesPage() {
                 <div
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(250px, 100%), 1fr))',
                     gap: 'var(--space-4)',
                   }}
                   className="settings-data-grid"
@@ -409,7 +425,7 @@ export default function ConfiguracoesPage() {
                   <div
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))',
                       gap: 'var(--space-3)',
                     }}
                   >
@@ -419,7 +435,7 @@ export default function ConfiguracoesPage() {
                         {userData.endereco.cep}
                       </p>
                     </div>
-                    <div style={{ gridColumn: 'span 2' }}>
+                    <div style={{ gridColumn: '1 / -1' }}>
                       <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginBottom: 'var(--space-1)' }}>Rua</p>
                       <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-primary)', fontWeight: 500 }}>
                         {userData.endereco.rua}
@@ -478,7 +494,7 @@ export default function ConfiguracoesPage() {
                   <div
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))',
                       gap: 'var(--space-3)',
                     }}
                   >
@@ -506,7 +522,7 @@ export default function ConfiguracoesPage() {
                         {userData.dadosBancarios.tipoConta}
                       </p>
                     </div>
-                    <div style={{ gridColumn: 'span 2' }}>
+                    <div style={{ gridColumn: '1 / -1' }}>
                       <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginBottom: 'var(--space-1)' }}>Nome do Titular</p>
                       <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-primary)', fontWeight: 500 }}>
                         {userData.dadosBancarios.nomeTitular}

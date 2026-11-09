@@ -41,7 +41,7 @@ export function EsporteFilterSelect({ value, onChange }: EsporteFilterSelectProp
   const opcoes = [OPCAO_TODOS, ...ativos];
   const selecionado = esportes.find((e) => e.id === value);
   const filtrando = value !== 'todos';
-  const rotuloAtual = selecionado ? selecionado.nome : OPCAO_TODOS.nome;
+  const rotuloAtual = selecionado ? selecionado.nome : filtrando ? "Esporte selecionado" : OPCAO_TODOS.nome;
 
   useEffect(() => {
     const handleClickFora = (event: MouseEvent) => {
@@ -144,8 +144,8 @@ export function EsporteFilterSelect({ value, onChange }: EsporteFilterSelectProp
           gap: 'var(--space-2)',
           padding: '0 var(--space-2)',
           borderRadius: 'var(--radius-md)',
-          background: filtrando ? 'rgba(0,230,118,0.1)' : 'rgba(255,255,255,0.04)',
-          border: `1px solid ${filtrando ? 'rgba(0,230,118,0.35)' : 'rgba(255,255,255,0.08)'}`,
+          background: filtrando ? 'color-mix(in srgb, var(--color-brand-primary), transparent 90%)' : 'var(--color-bg-surface)',
+          border: `1px solid ${filtrando ? 'color-mix(in srgb, var(--color-brand-primary), transparent 60%)' : 'var(--color-border-default)'}`,
           color: filtrando ? 'var(--color-brand-primary)' : 'var(--color-text-secondary)',
           fontSize: 'var(--text-xs)',
           fontWeight: 600,
@@ -195,12 +195,11 @@ export function EsporteFilterSelect({ value, onChange }: EsporteFilterSelectProp
               padding: 'var(--space-1)',
               maxHeight: '240px',
               overflowY: 'auto',
-              background: 'rgba(18,18,18,0.99)',
+              background: 'var(--color-bg-elevated)',
               backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(0,230,118,0.25)',
+              border: '1px solid var(--color-border-strong)',
               borderRadius: 'var(--radius-md)',
               boxShadow: '0 16px 48px rgba(0,0,0,0.5)',
-              outline: 'none',
             }}
           >
             {opcoes.map((opt, indice) => {
@@ -222,8 +221,8 @@ export function EsporteFilterSelect({ value, onChange }: EsporteFilterSelectProp
                     padding: 'var(--space-2)',
                     borderRadius: 'var(--radius-sm)',
                     // Opção ativa (teclado/mouse) com contorno visível; selecionada em verde.
-                    background: sel ? 'rgba(0,230,118,0.1)' : ativo ? 'rgba(255,255,255,0.07)' : 'transparent',
-                    boxShadow: ativo ? 'inset 0 0 0 1px rgba(0,230,118,0.55)' : 'none',
+                    background: sel ? 'color-mix(in srgb, var(--color-brand-primary), transparent 90%)' : ativo ? 'color-mix(in srgb, var(--color-text-primary), transparent 94%)' : 'transparent',
+                    boxShadow: ativo ? 'inset 0 0 0 1px var(--color-border-focus)' : 'none',
                     color: sel ? 'var(--color-brand-primary)' : 'var(--color-text-primary)',
                     cursor: 'pointer',
                     fontSize: 'var(--text-xs)',

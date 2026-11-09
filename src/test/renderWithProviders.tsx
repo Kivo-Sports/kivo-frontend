@@ -17,6 +17,7 @@ import { StrictMode, type ReactElement, type ReactNode } from "react";
 import { Provider } from "react-redux";
 
 import { ToastProvider } from "@/components/atoms/Toast";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { baseApi } from "@/store/api/baseApi";
 import authReducer, { type AuthState, type AuthenticatedUser } from "@/store/slices/authSlice";
 import registrationReducer from "@/store/slices/registrationSlice";
@@ -122,7 +123,9 @@ export function renderWithProviders(
   const Wrapper = ({ children }: { children: ReactNode }) => {
     const tree = (
       <Provider store={testStore}>
-        <ToastProvider>{children}</ToastProvider>
+        <ThemeProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </ThemeProvider>
       </Provider>
     );
 

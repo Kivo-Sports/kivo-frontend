@@ -4,7 +4,8 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { AdminDashboard } from "./AdminDashboard";
-import { authenticatedAs, renderWithProviders } from "@/test/renderWithProviders";
+import { authenticatedAs, makeUser, renderWithProviders } from "@/test/renderWithProviders";
+import { setCredentials } from "@/store/slices/authSlice";
 import { server } from "@/test/msw/server";
 import {
   okJson,
@@ -57,6 +58,80 @@ describe("AdminDashboard", () => {
     expect(chamadas[0].get("fim")).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(chamadas[0].has("esporteId")).toBe(false);
     expect(screen.getByRole("button", { name: "30 dias" })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("restaura os filtros salvos antes da primeira consulta e permite limpar a preferência", async () => {
+    const userId = authenticatedAs("administrador").user!.id;
+    const key = `kivo:admin-filters:v1:user:${userId}`;
+    localStorage.setItem(key, JSON.stringify({
+      selecao: "personalizado",
+      inicio: "2026-09-01",
+      fim: "2026-09-30",
+      esporteId: timeFixture.esporteId,
+    }));
+    const chamadas = capturarRequisicoes();
+    const user = userEvent.setup();
+    renderizar();
+
+    await waitFor(() => expect(chamadas).toHaveLength(1));
+    expect(chamadas[0].get("inicio")).toBe("2026-09-01");
+    expect(chamadas[0].get("fim")).toBe("2026-09-30");
+    expect(chamadas[0].get("esporteId")).toBe(timeFixture.esporteId);
+    expect(screen.getByRole("button", { name: "Personalizado" })).toHaveAttribute("aria-pressed", "true");
+
+    await user.click(screen.getByRole("button", { name: "7 dias" }));
+    await waitFor(() => expect(chamadas).toHaveLength(2));
+    expect(JSON.parse(localStorage.getItem(key) ?? "{}")).toMatchObject({ inicio: "2026-09-01", fim: "2026-09-30", selecao: "7d" });
+    await user.click(screen.getByRole("button", { name: "Personalizado" }));
+    expect(screen.getByLabelText("Data inicial")).toHaveValue("2026-09-01");
+    expect(screen.getByLabelText("Data final")).toHaveValue("2026-09-30");
+
+    await user.click(screen.getByRole("button", { name: "Restaurar padrão" }));
+    await waitFor(() => expect(chamadas.length).toBeGreaterThan(2));
+    expect(chamadas.at(-1)?.has("esporteId")).toBe(false);
+    expect(localStorage.getItem(key)).toBeNull();
+
+    await user.click(screen.getByRole("button", { name: "Tudo" }));
+    await waitFor(() => expect(JSON.parse(localStorage.getItem(key) ?? "{}").selecao).toBe("tudo"));
+  });
+
+  it.each([
+    { inicio: "2026-02-30", fim: "2026-03-10" },
+    { inicio: "", fim: "9999-12-31" },
+    { inicio: "0000-01-01", fim: "" },
+  ])("ignora intervalo salvo fora do calendário suportado ($inicio a $fim)", async ({ inicio, fim }) => {
+    const userId = authenticatedAs("administrador").user!.id;
+    const key = `kivo:admin-filters:v1:user:${userId}`;
+    localStorage.setItem(key, JSON.stringify({ selecao: "personalizado", inicio, fim, esporteId: "todos" }));
+    const chamadas = capturarRequisicoes();
+    const user = userEvent.setup();
+    renderizar();
+
+    await waitFor(() => expect(chamadas).toHaveLength(1));
+    expect(chamadas[0].get("inicio")).not.toBe(inicio);
+    expect(chamadas[0].get("fim")).not.toBe(fim);
+    expect(screen.getByRole("button", { name: "30 dias" })).toHaveAttribute("aria-pressed", "true");
+    await user.click(screen.getByRole("button", { name: "7 dias" }));
+    await waitFor(() => expect(JSON.parse(localStorage.getItem(key) ?? "{}")).toMatchObject({ selecao: "7d", inicio: "", fim: "" }));
+    await user.click(screen.getByRole("button", { name: "Personalizado" }));
+    expect(screen.getByLabelText("Data inicial")).toHaveValue("");
+    expect(screen.getByLabelText("Data final")).toHaveValue("");
+  });
+
+  it("não reaproveita o filtro da conta anterior durante troca de identidade", async () => {
+    const primeiraConta = authenticatedAs("administrador");
+    const segundaConta = makeUser("Administrador", { id: "88888888-8888-8888-8888-888888888888" });
+    localStorage.setItem(`kivo:admin-filters:v1:user:${segundaConta.id}`, JSON.stringify({ selecao: "90d", inicio: "", fim: "", esporteId: "todos" }));
+    const chamadas = capturarRequisicoes();
+    const { store } = renderWithProviders(<AdminDashboard />, { auth: primeiraConta });
+    await waitFor(() => expect(chamadas).toHaveLength(1));
+
+    store.dispatch(setCredentials({ token: "qa-token", user: segundaConta }));
+
+    await waitFor(() => expect(chamadas).toHaveLength(2));
+    expect(chamadas[1].get("inicio")).not.toBe(chamadas[0].get("inicio"));
+    expect(chamadas[1].get("esporteId")).toBeNull();
+    expect(screen.getByRole("button", { name: "90 dias" })).toHaveAttribute("aria-pressed", "true");
   });
 
   it("'Tudo' remove os limites de data", async () => {
