@@ -26,11 +26,13 @@
 
   /* ——— TEXTO ——— */
   --color-text-primary: var(--dark-50);
-  --color-text-secondary: var(--dark-100);
-  --color-text-muted: var(--dark-200);
+  --color-text-secondary: #a0bcab;
+  --color-text-muted: #789a86;
   --color-text-disabled: rgba(107, 143, 122, 0.4);
   --color-text-inverse: var(--dark-500);
   --color-text-on-primary: var(--dark-600);
+  --color-text-on-danger: #0a0f0d;
+  --color-role-admin: #ffd700;
 
   /* ——— FEEDBACK (Estados e mensagens) ——— */
   --color-feedback-success: var(--green-300);
@@ -72,11 +74,13 @@
   --color-border-strong: var(--dark-200);
   --color-border-focus: var(--color-brand-primary);
   --color-text-primary: var(--dark-50);
-  --color-text-secondary: var(--dark-100);
-  --color-text-muted: var(--dark-200);
+  --color-text-secondary: #a0bcab;
+  --color-text-muted: #789a86;
   --color-text-disabled: rgba(107, 143, 122, 0.4);
   --color-text-inverse: var(--dark-500);
   --color-text-on-primary: var(--dark-600);
+  --color-text-on-danger: #0a0f0d;
+  --color-role-admin: #ffd700;
   --color-feedback-success: var(--green-300);
   --color-feedback-warning: var(--yellow-500);
   --color-feedback-danger: var(--red-300);

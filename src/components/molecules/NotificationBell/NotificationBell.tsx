@@ -251,7 +251,7 @@ export function NotificationBell() {
               height: "1.25rem",
               paddingInline: "0.35rem",
               justifyContent: "center",
-              fontSize: "0.68rem",
+              fontSize: "var(--text-xs)",
               borderRadius: "999px",
             }}
           >
@@ -494,7 +494,7 @@ export function NotificationBell() {
                           display: "block",
                           marginTop: "0.35rem",
                           color: "var(--color-text-secondary)",
-                          fontSize: "0.7rem",
+                          fontSize: "var(--text-xs)",
                         }}
                       >
                         {formatarDataNotificacao(notification.criadaEm)}

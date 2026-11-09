@@ -200,7 +200,6 @@ export function EsporteFilterSelect({ value, onChange }: EsporteFilterSelectProp
               border: '1px solid var(--color-border-strong)',
               borderRadius: 'var(--radius-md)',
               boxShadow: '0 16px 48px rgba(0,0,0,0.5)',
-              outline: 'none',
             }}
           >
             {opcoes.map((opt, indice) => {

@@ -32,7 +32,6 @@ const inputStyle = {
   padding: "0 var(--space-3)",
   color: "white",
   fontSize: "var(--text-sm)",
-  outline: "none",
   boxSizing: "border-box" as const,
 };
 

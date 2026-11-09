@@ -91,7 +91,7 @@ function TimeJogoRow({ jogo }: { jogo: TimeJogoView }) {
       >
         <span
           style={{
-            flexShrink: 0, fontSize: "10px", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase",
+            flexShrink: 0, fontSize: "var(--text-xs)", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase",
             padding: "3px 7px", borderRadius: "var(--radius-full)",
             color: jogo.mandante ? "var(--color-brand-primary)" : "var(--color-text-muted)",
             background: jogo.mandante ? "rgba(0,230,118,0.1)" : "rgba(255,255,255,0.05)",
@@ -123,7 +123,7 @@ function TimeJogoRow({ jogo }: { jogo: TimeJogoView }) {
             <span style={{ fontSize: "var(--text-base)", fontWeight: 700, color: "white" }}>
               {jogo.golsTime} × {jogo.golsAdversario}
             </span>
-            <span style={{ width: 22, height: 22, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 800, color: corResultado, background: "rgba(255,255,255,0.05)", border: `1px solid ${corResultado}` }}>
+            <span style={{ width: 22, height: 22, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "var(--text-xs)", fontWeight: 800, color: corResultado, background: "rgba(255,255,255,0.05)", border: `1px solid ${corResultado}` }}>
               {resultado}
             </span>
           </div>
@@ -456,7 +456,7 @@ export default function ExplorarTimeDetalhePage({ params }: { params: Promise<{ 
                       <Icon icon={Trophy} size={20} style={{ color: "#facc15" }} />
                     </div>
                     <div style={{ minWidth: 0, flex: 1 }}>
-                      <p style={{ margin: "0 0 2px", fontSize: "10px", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#facc15" }}>Campeão</p>
+                      <p style={{ margin: "0 0 2px", fontSize: "var(--text-xs)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#facc15" }}>Campeão</p>
                       <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: 700, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.nome}</p>
                     </div>
                   </div>

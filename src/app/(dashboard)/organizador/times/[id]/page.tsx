@@ -300,7 +300,7 @@ function TimeJogoRow({ jogo }: { jogo: TimeJogoView }) {
       <span
         style={{
           flexShrink: 0,
-          fontSize: "10px",
+          fontSize: "var(--text-xs)",
           fontWeight: 700,
           letterSpacing: "0.06em",
           textTransform: "uppercase",
@@ -340,7 +340,7 @@ function TimeJogoRow({ jogo }: { jogo: TimeJogoView }) {
             style={{
               width: 22, height: 22, borderRadius: "50%",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: "11px", fontWeight: 800,
+              fontSize: "var(--text-xs)", fontWeight: 800,
               color: corResultado,
               background: "rgba(255,255,255,0.05)",
               border: `1px solid ${corResultado}`,
@@ -577,7 +577,6 @@ function EditarTimeModal({ time, onClose }: { time: TimeResponse; onClose: () =>
                   padding: "var(--space-3)",
                   cursor: "pointer",
                   transition: "all 0.2s ease",
-                  outline: "none",
                   display: "grid",
                   gap: "4px",
                 }}

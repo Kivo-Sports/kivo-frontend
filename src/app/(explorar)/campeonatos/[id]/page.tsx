@@ -76,7 +76,7 @@ function JogoRow({ jogo }: { jogo: JogoView }) {
             {jogo.finalizado ? `${jogo.golsCasa} × ${jogo.golsVisitante}` : "×"}
           </span>
           {dataFormatada && (
-            <span style={{ fontSize: "10px", color: "var(--color-text-muted)", whiteSpace: "nowrap" }}>{dataFormatada}</span>
+            <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)", whiteSpace: "nowrap" }}>{dataFormatada}</span>
           )}
         </div>
 
@@ -257,7 +257,7 @@ export default function ExplorarCampeonatoDetalhePage({ params }: { params: Prom
               background: campeonato.logoUrl ? `center / cover no-repeat url("${campeonato.logoUrl}")` : "linear-gradient(150deg, rgba(0,230,118,0.22), rgba(0,230,118,0.04))",
               border: "1px solid rgba(0,230,118,0.35)",
               display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden",
-              cursor: campeonato.logoUrl ? "zoom-in" : "default", outline: "none",
+              cursor: campeonato.logoUrl ? "zoom-in" : "default",
               boxShadow: "0 0 0 4px rgba(0,230,118,0.08), 0 10px 28px rgba(0,230,118,0.2)",
             }}
           >

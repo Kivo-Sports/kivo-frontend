@@ -264,7 +264,7 @@ function CartaoIngresso({
           <p style={{ color: "var(--color-text-primary)", fontWeight: 700, margin: "10px 0 2px" }}>
             {ingresso.nomeLote}
           </p>
-          <span style={{ color: "var(--color-text-muted)", fontSize: "10px" }}>
+          <span style={{ color: "var(--color-text-muted)", fontSize: "var(--text-xs)" }}>
             #{ingresso.id.slice(-8).toUpperCase()}
           </span>
         </div>
@@ -300,7 +300,7 @@ function CartaoIngresso({
             >
               {ingresso.nomeTitular}
             </strong>
-            <span style={{ color: "var(--color-text-muted)", fontSize: 10 }}>
+            <span style={{ color: "var(--color-text-muted)", fontSize: "var(--text-xs)" }}>
               CPF {mascararCpf(ingresso.cpfTitular)}
             </span>
             {ingresso.tipoDeficienciaDescricao &&
@@ -309,7 +309,7 @@ function CartaoIngresso({
                   style={{
                     display: "block",
                     color: "var(--color-brand-primary)",
-                    fontSize: 10,
+                    fontSize: "var(--text-xs)",
                     marginTop: 2,
                   }}
                 >
@@ -342,7 +342,7 @@ function CartaoIngresso({
             style={{
               color: "#111",
               fontFamily: "monospace",
-              fontSize: 10,
+              fontSize: "var(--text-xs)",
               fontWeight: 700,
               wordBreak: "break-all",
               margin: "7px 0 0",

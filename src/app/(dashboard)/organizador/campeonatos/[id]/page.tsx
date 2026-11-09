@@ -165,7 +165,7 @@ function ConvidarTimeModal({ campeonato, onClose, convidadosIniciais }: { campeo
               placeholder="Buscar por nome ou cidade..."
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
-              style={{ width: "100%", padding: "var(--space-2) var(--space-3) var(--space-2) calc(var(--space-3) + 22px)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "var(--radius-md)", color: "white", fontSize: "var(--text-sm)", outline: "none", boxSizing: "border-box", transition: "border-color 0.15s" }}
+              style={{ width: "100%", padding: "var(--space-2) var(--space-3) var(--space-2) calc(var(--space-3) + 22px)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "var(--radius-md)", color: "white", fontSize: "var(--text-sm)", boxSizing: "border-box", transition: "border-color 0.15s" }}
               onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(0,230,118,0.4)"; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; }}
             />
@@ -363,7 +363,6 @@ function EditarCampeonatoModal({ campeonato, onClose }: { campeonato: Campeonato
     padding: "0 var(--space-3)",
     color: "white",
     fontSize: "var(--text-sm)",
-    outline: "none",
     boxSizing: "border-box" as const,
   };
 
@@ -546,7 +545,6 @@ function EditarCampeonatoModal({ campeonato, onClose }: { campeonato: Campeonato
                 padding: "var(--space-3)",
                 cursor: "pointer",
                 transition: "all 0.2s ease",
-                outline: "none",
                 display: "grid",
                 gap: "4px",
               }}
@@ -938,7 +936,6 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                   display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
                   overflow: "hidden",
                   cursor: campeonato.logoUrl ? "zoom-in" : "default",
-                  outline: "none",
                   boxShadow: "0 0 0 4px rgba(0,230,118,0.08), 0 10px 28px rgba(0,230,118,0.2)",
                 }}
               >
@@ -1288,7 +1285,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                   placeholder="Buscar time..."
                   value={teamSearch}
                   onChange={(e) => setTeamSearch(e.target.value)}
-                  style={{ width: "100%", height: "36px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "var(--radius-md)", paddingLeft: "calc(var(--space-3) + 14px + var(--space-2))", paddingRight: "var(--space-3)", fontSize: "var(--text-sm)", color: "var(--color-text-primary)", outline: "none", boxSizing: "border-box", transition: "border-color 0.15s" }}
+                  style={{ width: "100%", height: "36px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "var(--radius-md)", paddingLeft: "calc(var(--space-3) + 14px + var(--space-2))", paddingRight: "var(--space-3)", fontSize: "var(--text-sm)", color: "var(--color-text-primary)", boxSizing: "border-box", transition: "border-color 0.15s" }}
                   onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(0,230,118,0.35)"; }}
                   onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
                 />
@@ -1327,7 +1324,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                       <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, color: grupo.color, letterSpacing: "0.1em", textTransform: "uppercase" }}>
                         {grupo.label}
                       </span>
-                      <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--color-text-muted)", background: "rgba(255,255,255,0.06)", padding: "1px 8px", borderRadius: "var(--radius-full)", lineHeight: 1.7 }}>
+                      <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, color: "var(--color-text-muted)", background: "rgba(255,255,255,0.06)", padding: "1px 8px", borderRadius: "var(--radius-full)", lineHeight: 1.7 }}>
                         {grupo.items.length}
                       </span>
                       <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.05)" }} />
@@ -1483,7 +1480,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
                         onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,230,118,0.06)"; e.currentTarget.style.borderColor = "rgba(0,230,118,0.25)"; }}
                         onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.025)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; }}
                       >
-                        <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--color-text-muted)", background: "rgba(255,255,255,0.06)", padding: "2px 8px", borderRadius: "var(--radius-full)", flexShrink: 0 }}>
+                        <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, color: "var(--color-text-muted)", background: "rgba(255,255,255,0.06)", padding: "2px 8px", borderRadius: "var(--radius-full)", flexShrink: 0 }}>
                           {j.etiqueta}
                         </span>
                         <span style={{ flex: 1, textAlign: "right", fontSize: "var(--text-sm)", fontWeight: 600, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{j.casa}</span>
@@ -1532,7 +1529,7 @@ export default function DetalhesCampeonatoPage({ params }: { params: Promise<{ i
               <span style={{ flex: 1, fontSize: "var(--text-xs)", fontWeight: 600, color: "var(--color-text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {feat.title}
               </span>
-              <span style={{ fontSize: "9px", background: "rgba(255,255,255,0.06)", padding: "2px 6px", borderRadius: "var(--radius-full)", color: "var(--color-text-muted)", letterSpacing: "0.06em", textTransform: "uppercase", flexShrink: 0 }}>
+              <span style={{ fontSize: "var(--text-xs)", background: "rgba(255,255,255,0.06)", padding: "2px 6px", borderRadius: "var(--radius-full)", color: "var(--color-text-muted)", letterSpacing: "0.06em", textTransform: "uppercase", flexShrink: 0 }}>
                 Em breve
               </span>
             </div>

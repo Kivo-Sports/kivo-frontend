@@ -104,7 +104,7 @@ function StatusSelect({
           {value !== "todos" && selected.count > 0 && (
             <span
               style={{
-                fontSize: "10px",
+                fontSize: "var(--text-xs)",
                 fontWeight: 700,
                 color: "var(--color-brand-primary)",
                 background: "rgba(0,230,118,0.14)",
@@ -199,7 +199,7 @@ function StatusSelect({
                   {opt.count > 0 && (
                     <span
                       style={{
-                        fontSize: "10px",
+                        fontSize: "var(--text-xs)",
                         fontWeight: 700,
                         color: isActive ? "var(--color-brand-primary)" : "var(--color-text-muted)",
                         background: isActive ? "rgba(0,230,118,0.15)" : "rgba(255,255,255,0.07)",
@@ -392,7 +392,6 @@ export default function OrganizadorCampeonatoPage() {
                   paddingRight: search ? "40px" : "var(--space-3)",
                   fontSize: "var(--text-sm)",
                   color: "var(--color-text-primary)",
-                  outline: "none",
                   boxSizing: "border-box",
                   transition: "border-color 0.15s",
                 }}

@@ -134,7 +134,7 @@ export function HeaderMobile() {
                 borderRadius: "8px",
                 cursor: "pointer",
                 fontWeight: 700,
-                color: "#000",
+                color: "var(--color-text-on-primary)",
                 fontSize: "13px",
                 transition: "opacity 0.2s ease",
               }}

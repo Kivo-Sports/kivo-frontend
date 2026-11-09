@@ -163,14 +163,14 @@ export function GraficoVendasPorDia({
                 <XAxis
                   dataKey="dia"
                   tickFormatter={(dia: string) => formatarDia(dia).slice(0, 5)}
-                  tick={{ fill: "var(--color-text-muted)", fontSize: 11 }}
+                  tick={{ fill: "var(--color-text-muted)", fontSize: 12 }}
                   axisLine={false}
                   tickLine={false}
                   minTickGap={24}
                 />
                 <YAxis
                   tickFormatter={(v: number) => formatarEixoY(metrica, v)}
-                  tick={{ fill: "var(--color-text-muted)", fontSize: 11 }}
+                  tick={{ fill: "var(--color-text-muted)", fontSize: 12 }}
                   axisLine={false}
                   tickLine={false}
                   allowDecimals={metrica === "receita"}

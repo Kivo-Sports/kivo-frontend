@@ -145,7 +145,6 @@ export function SearchableSelect({
                   flex: 1,
                   minWidth: 0,
                   border: "none",
-                  outline: "none",
                   background: "transparent",
                   color: "var(--color-text-primary)",
                   fontSize: "var(--text-sm)",

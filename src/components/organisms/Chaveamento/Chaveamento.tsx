@@ -72,7 +72,7 @@ function ColLabel({ label, mirror }: { label?: string; mirror?: boolean }) {
         <span
           style={{
             transform: mirror ? "scaleX(-1)" : undefined,
-            fontSize: "10px",
+            fontSize: "var(--text-xs)",
             fontWeight: 700,
             letterSpacing: "0.12em",
             textTransform: "uppercase",
@@ -105,7 +105,7 @@ function TeamLine({ nome, logo, gols, venceu, finalizado, placeholder }: {
       ) : (
         <Avatar name={nome} src={logo || undefined} size="sm" />
       )}
-      <span style={{ flex: 1, minWidth: 0, fontSize: "11px", fontWeight: venceu ? 700 : 600, color: placeholder ? "var(--color-text-muted)" : venceu ? "var(--color-brand-primary)" : "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+      <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-xs)", fontWeight: venceu ? 700 : 600, color: placeholder ? "var(--color-text-muted)" : venceu ? "var(--color-brand-primary)" : "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
         {nome}
       </span>
       <span style={{ flexShrink: 0, width: "16px", textAlign: "center", fontSize: "12px", fontWeight: 700, color: finalizado ? (venceu ? "var(--color-brand-primary)" : "white") : "var(--color-text-muted)" }}>
@@ -251,7 +251,7 @@ function ListaFases({ rounds }: { rounds: Slot[][] }) {
               <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, color: "var(--color-brand-primary)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
                 {FASE_LABEL_LONGO[fase] ?? fase}
               </span>
-              <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--color-text-muted)", background: "rgba(255,255,255,0.06)", padding: "1px 8px", borderRadius: "var(--radius-full)" }}>
+              <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, color: "var(--color-text-muted)", background: "rgba(255,255,255,0.06)", padding: "1px 8px", borderRadius: "var(--radius-full)" }}>
                 {slots.length} {slots.length === 1 ? "jogo" : "jogos"}
               </span>
               <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.06)" }} />

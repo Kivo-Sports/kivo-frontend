@@ -59,7 +59,7 @@ function SectionTitle({
     >
       <Icon icon={icon} size={18} color="var(--color-brand-primary)" />
       <h2
-        style={{ margin: 0, fontSize: "clamp(16px, 3vw, 20px)", fontWeight: 700, color: "white" }}
+        style={{ margin: 0, fontSize: "clamp(16px, 3vw, 20px)", fontWeight: 700, color: "var(--color-text-primary)" }}
       >
         {title}
       </h2>
@@ -160,7 +160,7 @@ function TimelineRow({ jogo }: { jogo: TimelineItem }) {
           >
             {dia}
           </div>
-          {hora && <div style={{ fontSize: "10px", color: "var(--color-text-muted)" }}>{hora}</div>}
+          {hora && <div style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>{hora}</div>}
         </div>
 
         {/* Confronto */}
@@ -168,14 +168,14 @@ function TimelineRow({ jogo }: { jogo: TimelineItem }) {
           <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
             <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", minWidth: 0 }}>
               <Avatar name={jogo.timeCasa} src={jogo.logoCasa || undefined} size="sm" />
-              <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>
+              <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)" }}>
                 {jogo.timeCasa}
               </span>
             </span>
             <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>x</span>
             <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", minWidth: 0 }}>
               <Avatar name={jogo.timeVisitante} src={jogo.logoVisitante || undefined} size="sm" />
-              <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "white" }}>
+              <span style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--color-text-primary)" }}>
                 {jogo.timeVisitante}
               </span>
             </span>
@@ -194,7 +194,7 @@ function TimelineRow({ jogo }: { jogo: TimelineItem }) {
             </span>
             <span
               style={{
-                fontSize: "10px",
+                fontSize: "var(--text-xs)",
                 color: "var(--color-brand-primary)",
                 background: "rgba(0,230,118,0.1)",
                 borderRadius: "var(--radius-full)",
@@ -209,7 +209,7 @@ function TimelineRow({ jogo }: { jogo: TimelineItem }) {
                   display: "inline-flex",
                   alignItems: "center",
                   gap: "3px",
-                  fontSize: "10px",
+                  fontSize: "var(--text-xs)",
                   color: "var(--color-text-muted)",
                 }}
               >
@@ -342,7 +342,7 @@ function SeguindoModal({
                       margin: 0,
                       fontSize: "var(--text-sm)",
                       fontWeight: 600,
-                      color: "white",
+                      color: "var(--color-text-primary)",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       whiteSpace: "nowrap",
@@ -399,7 +399,7 @@ function SeguindoModal({
                       margin: "0 0 2px",
                       fontSize: "var(--text-sm)",
                       fontWeight: 600,
-                      color: "white",
+                      color: "var(--color-text-primary)",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       whiteSpace: "nowrap",
@@ -475,7 +475,7 @@ export default function TorcedorDashboardPage() {
             margin: "2px 0 0",
             fontSize: "clamp(24px, 4vw, 34px)",
             fontWeight: 700,
-            color: "white",
+            color: "var(--color-text-primary)",
           }}
         >
           Olá, {user?.name || "Torcedor"}
@@ -527,7 +527,7 @@ export default function TorcedorDashboardPage() {
               }}
               title={`Ver ${s.label.toLowerCase()} que você segue`}
             >
-              <strong style={{ color: "white", fontSize: "var(--text-md)", fontWeight: 700 }}>
+              <strong style={{ color: "var(--color-text-primary)", fontSize: "var(--text-md)", fontWeight: 700 }}>
                 {s.valor}
               </strong>
               <span style={{ borderBottom: "1px dashed rgba(255,255,255,0.25)" }}>{s.label}</span>
@@ -566,7 +566,7 @@ export default function TorcedorDashboardPage() {
             <Icon icon={Ticket} size={22} color="var(--color-brand-primary)" />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <h2 style={{ margin: 0, color: "white", fontSize: "var(--text-md)", fontWeight: 700 }}>
+            <h2 style={{ margin: 0, color: "var(--color-text-primary)", fontSize: "var(--text-md)", fontWeight: 700 }}>
               Meus ingressos
             </h2>
             <p
@@ -669,7 +669,7 @@ export default function TorcedorDashboardPage() {
                         <p
                           style={{
                             margin: "6px 0 0",
-                            color: "white",
+                            color: "var(--color-text-primary)",
                             fontSize: "var(--text-xs)",
                             fontWeight: 600,
                           }}
@@ -691,7 +691,7 @@ export default function TorcedorDashboardPage() {
                         <p
                           style={{
                             margin: "6px 0 0",
-                            color: "white",
+                            color: "var(--color-text-primary)",
                             fontSize: "var(--text-xs)",
                             fontWeight: 600,
                           }}
@@ -716,7 +716,7 @@ export default function TorcedorDashboardPage() {
                           style={{
                             display: "block",
                             color: "var(--color-text-muted)",
-                            fontSize: "10px",
+                            fontSize: "var(--text-xs)",
                           }}
                         >
                           A partir de

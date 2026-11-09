@@ -129,7 +129,7 @@ function ConviteCard({
         <Link
           href={href}
           title="Ver campeonato"
-          style={{ flexShrink: 0, borderRadius: "var(--radius-lg)", outline: "none" }}
+          style={{ flexShrink: 0, borderRadius: "var(--radius-lg)" }}
         >
           <Avatar name={convite.nomeCampeonato} src={camp?.logoUrl || undefined} size="md" />
         </Link>
@@ -426,7 +426,7 @@ function ConvitesPainel({ organizadorTimeId, times }: ConvitesPainelProps) {
                       borderRadius: "var(--radius-full)",
                       background: "rgba(0,230,118,0.12)",
                       color: "var(--color-brand-primary)",
-                      fontSize: "10px",
+                      fontSize: "var(--text-xs)",
                       fontWeight: 700,
                     }}
                   >
@@ -1023,7 +1023,6 @@ export default function OrganizadorTimePage() {
                     paddingRight: "var(--space-3)",
                     fontSize: "var(--text-sm)",
                     color: "var(--color-text-primary)",
-                    outline: "none",
                     boxSizing: "border-box",
                     transition: "border-color 0.15s",
                   }}
