@@ -271,10 +271,10 @@ export function NotificationBell() {
             maxHeight: "min(520px, calc(100vh - 96px))",
             display: "flex",
             flexDirection: "column",
-            background: "rgba(20, 20, 20, 0.99)",
-            border: "1px solid rgba(0, 230, 118, 0.3)",
+            background: "var(--color-bg-surface)",
+            border: "1px solid var(--color-border-default)",
             borderRadius: 12,
-            boxShadow: "0 10px 40px rgba(0, 0, 0, 0.4)",
+            boxShadow: "var(--shadow-lg)",
             overflow: "hidden",
             zIndex: 1200,
             animation: "slideDown 0.2s ease-out",
@@ -287,17 +287,17 @@ export function NotificationBell() {
               justifyContent: "space-between",
               gap: "var(--space-3)",
               padding: "var(--space-4)",
-              borderBottom: "1px solid rgba(0, 230, 118, 0.2)",
+              borderBottom: "1px solid var(--color-border-default)",
             }}
           >
             <div>
-              <p style={{ margin: 0, color: "white", fontSize: "var(--text-sm)", fontWeight: 700 }}>
+              <p style={{ margin: 0, color: "var(--color-text-primary)", fontSize: "var(--text-sm)", fontWeight: 700 }}>
                 Notificações
               </p>
               <p
                 style={{
                   margin: "2px 0 0",
-                  color: "var(--color-text-muted)",
+                  color: "var(--color-text-secondary)",
                   fontSize: "var(--text-xs)",
                 }}
               >
@@ -335,7 +335,7 @@ export function NotificationBell() {
                 justifyContent: "space-between",
                 gap: "var(--space-3)",
                 padding: "var(--space-3) var(--space-4)",
-                color: "var(--color-feedback-warning)",
+                color: "var(--color-brand-accent)",
                 borderBottom: "1px solid rgba(255, 193, 7, 0.2)",
                 fontSize: "var(--text-xs)",
               }}
@@ -381,14 +381,14 @@ export function NotificationBell() {
             ) : orderedNotifications.length === 0 ? (
               <div style={{ padding: "var(--space-6) var(--space-4)", textAlign: "center" }}>
                 <p
-                  style={{ margin: 0, color: "white", fontSize: "var(--text-sm)", fontWeight: 700 }}
+                  style={{ margin: 0, color: "var(--color-text-primary)", fontSize: "var(--text-sm)", fontWeight: 700 }}
                 >
                   Nenhuma notificação
                 </p>
                 <p
                   style={{
                     margin: "var(--space-1) 0 0",
-                    color: "var(--color-text-muted)",
+                    color: "var(--color-text-secondary)",
                     fontSize: "var(--text-xs)",
                   }}
                 >
@@ -412,8 +412,8 @@ export function NotificationBell() {
                       gap: "var(--space-3)",
                       padding: "var(--space-3) var(--space-4)",
                       border: "none",
-                      borderBottom: "1px solid rgba(255, 255, 255, 0.06)",
-                      background: notification.lida ? "transparent" : "rgba(0, 230, 118, 0.08)",
+                      borderBottom: "1px solid var(--color-border-default)",
+                      background: notification.lida ? "transparent" : "color-mix(in srgb, var(--color-brand-primary) 7%, transparent)",
                       color: "inherit",
                       cursor: "pointer",
                       textAlign: "left",
@@ -429,10 +429,10 @@ export function NotificationBell() {
                         alignItems: "center",
                         justifyContent: "center",
                         color: notification.lida
-                          ? "var(--color-text-muted)"
+                          ? "var(--color-text-secondary)"
                           : "var(--color-brand-primary)",
                         background: notification.lida
-                          ? "rgba(255,255,255,0.04)"
+                          ? "var(--color-bg-elevated)"
                           : "rgba(0, 230, 118, 0.12)",
                       }}
                     >
@@ -451,7 +451,7 @@ export function NotificationBell() {
                       >
                         <strong
                           style={{
-                            color: "white",
+                            color: "var(--color-text-primary)",
                             fontSize: "var(--text-sm)",
                             lineHeight: 1.25,
                             overflow: "hidden",
@@ -493,7 +493,7 @@ export function NotificationBell() {
                         style={{
                           display: "block",
                           marginTop: "0.35rem",
-                          color: "var(--color-text-muted)",
+                          color: "var(--color-text-secondary)",
                           fontSize: "0.7rem",
                         }}
                       >

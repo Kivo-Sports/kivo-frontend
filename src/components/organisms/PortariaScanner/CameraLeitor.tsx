@@ -246,7 +246,7 @@ export function CameraLeitor({
             style={{
               ...botaoRedondo,
               background: lanternaLigada ? "var(--color-brand-primary)" : botaoRedondo.background,
-              color: lanternaLigada ? "var(--dark-600)" : "#fff",
+              color: lanternaLigada ? "var(--color-text-on-primary)" : "#fff",
             }}
           >
             {lanternaLigada ? <FlashlightOff size={20} /> : <Flashlight size={20} />}

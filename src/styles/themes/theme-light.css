@@ -8,9 +8,9 @@
 
 [data-theme="light"] {
   /* ——— BRAND / IDENTIDADE ——— */
-  --color-brand-primary: #ff5722;
-  --color-brand-secondary: #ff8a65;
-  --color-brand-accent: #212121;
+  --color-brand-primary: #087a48;
+  --color-brand-secondary: #087a59;
+  --color-brand-accent: #755900;
 
   /* ——— BACKGROUNDS ——— */
   --color-bg-base: var(--light-50);
@@ -22,7 +22,7 @@
   /* ——— BORDERS ——— */
   --color-border-default: var(--light-300);
   --color-border-strong: var(--light-400);
-  --color-border-focus: #ff5722;
+  --color-border-focus: #087a48;
 
   /* ——— TEXTO ——— */
   --color-text-primary: var(--light-700);
@@ -33,10 +33,10 @@
   --color-text-on-primary: var(--light-50);
 
   /* ——— FEEDBACK (Estados e mensagens) ——— */
-  --color-feedback-success: #388e3c;
+  --color-feedback-success: #087a48;
   --color-feedback-warning: #ff9100;
   --color-feedback-danger: #d32f2f;
-  --color-feedback-info: #0091ea;
+  --color-feedback-info: #087a78;
 
   /* Fundos suaves para badges e alertas */
   --color-feedback-success-bg: rgba(56, 142, 60, 0.12);
@@ -45,15 +45,15 @@
   --color-feedback-info-bg: rgba(0, 145, 234, 0.12);
 
   /* ——— ESTADOS INTERATIVOS ——— */
-  --color-interactive-default: #ff5722;
-  --color-interactive-hover: #ff4081;
-  --color-interactive-active: #e64a19;
-  --color-interactive-disabled: rgba(255, 87, 34, 0.3);
+  --color-interactive-default: #087a48;
+  --color-interactive-hover: #05643a;
+  --color-interactive-active: #044e2e;
+  --color-interactive-disabled: rgba(8, 122, 72, 0.35);
 
   /* ——— SHADOWS (padrão suave para tema claro) ——— */
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
   --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.15);
-  --shadow-brand: 0 4px 12px rgba(255, 87, 34, 0.2);
+  --shadow-brand: 0 4px 12px rgba(8, 122, 72, 0.2);
   --shadow-accent: 0 2px 8px rgba(33, 33, 33, 0.15);
 }

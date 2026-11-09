@@ -24,7 +24,7 @@ const baseClasses: string =
 const sizeClasses: Record<ButtonSize, string> = {
   sm: "text-sm",
   md: "text-sm",
-  lg: "text-[var(--text-md)]",
+  lg: "text-[length:var(--text-md)]",
 };
 
 const sizeStyles: Record<ButtonSize, CSSProperties> = {
@@ -35,9 +35,9 @@ const sizeStyles: Record<ButtonSize, CSSProperties> = {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "border-transparent bg-[var(--color-brand-primary)] text-[var(--color-bg-base)] shadow-[0_6px_18px_rgba(0,230,118,0.24)] hover:opacity-95 hover:shadow-[0_8px_22px_rgba(0,230,118,0.3)]",
+    "border-transparent bg-[var(--color-brand-primary)] text-[var(--color-text-on-primary)] shadow-[0_6px_18px_rgba(0,230,118,0.24)] hover:opacity-95 hover:shadow-[0_8px_22px_rgba(0,230,118,0.3)]",
   secondary:
-    "border-transparent bg-[var(--color-brand-secondary)] text-[var(--color-bg-base)] shadow-[0_6px_18px_rgba(0,191,165,0.22)] hover:opacity-95 hover:shadow-[0_8px_22px_rgba(0,191,165,0.28)]",
+    "border-transparent bg-[var(--color-brand-secondary)] text-[var(--color-text-on-primary)] shadow-[0_6px_18px_rgba(0,191,165,0.22)] hover:opacity-95 hover:shadow-[0_8px_22px_rgba(0,191,165,0.28)]",
   ghost:
     "border-[var(--color-border-default)] bg-transparent text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)] hover:border-[var(--color-brand-secondary)]",
   danger:

@@ -67,23 +67,23 @@ const status: Record<StatusIngresso, { texto: string; variante: BadgeVariant }> 
 const secaoCores: Record<SecaoVariant, { cor: string; fundo: string; borda: string }> = {
   success: {
     cor: "var(--color-brand-primary)",
-    fundo: "rgba(0,230,118,.055)",
-    borda: "rgba(0,230,118,.18)",
+    fundo: "color-mix(in srgb, var(--color-brand-primary), transparent 94%)",
+    borda: "color-mix(in srgb, var(--color-brand-primary), transparent 80%)",
   },
   warning: {
     cor: "var(--color-feedback-warning)",
-    fundo: "rgba(255,193,7,.045)",
-    borda: "rgba(255,193,7,.2)",
+    fundo: "var(--color-feedback-warning-bg)",
+    borda: "color-mix(in srgb, var(--color-feedback-warning), transparent 75%)",
   },
   muted: {
     cor: "var(--color-text-secondary)",
-    fundo: "rgba(255,255,255,.018)",
-    borda: "rgba(255,255,255,.08)",
+    fundo: "var(--color-bg-surface)",
+    borda: "var(--color-border-default)",
   },
   danger: {
     cor: "var(--color-feedback-danger)",
-    fundo: "rgba(255,23,68,.035)",
-    borda: "rgba(255,23,68,.18)",
+    fundo: "var(--color-feedback-danger-bg)",
+    borda: "color-mix(in srgb, var(--color-feedback-danger), transparent 78%)",
   },
 };
 
@@ -194,7 +194,7 @@ function Metrica({
   cor: string;
 }) {
   return (
-    <Card padding="md" style={{ background: "rgba(255,255,255,.022)" }}>
+    <Card padding="md" style={{ background: "var(--color-bg-surface)" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <div
           style={{
@@ -212,7 +212,7 @@ function Metrica({
           <Icon icon={icon} size={19} />
         </div>
         <div>
-          <strong style={{ display: "block", color: "white", fontSize: "var(--text-xl)" }}>
+          <strong style={{ display: "block", color: "var(--color-text-primary)", fontSize: "var(--text-xl)" }}>
             {valor}
           </strong>
           <span style={{ color: "var(--color-text-muted)", fontSize: "var(--text-xs)" }}>
@@ -245,8 +245,8 @@ function CartaoIngresso({
         minWidth: 0,
         padding: "var(--space-4)",
         borderRadius: "var(--radius-lg)",
-        border: "1px solid rgba(255,255,255,.08)",
-        background: "rgba(5,10,8,.58)",
+        border: "1px solid var(--color-border-default)",
+        background: "var(--color-bg-elevated)",
       }}
     >
       <div
@@ -261,7 +261,7 @@ function CartaoIngresso({
           <Badge size="sm" variant={info.variante}>
             {info.texto}
           </Badge>
-          <p style={{ color: "white", fontWeight: 700, margin: "10px 0 2px" }}>
+          <p style={{ color: "var(--color-text-primary)", fontWeight: 700, margin: "10px 0 2px" }}>
             {ingresso.nomeLote}
           </p>
           <span style={{ color: "var(--color-text-muted)", fontSize: "10px" }}>
@@ -282,8 +282,8 @@ function CartaoIngresso({
             marginTop: 14,
             padding: "10px 12px",
             borderRadius: 10,
-            background: "rgba(255,255,255,.035)",
-            border: "1px solid rgba(255,255,255,.07)",
+            background: "var(--color-bg-elevated)",
+            border: "1px solid var(--color-border-default)",
           }}
         >
           <Icon icon={UserRound} size={16} style={{ color: "var(--color-brand-primary)" }} />
@@ -291,7 +291,7 @@ function CartaoIngresso({
             <strong
               style={{
                 display: "block",
-                color: "white",
+                color: "var(--color-text-primary)",
                 fontSize: "var(--text-xs)",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -426,7 +426,7 @@ function GrupoPartidaCard({
           </div>
           <h3
             style={{
-              color: "white",
+              color: "var(--color-text-primary)",
               fontSize: "clamp(17px, 3vw, 22px)",
               margin: "0 0 9px",
             }}
@@ -525,7 +525,7 @@ function SecaoPagamentosPendentes({
             <Icon icon={ReceiptText} size={18} />
           </div>
           <div>
-            <h2 style={{ color: "white", fontSize: "var(--text-md)", margin: 0 }}>
+            <h2 style={{ color: "var(--color-text-primary)", fontSize: "var(--text-md)", margin: 0 }}>
               Aguardando pagamento
             </h2>
             <p style={{ color: "var(--color-text-muted)", fontSize: "var(--text-xs)", margin: 0 }}>
@@ -584,7 +584,7 @@ function SecaoPagamentosPendentes({
                   <Badge size="sm" variant="warning">
                     {grupo.ingressos.length} ingresso{grupo.ingressos.length === 1 ? "" : "s"}
                   </Badge>
-                  <h3 style={{ color: "white", fontSize: "var(--text-lg)", margin: "9px 0 6px" }}>
+                  <h3 style={{ color: "var(--color-text-primary)", fontSize: "var(--text-lg)", margin: "9px 0 6px" }}>
                     {primeiro?.nomePartida ?? "Compra de ingressos"}
                   </h3>
                   <div
@@ -630,8 +630,8 @@ function SecaoPagamentosPendentes({
                         gap: 12,
                         padding: "10px 12px",
                         borderRadius: 10,
-                        background: "rgba(5,10,8,.5)",
-                        border: "1px solid rgba(255,255,255,.07)",
+                        background: "var(--color-bg-elevated)",
+                        border: "1px solid var(--color-border-default)",
                       }}
                     >
                       <span
@@ -639,7 +639,7 @@ function SecaoPagamentosPendentes({
                       >
                         {lote.quantidade}× {lote.nome}
                       </span>
-                      <strong style={{ color: "white", fontSize: "var(--text-sm)" }}>
+                      <strong style={{ color: "var(--color-text-primary)", fontSize: "var(--text-sm)" }}>
                         {formatarMoeda(lote.total)}
                       </strong>
                     </div>
@@ -758,7 +758,7 @@ function SecaoIngressos({
             <Icon icon={icon} size={18} />
           </div>
           <div>
-            <h2 style={{ color: "white", fontSize: "var(--text-md)", margin: 0 }}>{titulo}</h2>
+            <h2 style={{ color: "var(--color-text-primary)", fontSize: "var(--text-md)", margin: 0 }}>{titulo}</h2>
             <p style={{ color: "var(--color-text-muted)", fontSize: "var(--text-xs)", margin: 0 }}>
               {descricao}
             </p>
@@ -965,8 +965,8 @@ export function CarteiraIngressos() {
           overflow: "hidden",
           marginBottom: "var(--space-4)",
           background:
-            "radial-gradient(circle at 85% 15%, rgba(0,230,118,.18), transparent 32%), linear-gradient(135deg, rgba(0,230,118,.08), rgba(5,10,8,.98) 58%)",
-          border: "1px solid rgba(0,230,118,.2)",
+            "radial-gradient(circle at 85% 15%, color-mix(in srgb, var(--color-brand-primary), transparent 82%), transparent 32%), linear-gradient(135deg, color-mix(in srgb, var(--color-brand-primary), transparent 92%), var(--color-bg-elevated) 58%)",
+          border: "1px solid color-mix(in srgb, var(--color-brand-primary), transparent 80%)",
         }}
       >
         <div
@@ -997,7 +997,7 @@ export function CarteiraIngressos() {
             </span>
             <h1
               style={{
-                color: "white",
+                color: "var(--color-text-primary)",
                 fontSize: "clamp(28px, 5vw, 44px)",
                 lineHeight: 1.05,
                 margin: "10px 0 12px",
@@ -1075,7 +1075,7 @@ export function CarteiraIngressos() {
             size={42}
             style={{ color: "var(--color-text-muted)", margin: "0 auto 12px" }}
           />
-          <h2 style={{ color: "white", fontSize: "var(--text-md)" }}>
+          <h2 style={{ color: "var(--color-text-primary)", fontSize: "var(--text-md)" }}>
             Você ainda não possui ingressos
           </h2>
           <p style={{ color: "var(--color-text-muted)", fontSize: "var(--text-sm)" }}>
@@ -1153,7 +1153,7 @@ export function CarteiraIngressos() {
               border: "1px solid rgba(0,230,118,.16)",
             }}
           >
-            <strong style={{ display: "block", color: "white", fontSize: "var(--text-sm)" }}>
+            <strong style={{ display: "block", color: "var(--color-text-primary)", fontSize: "var(--text-sm)" }}>
               {ingressoTitular?.nomePartida}
             </strong>
             <span style={{ color: "var(--color-text-muted)", fontSize: "var(--text-xs)" }}>

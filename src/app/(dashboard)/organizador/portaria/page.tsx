@@ -330,7 +330,7 @@ export default function PortariaPage() {
                       ? "1px solid var(--color-brand-primary)"
                       : "1px solid var(--color-border-default)",
                     background: selecionado ? "var(--color-brand-primary)" : "transparent",
-                    color: selecionado ? "var(--dark-600)" : "var(--color-text-primary)",
+                    color: selecionado ? "var(--color-text-on-primary)" : "var(--color-text-primary)",
                     fontWeight: 700,
                     fontSize: "var(--text-base)",
                     cursor: "pointer",

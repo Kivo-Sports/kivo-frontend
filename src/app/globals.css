@@ -198,6 +198,11 @@ select:focus {
   box-shadow: 0 0 0 3px var(--color-feedback-success-bg);
 }
 
+.kivo-date-input:focus-visible {
+  outline: 2px solid var(--color-border-focus) !important;
+  outline-offset: 2px;
+}
+
 input:disabled,
 textarea:disabled,
 select:disabled {
@@ -315,4 +320,21 @@ tr:hover {
     color: #0000ff;
     text-decoration: underline;
   }
+}
+/* Inputs de autenticação: contorno forte sem afetar bordas decorativas globais. */
+.login-form input[aria-invalid="false"] {
+  border-color: var(--color-text-secondary);
+}
+
+.login-form input[aria-invalid="false"]:hover {
+  border-color: var(--color-text-primary);
+}
+
+.login-form input[aria-invalid="false"]:focus-visible {
+  border-color: var(--color-border-focus);
+}
+
+.login-form input[aria-invalid="true"],
+.login-form input[aria-invalid="true"]:focus-visible {
+  border-color: var(--color-feedback-danger);
 }
