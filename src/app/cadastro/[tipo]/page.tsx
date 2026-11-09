@@ -140,7 +140,7 @@ export default function CadastroFormPage() {
   const stepperSteps = stepsConfig
     .filter((s) => s.numero !== 4)
     .map((s) => ({
-      numero: s.numero,
+      numero: s.numero === 5 ? 4 : s.numero,
       titulo: s.titulo,
     }));
 
@@ -336,7 +336,7 @@ export default function CadastroFormPage() {
         alignItems: 'flex-start',
         justifyContent: 'center',
         padding: 'var(--space-4)',
-        paddingTop: 'var(--space-6)',
+        paddingTop: '72px',
         paddingBottom: 'var(--space-6)',
         background:
           'radial-gradient(circle at 8% 12%, rgba(0, 230, 118, 0.15), transparent 35%), radial-gradient(circle at 100% 0%, rgba(255, 214, 0, 0.1), transparent 32%), linear-gradient(145deg, var(--color-bg-base), color-mix(in srgb, var(--color-bg-base), #000 10%))',
@@ -389,12 +389,12 @@ export default function CadastroFormPage() {
         </div>
       ) : null}
 
-      <FadeIn delay={0} direction="up">
+      <FadeIn delay={0} direction="up" className="w-full max-w-[600px]">
         <Card
           padding="lg"
           className="w-full"
           style={{
-            maxWidth: 'clamp(320px, calc(100% - 32px), 600px)',
+            maxWidth: '600px',
             width: '100%',
           }}
         >
@@ -428,7 +428,7 @@ export default function CadastroFormPage() {
           <Stepper
             steps={stepperSteps}
             currentStep={expandedStep}
-            completedSteps={registration.completedSteps}
+            completedSteps={registration.completedSteps.map((step) => step === 5 ? 4 : step)}
             disabled={isSubmitting || isTransitioning}
           />
 
@@ -458,6 +458,8 @@ export default function CadastroFormPage() {
             onSubmit={handleSubmit}
             style={{
               display: 'grid',
+              gridTemplateColumns: 'minmax(0, 1fr)',
+              minWidth: 0,
               gap: 0,
               pointerEvents: isTransitioning ? 'none' : 'auto',
             }}
@@ -479,7 +481,7 @@ export default function CadastroFormPage() {
                 <div
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))',
                     gap: 'var(--space-3)',
                   }}
                   className="form-grid-inputs"
@@ -553,7 +555,7 @@ export default function CadastroFormPage() {
                 <div
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))',
                     gap: 'var(--space-3)',
                   }}
                   className="form-grid-inputs"
@@ -676,6 +678,7 @@ export default function CadastroFormPage() {
                 <div
                   style={{
                     display: 'flex',
+                    flexWrap: 'wrap',
                     gap: 'var(--space-3)',
                   }}
                 >
@@ -721,7 +724,7 @@ export default function CadastroFormPage() {
                 <div
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))',
                     gap: 'var(--space-3)',
                   }}
                   className="form-grid-inputs"
@@ -819,6 +822,7 @@ export default function CadastroFormPage() {
                 <div
                   style={{
                     display: 'flex',
+                    flexWrap: 'wrap',
                     gap: 'var(--space-3)',
                   }}
                 >
@@ -866,7 +870,7 @@ export default function CadastroFormPage() {
                   <div
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))',
                       gap: 'var(--space-3)',
                     }}
                     className="form-grid-inputs"
@@ -951,6 +955,7 @@ export default function CadastroFormPage() {
                   <div
                     style={{
                       display: 'flex',
+                      flexWrap: 'wrap',
                       gap: 'var(--space-3)',
                     }}
                   >
@@ -1026,7 +1031,8 @@ export default function CadastroFormPage() {
                     <div
                       style={{
                         display: 'grid',
-                        gridTemplateColumns: '1fr 1fr',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
+                        overflowWrap: 'anywhere',
                         gap: 'var(--space-2)',
                         fontSize: 'var(--text-sm)',
                         color: 'var(--color-text-secondary)',
@@ -1063,7 +1069,8 @@ export default function CadastroFormPage() {
                     <div
                       style={{
                         display: 'grid',
-                        gridTemplateColumns: '1fr 1fr',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
+                        overflowWrap: 'anywhere',
                         gap: 'var(--space-2)',
                         fontSize: 'var(--text-sm)',
                         color: 'var(--color-text-secondary)',
@@ -1127,7 +1134,8 @@ export default function CadastroFormPage() {
                       <div
                         style={{
                           display: 'grid',
-                          gridTemplateColumns: '1fr 1fr',
+                          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
+                          overflowWrap: 'anywhere',
                           gap: 'var(--space-2)',
                           fontSize: 'var(--text-sm)',
                           color: 'var(--color-text-secondary)',
@@ -1159,6 +1167,7 @@ export default function CadastroFormPage() {
             <div
               style={{
                 display: 'flex',
+                flexWrap: 'wrap',
                 gap: 'var(--space-3)',
               }}
             >
