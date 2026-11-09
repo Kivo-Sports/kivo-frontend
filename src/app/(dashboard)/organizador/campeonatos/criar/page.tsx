@@ -385,7 +385,7 @@ export default function CriarCampeonatoPage() {
               boxShadow: "0 24px 60px rgba(0, 0, 0, 0.45)",
             }}
           >
-            <form onSubmit={handleSubmit(onSubmit)} style={{ display: "grid", gap: "var(--space-4)" }} noValidate>
+            <form onSubmit={handleSubmit(onSubmit)} style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: "var(--space-4)" }} noValidate>
 
               <FormField
                 label="Nome do campeonato"
@@ -400,7 +400,7 @@ export default function CriarCampeonatoPage() {
                 error={errors.esporteId?.message}
               />
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: "var(--space-3)" }}>
                 <DateInput
                   label="Data de início"
                   type="date"
@@ -485,7 +485,7 @@ export default function CriarCampeonatoPage() {
                   <div
                     style={{
                       display: "grid",
-                      gridTemplateColumns: "1fr 1fr 1fr",
+                      gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr)",
                       gap: "var(--space-3)",
                       padding: "var(--space-3)",
                       borderRadius: "var(--radius-lg)",
@@ -619,7 +619,7 @@ export default function CriarCampeonatoPage() {
       <style>{`
         @media (max-width: 720px) {
           [data-criar-grid] {
-            grid-template-columns: 1fr !important;
+            grid-template-columns: minmax(0, 1fr) !important;
           }
         }
       `}</style>
