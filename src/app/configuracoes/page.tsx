@@ -202,7 +202,7 @@ export default function ConfiguracoesPage() {
                   <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--color-text-primary)' }}>Aparência</h2>
                   <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)', marginTop: 'var(--space-1)' }}>Escolha o tema e o tamanho do texto desta conta neste navegador.</p>
                 </div>
-                <ThemeSelector />
+                <ThemeSelector variant="inline" />
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-4)', flexWrap: 'wrap' }}>
                   <span style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--color-text-primary)' }}>Tamanho do texto</span>
                   <TextScaleSelector />
