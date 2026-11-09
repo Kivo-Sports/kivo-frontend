@@ -27,7 +27,7 @@
   /* ——— TEXTO ——— */
   --color-text-primary: var(--light-700);
   --color-text-secondary: var(--light-600);
-  --color-text-muted: var(--light-500);
+  --color-text-muted: #6c6c6c;
   --color-text-disabled: rgba(117, 117, 117, 0.4);
   --color-text-inverse: var(--light-50);
   --color-text-on-primary: var(--light-50);
