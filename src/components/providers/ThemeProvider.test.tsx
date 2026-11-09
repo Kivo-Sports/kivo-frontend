@@ -14,16 +14,19 @@ describe("ThemeProvider", () => {
       <ThemeProvider><ThemeSelector /></ThemeProvider>,
       { auth: unauthenticated },
     );
-    const themeButton = screen.getByRole("button", { name: /Tema atual/ });
+    const chooseLight = async () => {
+      await user.click(screen.getByRole("button", { name: /Aparência:/ }));
+      await user.click(screen.getByRole("button", { name: "Claro" }));
+    };
 
-    await user.click(themeButton);
+    await chooseLight();
     expect(localStorage.getItem("kivo:theme:v1:guest")).toBe("light");
     await waitFor(() => expect(document.documentElement.dataset.theme).toBe("light"));
 
     const accountA = authenticatedAs("administrador");
     store.dispatch(setCredentials({ token: "qa-token", user: accountA.user! }));
     await waitFor(() => expect(document.documentElement.dataset.theme).toBe("dark"));
-    await user.click(themeButton);
+    await chooseLight();
     expect(localStorage.getItem(`kivo:theme:v1:user:${accountA.user!.id}`)).toBe("light");
 
     const accountB = makeUser("Administrador", { id: "88888888-8888-8888-8888-888888888888" });
@@ -39,7 +42,8 @@ describe("ThemeProvider", () => {
     renderWithProviders(<ThemeProvider><ThemeSelector /></ThemeProvider>, { auth: unauthenticated });
     vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new Error("storage indisponível"); });
 
-    await user.click(screen.getByRole("button", { name: /Tema atual/ }));
+    await user.click(screen.getByRole("button", { name: /Aparência:/ }));
+    await user.click(screen.getByRole("button", { name: "Claro" }));
 
     await waitFor(() => expect(document.documentElement.dataset.theme).toBe("light"));
     vi.restoreAllMocks();
